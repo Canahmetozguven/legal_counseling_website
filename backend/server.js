@@ -27,6 +27,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const caseRoutes = require('./routes/caseRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 // Route middleware
 app.use('/api/auth', authRoutes);
@@ -35,6 +36,9 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/cases', caseRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/contact', contactRoutes);
+
+// Dashboard routes
+app.use('/api/dashboard', dashboardRoutes);
 
 // Root route
 app.get('/', (req, res) => {

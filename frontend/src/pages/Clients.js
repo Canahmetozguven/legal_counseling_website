@@ -20,6 +20,9 @@ import {
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import clientService from '../api/clientService';
+import { motion } from 'framer-motion';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../theme';
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
@@ -114,51 +117,59 @@ const Clients = () => {
   };
 
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h4" sx={{ mb: 4, mt: 4 }}>
-        Clients
-      </Typography>
-      
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => handleClickOpen()}
-        sx={{ mb: 3 }}
-      >
-        Add New Client
-      </Button>
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="lg">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Typography variant="h4" sx={{ mb: 4, mt: 4 }}>
+            Clients
+          </Typography>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {clients.map((client) => (
-              <TableRow key={client._id}>
-                <TableCell>{client.name}</TableCell>
-                <TableCell>{client.email}</TableCell>
-                <TableCell>{client.phone}</TableCell>
-                <TableCell>{client.address}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleClickOpen(client)} color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(client._id)} color="error">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleClickOpen()}
+            sx={{ mb: 3 }}
+          >
+            Add New Client
+          </Button>
+
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Phone</TableCell>
+                  <TableCell>Address</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {clients.map((client) => (
+                  <TableRow key={client._id}>
+                    <TableCell>{client.name}</TableCell>
+                    <TableCell>{client.email}</TableCell>
+                    <TableCell>{client.phone}</TableCell>
+                    <TableCell>{client.address}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleClickOpen(client)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(client._id)} color="error">
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </motion.div>
+      </Container>
 
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{selectedClient ? 'Edit Client' : 'Add New Client'}</DialogTitle>
@@ -209,7 +220,7 @@ const Clients = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </ThemeProvider>
   );
 };
 

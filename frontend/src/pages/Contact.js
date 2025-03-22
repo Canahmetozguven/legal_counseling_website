@@ -10,7 +10,8 @@ import {
   Alert,
   Divider,
   Card,
-  CardContent
+  CardContent,
+  CircularProgress
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -18,6 +19,9 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import contactService from '../api/contactService';
+import { motion } from 'framer-motion';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from '../theme';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -84,8 +88,7 @@ const Contact = () => {
   ];
 
   return (
-    <>
-      {/* Hero Section */}
+    <ThemeProvider theme={theme}>
       <Box
         sx={{
           bgcolor: 'primary.main',
@@ -106,7 +109,6 @@ const Contact = () => {
 
       <Container maxWidth="lg">
         <Grid container spacing={6}>
-          {/* Contact Form Section */}
           <Grid item xs={12} md={7}>
             <Paper elevation={3} sx={{ p: 4 }}>
               {success && (
@@ -115,86 +117,94 @@ const Contact = () => {
                 </Alert>
               )}
 
-              <Typography variant="h4" gutterBottom>
-                Send Us a Message
-              </Typography>
-              <Typography variant="body1" paragraph color="text.secondary" sx={{ mb: 4 }}>
-                Please fill out the form below and we'll get back to you as soon as possible.
-              </Typography>
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Typography variant="h4" gutterBottom>
+                  Send Us a Message
+                </Typography>
+                <Typography variant="body1" paragraph color="text.secondary" sx={{ mb: 4 }}>
+                  Please fill out the form below and we'll get back to you as soon as possible.
+                </Typography>
 
-              <form onSubmit={handleSubmit}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      required
-                      fullWidth
-                      label="Name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                    />
+                <form onSubmit={handleSubmit}>
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        required
+                        fullWidth
+                        label="Name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'Name' }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        required
+                        fullWidth
+                        label="Email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'Email' }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        required
+                        fullWidth
+                        label="Subject"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        required
+                        fullWidth
+                        label="Message"
+                        name="message"
+                        multiline
+                        rows={4}
+                        value={formData.message}
+                        onChange={handleChange}
+                        inputProps={{ 'aria-label': 'Message' }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        fullWidth
+                        disabled={loading}
+                        sx={{ py: 1.5 }}
+                      >
+                        {loading ? <CircularProgress size={24} /> : 'Send Message'}
+                      </Button>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      required
-                      fullWidth
-                      label="Email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      required
-                      fullWidth
-                      label="Subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      required
-                      fullWidth
-                      label="Message"
-                      name="message"
-                      multiline
-                      rows={4}
-                      value={formData.message}
-                      onChange={handleChange}
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                      fullWidth
-                      disabled={loading}
-                      sx={{ py: 1.5 }}
-                    >
-                      {loading ? 'Sending...' : 'Send Message'}
-                    </Button>
-                  </Grid>
-                </Grid>
-              </form>
+                </form>
+              </motion.div>
             </Paper>
           </Grid>
 
-          {/* Contact Information Section */}
           <Grid item xs={12} md={5}>
             <Grid container spacing={3}>
               {contactInfo.map((info, index) => (
@@ -219,7 +229,6 @@ const Contact = () => {
               ))}
             </Grid>
 
-            {/* Emergency Contact Box */}
             <Box
               sx={{
                 mt: 4,
@@ -241,14 +250,12 @@ const Contact = () => {
           </Grid>
         </Grid>
 
-        {/* Map Section */}
         <Box sx={{ mt: 8, mb: 4 }}>
           <Divider sx={{ mb: 6 }} />
           <Typography variant="h4" gutterBottom textAlign="center">
             Visit Our Office
           </Typography>
           <Paper elevation={3} sx={{ height: 400, mt: 4 }}>
-            {/* Add your map component here */}
             <Box
               sx={{
                 width: '100%',
@@ -266,7 +273,7 @@ const Contact = () => {
           </Paper>
         </Box>
       </Container>
-    </>
+    </ThemeProvider>
   );
 };
 

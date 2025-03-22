@@ -1,47 +1,41 @@
 import React from 'react';
-import { Container, Typography, Grid, Paper, Box } from '@mui/material';
-import { useAuth } from '../features/auth/AuthContext';
+import { Grid, Card, Typography } from '@mui/material';
 
 const Dashboard = () => {
-  const { user } = useAuth();
-
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" gutterBottom>
-          Welcome back, {user?.name || 'User'}
-        </Typography>
-        
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-              <Typography variant="h6" gutterBottom>
-                Recent Cases
-              </Typography>
-              <Typography>No cases to display</Typography>
-            </Paper>
-          </Grid>
-          
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-              <Typography variant="h6" gutterBottom>
-                Upcoming Appointments
-              </Typography>
-              <Typography>No appointments scheduled</Typography>
-            </Paper>
-          </Grid>
-          
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-              <Typography variant="h6" gutterBottom>
-                Recent Activities
-              </Typography>
-              <Typography>No recent activities</Typography>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Box>
-    </Container>
+    <Grid container spacing={3} style={{ padding: '20px' }}>
+      {/* User Statistics */}
+      <Grid item xs={12} md={6} lg={4}>
+        <Card style={{ padding: '20px' }}>
+          <Typography variant="h5">Total Users</Typography>
+          <Typography variant="h2">123</Typography>
+        </Card>
+      </Grid>
+
+      {/* Recent Activities */}
+      <Grid item xs={12} md={6} lg={4}>
+        <Card style={{ padding: '20px' }}>
+          <Typography variant="h5">Recent Activities</Typography>
+          <ul>
+            <li>User A logged in</li>
+            <li>Client B added</li>
+            <li>Contact form submitted</li>
+          </ul>
+        </Card>
+      </Grid>
+
+      {/* Navigation Links */}
+      <Grid item xs={12} md={6} lg={4}>
+        <Card style={{ padding: '20px' }}>
+          <Typography variant="h5">Navigation</Typography>
+          <ul>
+            <li><a href="/clients">Clients</a></li>
+            <li><a href="/contact">Contact</a></li>
+            <li><a href="/">Home</a></li>
+          </ul>
+        </Card>
+      </Grid>
+    </Grid>
   );
 };
 
