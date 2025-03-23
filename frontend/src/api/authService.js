@@ -2,12 +2,17 @@ import axiosInstance from './axiosConfig';
 
 const authService = {
   login: async (email, password) => {
-    const response = await axiosInstance.post('/auth/login', { email, password });
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.data.user));
+    try {
+      const response = await axiosInstance.post('/api/auth/login', { email, password });
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+      }
+      return response.data;
+    } catch (error) {
+      console.error('Login error:', error.response?.data);
+      throw error;
     }
-    return response.data;
   },
 
   logout: () => {
@@ -16,8 +21,13 @@ const authService = {
   },
 
   signup: async (userData) => {
-    const response = await axiosInstance.post('/auth/signup', userData);
-    return response.data;
+    try {
+      const response = await axiosInstance.post('/api/auth/signup', userData);
+      return response.data;
+    } catch (error) {
+      console.error('Signup error:', error.response?.data);
+      throw error;
+    }
   },
 
   getCurrentUser: () => {
@@ -26,12 +36,17 @@ const authService = {
   },
 
   updatePassword: async (currentPassword, password, passwordConfirm) => {
-    const response = await axiosInstance.patch('/auth/update-password', {
-      passwordCurrent: currentPassword,
-      password,
-      passwordConfirm
-    });
-    return response.data;
+    try {
+      const response = await axiosInstance.patch('/api/auth/update-password', {
+        passwordCurrent: currentPassword,
+        password,
+        passwordConfirm
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Password update error:', error.response?.data);
+      throw error;
+    }
   },
 
   isAuthenticated: () => {

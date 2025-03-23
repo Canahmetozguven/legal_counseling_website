@@ -15,10 +15,12 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemButton
+  ListItemButton,
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../features/auth/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 
@@ -37,9 +39,11 @@ function HideOnScroll(props) {
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -72,6 +76,58 @@ const Header = () => {
 
   const isActivePath = (path) => location.pathname === path;
 
+  const handleNavigate = (path) => {
+    navigate(path);
+    setMobileDrawerOpen(false);
+  };
+
+  const renderMobileDrawer = () => (
+    <Drawer
+      anchor="left"
+      open={mobileDrawerOpen}
+      onClose={toggleMobileDrawer(false)}
+      sx={{
+        '& .MuiDrawer-paper': {
+          width: 250,
+          backgroundColor: theme.palette.background.paper,
+        },
+      }}
+    >
+      <List sx={{ pt: 2 }}>
+        {navigationItems.map((item) => (
+          <ListItem key={item.name} disablePadding>
+            <ListItemButton
+              onClick={() => handleNavigate(item.path)}
+              selected={isActivePath(item.path)}
+            >
+              <ListItemText primary={item.name} />
+            </ListItemButton>
+          </ListItem>
+        ))}
+        {!isAuthenticated ? (
+          <ListItem disablePadding>
+            <ListItemButton onClick={() => handleNavigate('/login')}>
+              <ListItemText primary="Login" />
+            </ListItemButton>
+          </ListItem>
+        ) : (
+          <>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => handleNavigate('/dashboard')}>
+                <ListItemText primary="Dashboard" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={handleLogout}>
+                <ListItemText primary="Logout" />
+              </ListItemButton>
+            </ListItem>
+          </>
+        )}
+      </List>
+    </Drawer>
+  );
+
   return (
     <HideOnScroll>
       <AppBar position="fixed" sx={{ backgroundColor: 'white', boxShadow: 2 }}>
@@ -83,7 +139,7 @@ const Header = () => {
               edge="start"
               color="primary"
               aria-label="menu"
-              sx={{ display: { sm: 'none' }, mr: 2 }}
+              sx={{ display: { md: 'none' }, mr: 2 }}
               onClick={toggleMobileDrawer(true)}
             >
               <MenuIcon />
@@ -92,45 +148,31 @@ const Header = () => {
             {/* Logo/Brand */}
             <Typography
               variant="h6"
+              noWrap
               component="div"
               sx={{
-                flexGrow: { xs: 1, sm: 0 },
-                mr: { sm: 4 },
+                flexGrow: { xs: 1, md: 0 },
                 color: 'primary.main',
-                fontFamily: '"Libre Baskerville", serif',
-                fontWeight: 700
+                fontWeight: 700,
+                cursor: 'pointer',
               }}
+              onClick={() => navigate('/')}
             >
-              Law Firm
+              LEGAL COUNSEL
             </Typography>
 
             {/* Desktop Navigation */}
-            <Box sx={{ 
-              display: { xs: 'none', sm: 'flex' }, 
-              flexGrow: 1,
-              gap: 2
-            }}>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, ml: 4 }}>
               {navigationItems.map((item) => (
                 <Button
-                  key={item.path}
-                  color="primary"
+                  key={item.name}
                   onClick={() => navigate(item.path)}
                   sx={{
-                    position: 'relative',
-                    '&::after': {
-                      content: '""',
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '2px',
-                      backgroundColor: 'primary.main',
-                      transform: isActivePath(item.path) ? 'scaleX(1)' : 'scaleX(0)',
-                      transition: 'transform 0.3s ease'
+                    mx: 1,
+                    color: isActivePath(item.path) ? 'primary.main' : 'text.primary',
+                    '&:hover': {
+                      color: 'primary.main',
                     },
-                    '&:hover::after': {
-                      transform: 'scaleX(1)'
-                    }
                   }}
                 >
                   {item.name}
@@ -140,15 +182,19 @@ const Header = () => {
 
             {/* Auth Section */}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              {isAuthenticated() ? (
+              {!isAuthenticated ? (
+                <Button
+                  color="primary"
+                  variant="contained"
+                  onClick={() => navigate('/login')}
+                  sx={{
+                    display: { xs: 'none', md: 'flex' },
+                  }}
+                >
+                  Login
+                </Button>
+              ) : (
                 <>
-                  <Button
-                    color="primary"
-                    onClick={() => navigate('/dashboard')}
-                    sx={{ display: { xs: 'none', sm: 'block' } }}
-                  >
-                    Dashboard
-                  </Button>
                   <IconButton
                     size="large"
                     aria-label="account of current user"
@@ -156,6 +202,7 @@ const Header = () => {
                     aria-haspopup="true"
                     onClick={handleMenu}
                     color="primary"
+                    sx={{ display: { xs: 'none', md: 'flex' } }}
                   >
                     <AccountCircle />
                   </IconButton>
@@ -174,58 +221,20 @@ const Header = () => {
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
                   >
-                    <MenuItem onClick={() => { handleClose(); navigate('/profile'); }}>
-                      Profile
+                    <MenuItem onClick={() => {
+                      handleClose();
+                      navigate('/dashboard');
+                    }}>
+                      Dashboard
                     </MenuItem>
                     <MenuItem onClick={handleLogout}>Logout</MenuItem>
                   </Menu>
                 </>
-              ) : (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => navigate('/login')}
-                >
-                  Login
-                </Button>
               )}
             </Box>
-
-            {/* Mobile Navigation Drawer */}
-            <Drawer
-              anchor="left"
-              open={mobileDrawerOpen}
-              onClose={toggleMobileDrawer(false)}
-            >
-              <Box
-                sx={{ width: 250 }}
-                role="presentation"
-                onClick={toggleMobileDrawer(false)}
-                onKeyDown={toggleMobileDrawer(false)}
-              >
-                <List>
-                  {navigationItems.map((item) => (
-                    <ListItem key={item.path} disablePadding>
-                      <ListItemButton 
-                        onClick={() => navigate(item.path)}
-                        selected={isActivePath(item.path)}
-                      >
-                        <ListItemText primary={item.name} />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                  {isAuthenticated() && (
-                    <ListItem disablePadding>
-                      <ListItemButton onClick={() => navigate('/dashboard')}>
-                        <ListItemText primary="Dashboard" />
-                      </ListItemButton>
-                    </ListItem>
-                  )}
-                </List>
-              </Box>
-            </Drawer>
           </Toolbar>
         </Container>
+        {matches && renderMobileDrawer()}
       </AppBar>
     </HideOnScroll>
   );

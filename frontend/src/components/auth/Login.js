@@ -44,6 +44,7 @@ const Login = () => {
       await authService.login(formData.email, formData.password);
       navigate('/dashboard');
     } catch (err) {
+      console.error('Login error:', err);
       setError(err.response?.data?.message || 'An error occurred during login');
     } finally {
       setLoading(false);
@@ -66,8 +67,10 @@ const Login = () => {
               alignItems: 'center',
             }}
           >
-            <img src="../../../public/logo192.png" alt="Logo" style={{ width: '100px', marginBottom: '20px' }} />
-            <Typography component="h1" variant="h5" color="primary">
+            <Typography component="h1" variant="h4" color="primary" gutterBottom>
+              Legal Counsel
+            </Typography>
+            <Typography component="h2" variant="h5" color="primary" sx={{ mb: 3 }}>
               Login
             </Typography>
 
@@ -83,7 +86,7 @@ const Login = () => {
               </motion.div>
             )}
 
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
               <TextField
                 margin="normal"
                 required
@@ -96,10 +99,12 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleChange}
                 sx={{
-                  transition: 'all 0.3s',
-                  '&:hover': { borderColor: '#1976d2' },
+                  '& .MuiOutlinedInput-root': {
+                    '&:hover fieldset': {
+                      borderColor: 'primary.main',
+                    },
+                  },
                 }}
-                inputProps={{ 'aria-label': 'Email Address' }}
               />
               <TextField
                 margin="normal"
@@ -113,19 +118,30 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
                 sx={{
-                  transition: 'all 0.3s',
-                  '&:hover': { borderColor: '#1976d2' },
+                  '& .MuiOutlinedInput-root': {
+                    '&:hover fieldset': {
+                      borderColor: 'primary.main',
+                    },
+                  },
                 }}
-                inputProps={{ 'aria-label': 'Password' }}
               />
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{
+                  mt: 3,
+                  mb: 2,
+                  height: '48px',
+                  position: 'relative',
+                }}
                 disabled={loading}
               >
-                {loading ? <CircularProgress size={24} /> : 'Login'}
+                {loading ? (
+                  <CircularProgress size={24} sx={{ position: 'absolute' }} />
+                ) : (
+                  'Login'
+                )}
               </Button>
             </Box>
           </Box>

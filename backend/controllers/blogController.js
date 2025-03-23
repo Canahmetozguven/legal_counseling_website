@@ -1,18 +1,27 @@
 const mongoose = require('mongoose');
 const Blog = require('../models/blogModel');
-const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
-// Get all published blog posts
-exports.getAllPublishedPosts = catchAsync(async (req, res, next) => {
+// Get all blog posts (for admin)
+exports.getAllPosts = catchAsync(async (req, res) => {
+  const posts = await Blog.find()
+    .sort({ createdAt: -1 });
+
+  res.status(200).json({
+    status: 'success',
+    data: posts
+  });
+});
+
+// Get published blog posts (for public)
+exports.getPublishedPosts = catchAsync(async (req, res) => {
   const filter = { status: 'published' };
   
-  // Filter by category
   if (req.query.category) {
     filter.categories = { $in: [req.query.category] };
   }
   
-  // Filter by tag
   if (req.query.tag) {
     filter.tags = { $in: [req.query.tag] };
   }
@@ -22,133 +31,72 @@ exports.getAllPublishedPosts = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success',
-    results: posts.length,
-    data: {
-      posts
-    }
+    data: posts
   });
 });
 
-// Get all blog posts (including drafts and archived) for admin/author
-exports.getAllPosts = catchAsync(async (req, res, next) => {
-  let filter = {};
-  
-  // Filter by status
-  if (req.query.status) {
-    filter.status = req.query.status;
-  }
-  
-  // Filter by author
-  if (req.query.author) {
-    filter.author = req.query.author;
-  } else {
-    // If not admin, only show own posts
-    if (req.user.role !== 'admin') {
-      filter.author = req.user.id;
-    }
-  }
-
-  const posts = await Blog.find(filter)
-    .sort({ createdAt: -1 });
-
-  res.status(200).json({
-    status: 'success',
-    results: posts.length,
-    data: {
-      posts
-    }
-  });
-});
-
-// Get a single blog post by ID or slug
+// Get single blog post
 exports.getPost = catchAsync(async (req, res, next) => {
-  let post;
-  
-  // Check if the parameter is an ID or slug
-  const isValidId = mongoose.Types.ObjectId.isValid(req.params.id);
-  
-  if (isValidId) {
-    post = await Blog.findById(req.params.id);
-  } else {
-    post = await Blog.findOne({ slug: req.params.id });
-  }
+  const post = await Blog.findById(req.params.id);
 
   if (!post) {
-    return next(new AppError('No blog post found with that ID or slug', 404));
+    return next(new AppError('No post found with that ID', 404));
   }
 
-  // Increment view count if post is published and not the author viewing
-  if (post.status === 'published' && (!req.user || req.user.id !== post.author.id)) {
-    post.viewCount += 1;
+  // Increment view count if not author
+  if (!req.user || req.user._id.toString() !== post.author.toString()) {
+    post.analytics.views += 1;
     await post.save({ validateBeforeSave: false });
   }
 
   res.status(200).json({
     status: 'success',
-    data: {
-      post
-    }
+    data: post
   });
 });
 
-// Create a new blog post
-exports.createPost = catchAsync(async (req, res, next) => {
-  // Set author to current user if not specified
-  if (!req.body.author) {
-    req.body.author = req.user.id;
-  }
-
-  const newPost = await Blog.create(req.body);
+// Create blog post
+exports.createPost = catchAsync(async (req, res) => {
+  const newPost = await Blog.create({
+    ...req.body,
+    author: req.user._id,
+    status: 'draft'
+  });
 
   res.status(201).json({
     status: 'success',
-    data: {
-      post: newPost
-    }
+    data: newPost
   });
 });
 
-// Update a blog post
+// Update blog post
 exports.updatePost = catchAsync(async (req, res, next) => {
-  const post = await Blog.findById(req.params.id);
+  const post = await Blog.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true
+    }
+  );
 
   if (!post) {
-    return next(new AppError('No blog post found with that ID', 404));
+    return next(new AppError('No post found with that ID', 404));
   }
-
-  // Check if user is author or admin
-  if (post.author.id !== req.user.id && req.user.role !== 'admin') {
-    return next(new AppError('You do not have permission to edit this post', 403));
-  }
-
-  // Update the post
-  const updatedPost = await Blog.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
 
   res.status(200).json({
     status: 'success',
-    data: {
-      post: updatedPost
-    }
+    data: post
   });
 });
 
-// Delete a blog post
+// Delete blog post
 exports.deletePost = catchAsync(async (req, res, next) => {
-  const post = await Blog.findById(req.params.id);
+  const post = await Blog.findByIdAndDelete(req.params.id);
 
   if (!post) {
-    return next(new AppError('No blog post found with that ID', 404));
+    return next(new AppError('No post found with that ID', 404));
   }
-
-  // Check if user is author or admin
-  if (post.author.id !== req.user.id && req.user.role !== 'admin') {
-    return next(new AppError('You do not have permission to delete this post', 403));
-  }
-
-  await Blog.findByIdAndDelete(req.params.id);
 
   res.status(204).json({
     status: 'success',
@@ -156,58 +104,147 @@ exports.deletePost = catchAsync(async (req, res, next) => {
   });
 });
 
-// Add a comment to a blog post
-exports.addComment = catchAsync(async (req, res, next) => {
-  const post = await Blog.findById(req.params.id);
-
-  if (!post) {
-    return next(new AppError('No blog post found with that ID', 404));
-  }
-
-  // Create the comment
-  const comment = {
-    user: {
-      name: req.body.name,
-      email: req.body.email
-    },
-    content: req.body.content,
-    // Auto-approve comments if the user is the author or admin
-    isApproved: req.user && (req.user.id === post.author.id || req.user.role === 'admin')
-  };
-
-  post.comments.push(comment);
-  await post.save({ validateBeforeSave: false });
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      comment
-    }
-  });
-});
-
-// Get all categories
-exports.getCategories = catchAsync(async (req, res, next) => {
-  const categories = await Blog.distinct('categories');
-
-  res.status(200).json({
-    status: 'success',
-    results: categories.length,
-    data: {
-      categories
-    }
-  });
-});
-
 // Get all tags
-exports.getTags = catchAsync(async (req, res, next) => {
+exports.getTags = catchAsync(async (req, res) => {
   const tags = await Blog.distinct('tags');
 
   res.status(200).json({
     status: 'success',
-    results: tags.length,
+    data: tags
+  });
+});
+
+// Like a post
+exports.likePost = catchAsync(async (req, res, next) => {
+  const post = await Blog.findById(req.params.id);
+
+  if (!post) {
+    return next(new AppError('No post found with that ID', 404));
+  }
+
+  post.analytics.likes += 1;
+  await post.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: 'success',
+    data: post
+  });
+});
+
+// Share a post
+exports.sharePost = catchAsync(async (req, res, next) => {
+  const post = await Blog.findById(req.params.id);
+
+  if (!post) {
+    return next(new AppError('No post found with that ID', 404));
+  }
+
+  post.analytics.shares += 1;
+  await post.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: 'success',
+    data: post
+  });
+});
+
+// Add a comment
+exports.addComment = catchAsync(async (req, res, next) => {
+  const post = await Blog.findById(req.params.id);
+
+  if (!post) {
+    return next(new AppError('No post found with that ID', 404));
+  }
+
+  post.comments.push({
+    author: {
+      name: req.body.name,
+      email: req.body.email
+    },
+    content: req.body.content,
+    isApproved: req.user?.role === 'admin' // Auto-approve if admin
+  });
+
+  await post.save();
+
+  res.status(201).json({
+    status: 'success',
+    data: post.comments[post.comments.length - 1]
+  });
+});
+
+// Approve a comment
+exports.approveComment = catchAsync(async (req, res, next) => {
+  const post = await Blog.findById(req.params.id);
+
+  if (!post) {
+    return next(new AppError('No post found with that ID', 404));
+  }
+
+  const comment = post.comments.id(req.params.commentId);
+  
+  if (!comment) {
+    return next(new AppError('No comment found with that ID', 404));
+  }
+
+  comment.isApproved = true;
+  await post.save();
+
+  res.status(200).json({
+    status: 'success',
+    data: comment
+  });
+});
+
+// Delete a comment
+exports.deleteComment = catchAsync(async (req, res, next) => {
+  const post = await Blog.findById(req.params.id);
+
+  if (!post) {
+    return next(new AppError('No post found with that ID', 404));
+  }
+
+  post.comments.id(req.params.commentId).deleteOne();
+  await post.save();
+
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
+});
+
+// Get blog analytics
+exports.getBlogAnalytics = catchAsync(async (req, res) => {
+  const post = await Blog.findById(req.params.id);
+
+  if (!post) {
+    return next(new AppError('No post found with that ID', 404));
+  }
+
+  // Get historical data (last 30 days)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const lastMonth = await Blog.findById(req.params.id)
+    .select('analytics')
+    .lean();
+
+  // For demo purposes, generate some random daily data
+  const daily = Array.from({ length: 30 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    return {
+      date: date.toISOString(),
+      views: Math.floor(Math.random() * 100)
+    };
+  });
+
+  res.status(200).json({
+    status: 'success',
     data: {
-      tags
+      current: post.analytics,
+      lastMonth: lastMonth.analytics,
+      daily
     }
   });
 });

@@ -1,25 +1,50 @@
 const express = require('express');
-const blogController = require('../controllers/blogController');
-const authController = require('../controllers/authController');
+const { protect, restrictTo } = require('../controllers/authController');
+const {
+  getAllPosts,
+  getPublishedPosts,
+  getPost,
+  createPost,
+  updatePost,
+  deletePost,
+  getTags,
+  likePost,
+  sharePost,
+  addComment,
+  approveComment,
+  deleteComment,
+  getBlogAnalytics
+} = require('../controllers/blogController');
 
 const router = express.Router();
 
 // Public routes
-router.get('/published', blogController.getAllPublishedPosts);
-router.get('/categories', blogController.getCategories);
-router.get('/tags', blogController.getTags);
-router.get('/:id', blogController.getPost);
+router.get('/published', getPublishedPosts);
+router.get('/tags', getTags);
+router.get('/:id', getPost);
+router.post('/:id/like', likePost);
+router.post('/:id/share', sharePost);
+router.post('/:id/comments', addComment);
 
-// Protected routes - Require authentication
-router.use(authController.protect);
+// Protected routes
+router.use(protect);
 
-// Admin/Author only routes
-router.get('/', blogController.getAllPosts);
-router.post('/', blogController.createPost);
-router.patch('/:id', blogController.updatePost);
-router.delete('/:id', blogController.deletePost);
+router.route('/')
+  .get(getAllPosts)
+  .post(createPost);
 
-// Comments
-router.post('/:id/comments', blogController.addComment);
+router.route('/:id')
+  .patch(updatePost)
+  .delete(deletePost);
+
+// Admin only routes
+router.use(restrictTo('admin'));
+
+router.route('/:id/analytics')
+  .get(getBlogAnalytics);
+
+router.route('/:id/comments/:commentId')
+  .patch(approveComment)
+  .delete(deleteComment);
 
 module.exports = router;

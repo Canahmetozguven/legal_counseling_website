@@ -1,12 +1,16 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
 const axiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: 'http://localhost:5000',
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Origin': 'http://localhost:3000'
   },
+  withCredentials: true,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+  timeout: 5000
 });
 
 // Add a request interceptor to attach the JWT token

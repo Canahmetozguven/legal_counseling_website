@@ -1,57 +1,18 @@
-const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const errorHandler = require('./middleware/errorMiddleware');
-const AppError = require('./utils/appError');
+
+// Handle uncaught exceptions
+process.on('uncaughtException', err => {
+  console.log('UNCAUGHT EXCEPTION! Shutting down...');
+  console.log(err.name, err.message);
+  process.exit(1);
+});
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: './config.env' });
 
-// Initialize Express app
-const app = express();
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-app.use(helmet());
-app.use(morgan('dev'));
-
-// Import routes
-const authRoutes = require('./routes/authRoutes');
-const clientRoutes = require('./routes/clientRoutes');
-const appointmentRoutes = require('./routes/appointmentRoutes');
-const caseRoutes = require('./routes/caseRoutes');
-const blogRoutes = require('./routes/blogRoutes');
-const contactRoutes = require('./routes/contactRoutes');
-const dashboardRoutes = require('./routes/dashboardRoutes');
-
-// Route middleware
-app.use('/api/auth', authRoutes);
-app.use('/api/clients', clientRoutes);
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/cases', caseRoutes);
-app.use('/api/blog', blogRoutes);
-app.use('/api/contact', contactRoutes);
-
-// Dashboard routes
-app.use('/api/dashboard', dashboardRoutes);
-
-// Root route
-app.get('/', (req, res) => {
-  res.send('Welcome to the Lawyer Website API');
-});
-
-// Handle undefined routes
-app.all('*', (req, res, next) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
-});
-
-// Global error handling middleware
-app.use(errorHandler);
+// Import app after environment variables are loaded
+const app = require('./app');
 
 // Database connection
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/lawyer-website';
@@ -62,8 +23,15 @@ mongoose.connect(MONGODB_URI)
 
 // Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-module.exports = app;
+// Handle unhandled rejections
+process.on('unhandledRejection', err => {
+  console.log('UNHANDLED REJECTION! Shutting down...');
+  console.log(err.name, err.message);
+  server.close(() => {
+    process.exit(1);
+  });
+});
