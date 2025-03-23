@@ -71,29 +71,41 @@ exports.protect = catchAsync(async (req, res, next) => {
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies && req.cookies.jwt) {
+    // Also check for token in cookies if not in headers
+    token = req.cookies.jwt;
   }
 
   if (!token) {
     return next(new AppError('You are not logged in. Please log in to get access.', 401));
   }
 
-  // 2) Verify token
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  try {
+    // 2) Verify token with a timeout
+    const decoded = await Promise.race([
+      promisify(jwt.verify)(token, process.env.JWT_SECRET),
+      new Promise((_, reject) => 
+        setTimeout(() => reject(new AppError('Token verification timed out', 500)), 5000)
+      )
+    ]);
 
-  // 3) Check if user still exists
-  const currentUser = await User.findById(decoded.id);
-  if (!currentUser) {
-    return next(new AppError('The user belonging to this token no longer exists.', 401));
+    // 3) Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next(new AppError('The user belonging to this token no longer exists.', 401));
+    }
+
+    // 4) Check if user changed password after the token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next(new AppError('User recently changed password. Please log in again.', 401));
+    }
+
+    // Grant access to protected route
+    req.user = currentUser;
+    next();
+  } catch (error) {
+    return next(new AppError(`Authentication failed: ${error.message}`, 401));
   }
-
-  // 4) Check if user changed password after the token was issued
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(new AppError('User recently changed password. Please log in again.', 401));
-  }
-
-  // Grant access to protected route
-  req.user = currentUser;
-  next();
 });
 
 // Restrict routes to certain roles
@@ -127,6 +139,11 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
 // Get current user
 exports.getMe = catchAsync(async (req, res, next) => {
-  req.params.id = req.user.id;
-  next();
+  // User is already available on req.user from the protect middleware
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: req.user
+    }
+  });
 });

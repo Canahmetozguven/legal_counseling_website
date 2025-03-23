@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, TextField, Typography, Container, Alert, CircularProgress } from '@mui/material';
-import authService from '../../api/authService';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../contexts/AuthContext';
 
 const theme = createTheme({
   palette: {
@@ -21,6 +21,7 @@ const theme = createTheme({
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -41,7 +42,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await authService.login(formData.email, formData.password);
+      await login(formData.email, formData.password);
       navigate('/dashboard');
     } catch (err) {
       console.error('Login error:', err);

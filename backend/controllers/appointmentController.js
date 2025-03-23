@@ -202,3 +202,38 @@ exports.getMyAppointments = catchAsync(async (req, res, next) => {
     }
   });
 });
+
+// Get recent appointments
+exports.getRecentAppointments = catchAsync(async (req, res, next) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const recentAppointments = await Appointment.find({
+    date: { 
+      $gte: today
+    },
+    status: { 
+      $nin: ['canceled', 'completed'] 
+    }
+  })
+  .sort({ date: 1, startTime: 1 })
+  .limit(5)
+  .select('title date startTime endTime status type location client lawyer')
+  .lean();
+
+  if (!recentAppointments) {
+    return res.status(200).json({
+      status: 'success',
+      data: {
+        appointments: []
+      }
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      appointments: recentAppointments
+    }
+  });
+});

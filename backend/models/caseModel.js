@@ -111,7 +111,6 @@ const caseSchema = new mongoose.Schema({
 });
 
 // Index for faster queries
-caseSchema.index({ caseNumber: 1 });
 caseSchema.index({ client: 1 });
 caseSchema.index({ status: 1 });
 caseSchema.index({ assignedLawyer: 1 });

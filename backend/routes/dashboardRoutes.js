@@ -1,12 +1,14 @@
 const express = require('express');
-const { protect } = require('../controllers/authController');
-const { getDashboardData, getDashboardStats } = require('../controllers/dashboardController');
+const authController = require('../controllers/authController');
+const dashboardController = require('../controllers/dashboardController');
 
 const router = express.Router();
 
-router.use(protect); // Protect all dashboard routes
+// Protect all dashboard routes
+router.use(authController.protect);
 
-router.get('/data', getDashboardData);
-router.get('/stats', getDashboardStats);
+// Dashboard statistics and data
+router.get('/stats', dashboardController.getDashboardStats);
+router.get('/data', dashboardController.getDashboardData);
 
 module.exports = router;

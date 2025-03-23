@@ -19,18 +19,51 @@ exports.getDashboardData = catchAsync(async (req, res) => {
   });
 });
 
+// Get dashboard overview stats
 exports.getDashboardStats = catchAsync(async (req, res) => {
-  const [totalClients, totalCases, totalAppointments, totalBlogs] = await Promise.all([
-    Client.countDocuments(),
-    Case.countDocuments(),
-    Appointment.countDocuments(),
-    Blog.countDocuments()
-  ]);
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  res.status(200).json({
+  const [
     totalClients,
     totalCases,
     totalAppointments,
-    totalBlogs
+    totalPendingAppointments,
+    activeClients,
+    activeCases,
+    monthlyAppointments,
+    recentContacts
+  ] = await Promise.all([
+    Client.countDocuments(),
+    Case.countDocuments(),
+    Appointment.countDocuments(),
+    Appointment.countDocuments({ 
+      date: { $gte: now },
+      status: 'scheduled'
+    }),
+    Client.countDocuments({ active: true }),
+    Case.countDocuments({ status: { $in: ['open', 'ongoing', 'pending'] } }),
+    Appointment.countDocuments({
+      date: { $gte: startOfMonth, $lte: now }
+    }),
+    Contact.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('name email subject status createdAt')
+  ]);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      totalClients,
+      totalCases,
+      totalAppointments,
+      totalPendingAppointments,
+      activeClients,
+      activeCases,
+      monthlyAppointments,
+      recentContacts,
+      lastUpdated: new Date()
+    }
   });
 });

@@ -48,8 +48,8 @@ const DashboardHome = () => {
           axios.get('/api/appointments/recent')
         ]);
         
-        setStats(statsRes.data);
-        setRecentAppointments(appointmentsRes.data);
+        setStats(statsRes.data?.data || statsRes.data || {});
+        setRecentAppointments(appointmentsRes.data?.data?.appointments || []);
         
         // Mock case status data (replace with actual API call)
         setCaseData([
@@ -218,29 +218,42 @@ const DashboardHome = () => {
               Recent Appointments
             </Typography>
             <List>
-              {recentAppointments.map((appointment) => (
-                <React.Fragment key={appointment._id}>
-                  <ListItem>
-                    <ListItemText
-                      primary={appointment.clientName}
-                      secondary={new Date(appointment.date).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    />
-                    <ListItemSecondaryAction>
-                      <IconButton edge="end" size="small">
-                        <ArrowForwardIcon />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  <Divider />
-                </React.Fragment>
-              ))}
+              {recentAppointments.length === 0 ? (
+                <ListItem>
+                  <ListItemText primary="No upcoming appointments" />
+                </ListItem>
+              ) : (
+                recentAppointments.map((appointment) => (
+                  <React.Fragment key={appointment._id}>
+                    <ListItem>
+                      <ListItemText
+                        primary={`${appointment.client?.firstName} ${appointment.client?.lastName}`}
+                        secondary={
+                          <>
+                            <Typography component="span" variant="body2" color="text.primary">
+                              {appointment.title}
+                            </Typography>
+                            <br />
+                            {new Date(appointment.date).toLocaleDateString('en-US', {
+                              weekday: 'long',
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                            {` ${appointment.startTime} - ${appointment.endTime}`}
+                          </>
+                        }
+                      />
+                      <ListItemSecondaryAction>
+                        <IconButton edge="end" size="small">
+                          <ArrowForwardIcon />
+                        </IconButton>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    <Divider />
+                  </React.Fragment>
+                ))
+              )}
             </List>
           </Paper>
         </Grid>

@@ -10,6 +10,9 @@ router.use(authController.protect);
 // Get my appointments route
 router.get('/my-appointments', appointmentController.getMyAppointments);
 
+// Get recent appointments
+router.get('/recent', appointmentController.getRecentAppointments);
+
 // Standard CRUD routes
 router
   .route('/')

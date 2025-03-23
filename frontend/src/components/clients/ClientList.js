@@ -24,6 +24,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { debounce } from 'lodash';
 
 const ClientList = () => {
   const [clients, setClients] = useState([]);
@@ -31,20 +32,36 @@ const ClientList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchClients();
-  }, []);
-
   const fetchClients = async () => {
     try {
-      const response = await axios.get('/api/clients');
-      setClients(response.data.data);
+      const response = await axios.get('/api/clients', {
+        // Add retry logic
+        retry: 3,
+        retryDelay: (retryCount) => {
+          return retryCount * 1000; // Wait 1s, 2s, 3s between retries
+        }
+      });
+      setClients(response.data?.data?.clients || []);
     } catch (error) {
-      console.error('Error fetching clients:', error);
+      if (error.response?.status === 429) {
+        console.error('Rate limit exceeded. Please wait before trying again.');
+        // Optional: Add automatic retry after delay
+        setTimeout(fetchClients, 5000);
+      } else {
+        console.error('Error fetching clients:', error);
+      }
+      setClients([]);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const debouncedFetchClients = debounce(fetchClients, 1000);
+
+  useEffect(() => {
+    debouncedFetchClients();
+    return () => debouncedFetchClients.cancel();
+  }, []);
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this client?')) {
@@ -58,7 +75,7 @@ const ClientList = () => {
   };
 
   const filteredClients = clients.filter(client =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    `${client.firstName} ${client.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
     client.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -111,28 +128,36 @@ const ClientList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredClients.map((client) => (
-              <TableRow key={client._id}>
-                <TableCell>{client.name}</TableCell>
-                <TableCell>{client.email}</TableCell>
-                <TableCell>{client.phone}</TableCell>
-                <TableCell>{client.cases?.length || 0}</TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    onClick={() => navigate(`/dashboard/clients/${client._id}`)}
-                    color="primary"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDelete(client._id)}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {filteredClients.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No clients found
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              filteredClients.map((client) => (
+                <TableRow key={client._id}>
+                  <TableCell>{`${client.firstName} ${client.lastName}`}</TableCell>
+                  <TableCell>{client.email}</TableCell>
+                  <TableCell>{client.phone}</TableCell>
+                  <TableCell>{client.cases?.length || 0}</TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      onClick={() => navigate(`/dashboard/clients/${client._id}`)}
+                      color="primary"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDelete(client._id)}
+                      color="error"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

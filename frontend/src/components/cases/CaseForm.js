@@ -30,18 +30,34 @@ const CaseForm = () => {
     caseNumber: '',
     client: null,
     status: 'open',
+    caseType: '', // Add the missing caseType field
     description: '',
     nextHearing: null,
     courtDetails: '',
-    notes: '',
+    notes: { content: '' }, // Change notes to be an object with content
   });
 
   const fetchClients = async () => {
     try {
       const response = await axios.get('/api/clients');
-      setClients(response.data.data);
+      console.log('API response:', response.data);
+      
+      // Handle the correct nested structure
+      let clientsData = [];
+      if (response.data && response.data.data && response.data.data.clients) {
+        // Access the clients array from the nested structure
+        clientsData = Array.isArray(response.data.data.clients) ? response.data.data.clients : [];
+      } else if (response.data && response.data.data) {
+        clientsData = Array.isArray(response.data.data) ? response.data.data : [];
+      } else if (Array.isArray(response.data)) {
+        clientsData = response.data;
+      }
+      
+      console.log('Processed clients data:', clientsData);
+      setClients(clientsData);
     } catch (error) {
       console.error('Error fetching clients:', error);
+      setClients([]); // Set to empty array on error
     }
   };
 
@@ -68,16 +84,29 @@ const CaseForm = () => {
   }, []);
 
   useEffect(() => {
+    console.log('Available clients:', clients);
+  }, [clients]);
+
+  useEffect(() => {
     if (id) {
       fetchCase();
     }
   }, [id, fetchCase]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    
+    if (name === 'notes') {
+      setFormData({
+        ...formData,
+        notes: { content: value }
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -167,11 +196,19 @@ const CaseForm = () => {
             </Grid>
             <Grid item xs={12}>
               <Autocomplete
-                options={clients}
-                getOptionLabel={(option) => option.name}
+                options={Array.isArray(clients) ? clients : []}
+                getOptionLabel={(option) => {
+                  if (!option) return '';
+                  return option.fullName || `${option.firstName || ''} ${option.lastName || ''}`.trim() || String(option._id) || '';
+                }}
                 value={formData.client}
                 onChange={(event, newValue) => {
+                  console.log('Selected client:', newValue);
                   setFormData({ ...formData, client: newValue });
+                }}
+                isOptionEqualToValue={(option, value) => {
+                  if (!option || !value) return false;
+                  return option._id === value._id;
                 }}
                 renderInput={(params) => (
                   <TextField
@@ -180,6 +217,7 @@ const CaseForm = () => {
                     required
                   />
                 )}
+                noOptionsText="No clients found"
               />
             </Grid>
             <Grid item xs={12}>
@@ -212,6 +250,23 @@ const CaseForm = () => {
                 onChange={handleChange}
               />
             </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth required>
+                <InputLabel>Case Type</InputLabel>
+                <Select
+                  name="caseType"
+                  value={formData.caseType}
+                  onChange={handleChange}
+                  label="Case Type"
+                >
+                  <MenuItem value="civil">Civil</MenuItem>
+                  <MenuItem value="criminal">Criminal</MenuItem>
+                  <MenuItem value="family">Family</MenuItem>
+                  <MenuItem value="corporate">Corporate</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -219,7 +274,7 @@ const CaseForm = () => {
                 name="notes"
                 multiline
                 rows={4}
-                value={formData.notes}
+                value={formData.notes.content || ''}
                 onChange={handleChange}
               />
             </Grid>

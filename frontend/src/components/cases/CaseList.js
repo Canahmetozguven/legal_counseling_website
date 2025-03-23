@@ -28,9 +28,13 @@ import axios from 'axios';
 
 const statusColors = {
   'open': 'primary',
-  'in-progress': 'warning',
+  'ongoing': 'warning',
   'closed': 'success',
   'pending': 'info',
+  'won': 'success',
+  'lost': 'error',
+  'settled': 'success',
+  'appealed': 'warning'
 };
 
 const CaseList = () => {
@@ -46,9 +50,10 @@ const CaseList = () => {
   const fetchCases = async () => {
     try {
       const response = await axios.get('/api/cases');
-      setCases(response.data.data);
+      setCases(response.data?.data?.cases || []);
     } catch (error) {
       console.error('Error fetching cases:', error);
+      setCases([]);
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +73,7 @@ const CaseList = () => {
   const filteredCases = cases.filter(case_ =>
     case_.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     case_.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    case_.client?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    `${case_.client?.firstName} ${case_.client?.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) {
@@ -121,39 +126,49 @@ const CaseList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredCases.map((case_) => (
-              <TableRow key={case_._id}>
-                <TableCell>{case_.caseNumber}</TableCell>
-                <TableCell>{case_.title}</TableCell>
-                <TableCell>{case_.client?.name}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={case_.status}
-                    color={statusColors[case_.status] || 'default'}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  {case_.nextHearing
-                    ? new Date(case_.nextHearing).toLocaleDateString()
-                    : 'Not scheduled'}
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton
-                    onClick={() => navigate(`/dashboard/cases/${case_._id}`)}
-                    color="primary"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDelete(case_._id)}
-                    color="error"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+            {filteredCases.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} align="center">
+                  No cases found
                 </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              filteredCases.map((case_) => (
+                <TableRow key={case_._id}>
+                  <TableCell>{case_.caseNumber}</TableCell>
+                  <TableCell>{case_.title}</TableCell>
+                  <TableCell>
+                    {case_.client ? `${case_.client.firstName} ${case_.client.lastName}` : 'N/A'}
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={case_.status}
+                      color={statusColors[case_.status] || 'default'}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {case_.nextHearing
+                      ? new Date(case_.nextHearing).toLocaleDateString()
+                      : 'Not scheduled'}
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      onClick={() => navigate(`/dashboard/cases/${case_._id}`)}
+                      color="primary"
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDelete(case_._id)}
+                      color="error"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

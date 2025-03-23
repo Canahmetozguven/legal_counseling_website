@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -10,12 +10,14 @@ import {
   Autocomplete,
   Chip,
   FormControlLabel,
-  Switch
+  Switch,
+  LinearProgress
 } from '@mui/material';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+import ImageUpload from './ImageUpload';
 
 const modules = {
   toolbar: [
@@ -28,6 +30,16 @@ const modules = {
   ],
 };
 
+const validateForm = (formData) => {
+  const errors = [];
+  if (!formData.title.trim()) errors.push('Title is required');
+  if (!formData.summary.trim()) errors.push('Summary is required');
+  if (!formData.content.trim()) errors.push('Content is required');
+  if (formData.summary.length > 500) errors.push('Summary must be less than 500 characters');
+  if (formData.title.length > 200) errors.push('Title must be less than 200 characters');
+  return errors;
+};
+
 const BlogForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -36,30 +48,29 @@ const BlogForm = () => {
     content: '',
     summary: '',
     tags: [],
-    status: 'draft'
+    status: 'draft',
+    featuredImage: null,
+    seo: {
+      metaTitle: '',
+      metaDescription: '',
+      keywords: []
+    }
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [availableTags, setAvailableTags] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    fetchTags();
-    if (id) {
-      fetchPost();
-    }
-  }, [id]);
-
-  const fetchTags = async () => {
+  const fetchTags = useCallback(async () => {
     try {
       const response = await axios.get('/api/blog/tags');
       setAvailableTags(response.data.data || []);
     } catch (err) {
       console.error('Error fetching tags:', err);
     }
-  };
+  }, []);
 
-  const fetchPost = async () => {
+  const fetchPost = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get(`/api/blog/${id}`);
@@ -69,46 +80,88 @@ const BlogForm = () => {
         content: post.content,
         summary: post.summary,
         tags: post.tags,
-        status: post.status
+        status: post.status,
+        featuredImage: post.featuredImage,
+        seo: post.seo || {
+          metaTitle: '',
+          metaDescription: '',
+          keywords: []
+        }
       });
     } catch (err) {
       setError(err.response?.data?.message || 'Error fetching post');
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchTags();
+    if (id) {
+      fetchPost();
+    }
+  }, [id, fetchPost, fetchTags]);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    if (name.startsWith('seo.')) {
+      const seoField = name.split('.')[1];
+      setFormData(prev => ({
+        ...prev,
+        seo: {
+          ...prev.seo,
+          [seoField]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleContentChange = (content) => {
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       content
-    });
+    }));
   };
 
   const handleTagsChange = (event, newTags) => {
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       tags: newTags
-    });
+    }));
   };
 
   const handleStatusChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       status: e.target.checked ? 'published' : 'draft'
-    });
+    }));
+  };
+
+  const handleImageUpload = (imageData) => {
+    setFormData(prev => ({
+      ...prev,
+      featuredImage: imageData
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const validationErrors = validateForm(formData);
+    
+    if (validationErrors.length > 0) {
+      setError(validationErrors.join('. '));
+      return;
+    }
+
     try {
+      setLoading(true);
+      setError('');
+      
       const method = id ? 'patch' : 'post';
       const url = id ? `/api/blog/${id}` : '/api/blog';
       
@@ -119,20 +172,17 @@ const BlogForm = () => {
         navigate('/blog');
       }, 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      setError(err.response?.data?.message || 'Failed to save blog post');
+      console.error('Error saving blog post:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (id) {
-      fetchPost();
-    }
-  }, [id, fetchPost]);
-
-  if (loading) {
+  if (loading && id) {
     return (
       <Box p={3}>
-        <Typography>Loading...</Typography>
+        <LinearProgress />
       </Box>
     );
   }
@@ -165,6 +215,8 @@ const BlogForm = () => {
               value={formData.title}
               onChange={handleChange}
               required
+              error={formData.title.length > 200}
+              helperText={formData.title.length > 200 ? 'Title must be less than 200 characters' : ''}
             />
 
             <TextField
@@ -176,7 +228,19 @@ const BlogForm = () => {
               required
               multiline
               rows={2}
+              error={formData.summary.length > 500}
+              helperText={`${formData.summary.length}/500 characters`}
             />
+
+            <Box>
+              <Typography variant="subtitle1" gutterBottom>
+                Featured Image
+              </Typography>
+              <ImageUpload
+                onImageUpload={handleImageUpload}
+                initialImage={formData.featuredImage}
+              />
+            </Box>
 
             <Typography variant="subtitle1" gutterBottom>
               Content
@@ -212,6 +276,26 @@ const BlogForm = () => {
               )}
             />
 
+            <Typography variant="subtitle1" gutterBottom>
+              SEO Settings
+            </Typography>
+            <TextField
+              fullWidth
+              label="Meta Title"
+              name="seo.metaTitle"
+              value={formData.seo.metaTitle}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              label="Meta Description"
+              name="seo.metaDescription"
+              value={formData.seo.metaDescription}
+              onChange={handleChange}
+              multiline
+              rows={2}
+            />
+
             <FormControlLabel
               control={
                 <Switch
@@ -223,21 +307,21 @@ const BlogForm = () => {
               label={formData.status === 'published' ? 'Published' : 'Draft'}
             />
 
-            <Box>
+            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+              <Button
+                variant="outlined"
+                onClick={() => navigate('/blog')}
+                disabled={loading}
+              >
+                Cancel
+              </Button>
               <Button
                 type="submit"
                 variant="contained"
                 color="primary"
-                size="large"
+                disabled={loading}
               >
-                {formData.status === 'published' ? 'Publish' : 'Save Draft'}
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => navigate('/blog')}
-                sx={{ ml: 2 }}
-              >
-                Cancel
+                {loading ? 'Saving...' : formData.status === 'published' ? 'Publish' : 'Save Draft'}
               </Button>
             </Box>
           </Stack>

@@ -11,13 +11,17 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
 const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
+const userRouter = require('./routes/userRoutes');
 const clientRoutes = require('./routes/clientRoutes');
 const caseRoutes = require('./routes/caseRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const blogRoutes = require('./routes/blogRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
+
+// Trust proxy to handle X-Forwarded-For header
+app.set('trust proxy', 1);
 
 // Global Middlewares
 // Security HTTP headers
@@ -32,12 +36,27 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Rate limiting
-const limiter = rateLimit({
-  max: 100,
-  windowMs: 60 * 60 * 1000,
-  message: 'Too many requests from this IP, please try again in an hour!'
+const authLimiter = rateLimit({
+  max: 50,
+  windowMs: 60 * 60 * 1000, // 1 hour
+  message: 'Too many authentication attempts, please try again in an hour!'
 });
-app.use('/api', limiter);
+
+const standardLimiter = rateLimit({
+  max: 500,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  message: 'Too many requests, please try again in 15 minutes!'
+});
+
+// Apply stricter rate limiting to auth routes
+app.use('/api/auth', authLimiter);
+
+// Apply standard rate limiting to other routes
+app.use('/api/clients', standardLimiter);
+app.use('/api/cases', standardLimiter);
+app.use('/api/appointments', standardLimiter);
+app.use('/api/blog', standardLimiter);
+app.use('/api/dashboard', standardLimiter);
 
 // Body parser
 app.use(express.json({ limit: '10kb' }));
@@ -67,11 +86,12 @@ app.use(cors({
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
+app.use('/api/users', userRouter);
 app.use('/api/clients', clientRoutes);
 app.use('/api/cases', caseRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Handle undefined routes
 app.all('*', (req, res, next) => {

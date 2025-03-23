@@ -19,7 +19,8 @@ const ClientForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     address: '',
@@ -30,9 +31,22 @@ const ClientForm = () => {
     try {
       setLoading(true);
       const response = await axios.get(`/api/clients/${id}`);
-      setFormData(response.data.data);
+      const clientData = response.data?.data?.client || {};
+      setFormData({
+        firstName: clientData.firstName || '',
+        lastName: clientData.lastName || '',
+        email: clientData.email || '',
+        phone: clientData.phone || '',
+        address: clientData.address || '',
+        notes: clientData.notes || '',
+      });
     } catch (error) {
       setError('Error fetching client details');
+      if (error.response?.status === 429) {
+        setError('Too many requests. Please try again in a few minutes.');
+      } else {
+        setError(error.response?.data?.message || 'Error fetching client details');
+      }
       console.error('Error:', error);
     } finally {
       setLoading(false);
@@ -66,7 +80,11 @@ const ClientForm = () => {
 
       navigate('/dashboard/clients');
     } catch (error) {
-      setError(error.response?.data?.message || 'Error saving client');
+      if (error.response?.status === 429) {
+        setError('Too many requests. Please try again in a few minutes.');
+      } else {
+        setError(error.response?.data?.message || 'Error saving client');
+      }
       console.error('Error:', error);
     } finally {
       setLoading(false);
@@ -100,13 +118,22 @@ const ClientForm = () => {
               <TextField
                 required
                 fullWidth
-                label="Name"
-                name="name"
-                value={formData.name}
+                label="First Name"
+                name="firstName"
+                value={formData.firstName}
                 onChange={handleChange}
               />
             </Grid>
-
+            <Grid item xs={12} sm={6}>
+              <TextField
+                required
+                fullWidth
+                label="Last Name"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+              />
+            </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 required
@@ -118,7 +145,6 @@ const ClientForm = () => {
                 onChange={handleChange}
               />
             </Grid>
-
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -128,7 +154,6 @@ const ClientForm = () => {
                 onChange={handleChange}
               />
             </Grid>
-
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -140,7 +165,6 @@ const ClientForm = () => {
                 rows={2}
               />
             </Grid>
-
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -152,7 +176,6 @@ const ClientForm = () => {
                 rows={4}
               />
             </Grid>
-
             <Grid item xs={12}>
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                 <Button
