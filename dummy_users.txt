@@ -1,0 +1,3 @@
+Admin: admin@example.com / admin123
+Lawyer: lawyer@example.com / lawyer123
+Secretary: secretary@example.com / secretary123
