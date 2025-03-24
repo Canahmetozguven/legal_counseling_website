@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -7,31 +7,89 @@ import {
   Avatar,
   Card,
   CardContent,
+  CircularProgress,
+  Alert,
+  Paper,
 } from '@mui/material';
 import { motion } from 'framer-motion';
-
-const teamMembers = [
-  {
-    name: 'John Smith',
-    title: 'Senior Partner',
-    image: '/images/team/john-smith.jpg',
-    description: '20+ years of experience in corporate law and mergers & acquisitions.',
-  },
-  {
-    name: 'Sarah Johnson',
-    title: 'Managing Partner',
-    image: '/images/team/sarah-johnson.jpg',
-    description: 'Expert in real estate law and commercial property transactions.',
-  },
-  {
-    name: 'Michael Chen',
-    title: 'Associate',
-    image: '/images/team/michael-chen.jpg',
-    description: 'Specializes in intellectual property and technology law.',
-  },
-];
+import aboutService from '../../api/aboutService';
 
 const About = () => {
+  const [aboutData, setAboutData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAboutContent = async () => {
+      try {
+        const response = await aboutService.getAboutContent();
+        console.log('About API response:', response); // For debugging
+        setAboutData(response.data.about);
+      } catch (error) {
+        console.error('Error fetching about content:', error);
+        setError('Failed to load content. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAboutContent();
+  }, []);
+
+  const renderValue = (value, index) => (
+    <Grid item xs={12} sm={6} md={4} key={index}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: index * 0.1 }}
+      >
+        <Paper
+          elevation={3}
+          sx={{
+            p: 3,
+            height: '100%',
+            textAlign: 'center',
+            backgroundColor: 'primary.main',
+            color: 'white',
+            transition: '0.3s',
+            '&:hover': {
+              transform: 'translateY(-8px)',
+              boxShadow: 6,
+            },
+          }}
+        >
+          <Typography variant="h6" gutterBottom>
+            {value}
+          </Typography>
+        </Paper>
+      </motion.div>
+    </Grid>
+  );
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <Alert severity="error">{error}</Alert>
+      </Box>
+    );
+  }
+
+  if (!aboutData) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <Alert severity="info">No content available.</Alert>
+      </Box>
+    );
+  }
+
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
       <motion.div
@@ -55,7 +113,7 @@ const About = () => {
           </Typography>
         </Box>
 
-        {/* Mission Statement */}
+        {/* Mission Statement and Values */}
         <Grid container spacing={6} mb={8}>
           <Grid item xs={12} md={6}>
             <motion.div
@@ -67,10 +125,7 @@ const About = () => {
                 Our Mission
               </Typography>
               <Typography variant="body1" paragraph>
-                We are committed to providing exceptional legal services with integrity,
-                professionalism, and a deep understanding of our clients' needs. Our mission
-                is to deliver innovative legal solutions while maintaining the highest
-                standards of ethical conduct.
+                {aboutData.mission}
               </Typography>
             </motion.div>
           </Grid>
@@ -83,13 +138,9 @@ const About = () => {
               <Typography variant="h4" color="primary" gutterBottom>
                 Our Values
               </Typography>
-              <Typography variant="body1" paragraph>
-                • Excellence in legal practice<br />
-                • Client-centered approach<br />
-                • Integrity and transparency<br />
-                • Innovation and adaptability<br />
-                • Community engagement
-              </Typography>
+              <Grid container spacing={2}>
+                {aboutData.values.map((value, index) => renderValue(value, index))}
+              </Grid>
             </motion.div>
           </Grid>
         </Grid>
@@ -100,58 +151,60 @@ const About = () => {
             Our Team
           </Typography>
           <Grid container spacing={4} mt={2}>
-            {teamMembers.map((member, index) => (
-              <Grid item xs={12} sm={6} md={4} key={member.name}>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 + 0.4 }}
-                >
-                  <Card
-                    sx={{
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      p: 2,
-                      transition: '0.3s',
-                      '&:hover': {
-                        transform: 'translateY(-8px)',
-                        boxShadow: 6,
-                      },
-                    }}
+            {aboutData.teamMembers
+              .sort((a, b) => a.order - b.order)
+              .map((member, index) => (
+                <Grid item xs={12} sm={6} md={4} key={member._id}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 + 0.4 }}
                   >
-                    <Avatar
-                      src={member.image}
-                      alt={member.name}
+                    <Card
                       sx={{
-                        width: 120,
-                        height: 120,
-                        mb: 2,
-                        border: '3px solid',
-                        borderColor: 'primary.main',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        p: 2,
+                        transition: '0.3s',
+                        '&:hover': {
+                          transform: 'translateY(-8px)',
+                          boxShadow: 6,
+                        },
                       }}
-                    />
-                    <CardContent>
-                      <Typography variant="h6" component="h3" gutterBottom align="center">
-                        {member.name}
-                      </Typography>
-                      <Typography
-                        variant="subtitle1"
-                        color="primary"
-                        gutterBottom
-                        align="center"
-                      >
-                        {member.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" align="center">
-                        {member.description}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </Grid>
-            ))}
+                    >
+                      <Avatar
+                        src={member.image}
+                        alt={member.name}
+                        sx={{
+                          width: 120,
+                          height: 120,
+                          mb: 2,
+                          border: '3px solid',
+                          borderColor: 'primary.main',
+                        }}
+                      />
+                      <CardContent>
+                        <Typography variant="h6" component="h3" gutterBottom align="center">
+                          {member.name}
+                        </Typography>
+                        <Typography
+                          variant="subtitle1"
+                          color="primary"
+                          gutterBottom
+                          align="center"
+                        >
+                          {member.title}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" align="center">
+                          {member.description}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Grid>
+              ))}
           </Grid>
         </Box>
 
@@ -161,10 +214,7 @@ const About = () => {
             Our History
           </Typography>
           <Typography variant="body1" paragraph align="center">
-            Founded in 2000, our firm has grown from a small practice to a respected legal
-            institution. Over the years, we have successfully handled thousands of cases,
-            built lasting relationships with our clients, and contributed significantly to
-            our community's legal landscape.
+            {aboutData.history}
           </Typography>
         </Box>
       </motion.div>

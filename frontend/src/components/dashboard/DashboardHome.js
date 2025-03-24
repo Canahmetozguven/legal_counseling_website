@@ -28,8 +28,10 @@ import { ResponsivePie } from '@nivo/pie';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider, DateCalendar } from '@mui/x-date-pickers';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const DashboardHome = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalClients: 0,
     totalCases: 0,
@@ -92,16 +94,36 @@ const DashboardHome = () => {
         Quick Actions
       </Typography>
       <Stack spacing={2}>
-        <Button variant="contained" startIcon={<AddIcon />} fullWidth>
+        <Button 
+          variant="contained" 
+          startIcon={<AddIcon />} 
+          fullWidth
+          onClick={() => navigate('/dashboard/cases/new')}
+        >
           New Case
         </Button>
-        <Button variant="contained" startIcon={<EventIcon />} fullWidth>
+        <Button 
+          variant="contained" 
+          startIcon={<EventIcon />} 
+          fullWidth
+          onClick={() => navigate('/dashboard/appointments/new')}
+        >
           Schedule Appointment
         </Button>
-        <Button variant="contained" startIcon={<PeopleIcon />} fullWidth>
+        <Button 
+          variant="contained" 
+          startIcon={<PeopleIcon />} 
+          fullWidth
+          onClick={() => navigate('/dashboard/clients/new')}
+        >
           Add Client
         </Button>
-        <Button variant="contained" startIcon={<ArticleIcon />} fullWidth>
+        <Button 
+          variant="contained" 
+          startIcon={<ArticleIcon />} 
+          fullWidth
+          onClick={() => navigate('/dashboard/blog/new')}
+        >
           Create Blog Post
         </Button>
       </Stack>

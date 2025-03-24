@@ -1,5 +1,6 @@
 const express = require('express');
 const { protect, restrictTo } = require('../controllers/authController');
+const upload = require('../utils/uploadConfig');
 const {
   getAllPosts,
   getPublishedPosts,
@@ -13,7 +14,8 @@ const {
   addComment,
   approveComment,
   deleteComment,
-  getBlogAnalytics
+  getBlogAnalytics,
+  uploadImage
 } = require('../controllers/blogController');
 
 const router = express.Router();
@@ -28,6 +30,9 @@ router.post('/:id/comments', addComment);
 
 // Protected routes
 router.use(protect);
+
+// Upload route - must be before the routes with URL parameters
+router.post('/upload', upload.single('image'), uploadImage);
 
 router.route('/')
   .get(getAllPosts)

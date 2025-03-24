@@ -90,7 +90,7 @@ const blogSchema = new mongoose.Schema({
 // Pre-save middleware to set publishedAt date when status changes to published
 blogSchema.pre('save', function(next) {
   if (this.isModified('status') && this.status === 'published' && !this.publishedAt) {
-    this.publishedAt = Date.now();
+    this.publishedAt = new Date();
   }
   next();
 });

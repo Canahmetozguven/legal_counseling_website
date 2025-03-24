@@ -23,6 +23,8 @@ import {
   Gavel as CasesIcon,
   Event as AppointmentsIcon,
   Article as BlogIcon,
+  Business as PracticeAreasIcon,
+  Info as AboutIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -34,6 +36,8 @@ const menuItems = [
   { text: 'Cases', icon: <CasesIcon />, path: '/dashboard/cases' },
   { text: 'Appointments', icon: <AppointmentsIcon />, path: '/dashboard/appointments' },
   { text: 'Blog', icon: <BlogIcon />, path: '/dashboard/blog' },
+  { text: 'Practice Areas', icon: <PracticeAreasIcon />, path: '/dashboard/practice-areas' },
+  { text: 'About Page', icon: <AboutIcon />, path: '/dashboard/about' },
 ];
 
 const DashboardLayout = () => {

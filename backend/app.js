@@ -7,6 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
+const path = require('path');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
@@ -17,6 +18,8 @@ const caseRoutes = require('./routes/caseRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const practiceAreaRoutes = require('./routes/practiceAreaRoutes');
+const aboutRoutes = require('./routes/aboutRoutes');
 
 const app = express();
 
@@ -84,6 +87,9 @@ app.use(cors({
   maxAge: 86400
 }));
 
+// Serve static files from uploads directory
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRouter);
@@ -92,6 +98,8 @@ app.use('/api/cases', caseRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/practice-areas', practiceAreaRoutes);
+app.use('/api/about', aboutRoutes);
 
 // Handle undefined routes
 app.all('*', (req, res, next) => {

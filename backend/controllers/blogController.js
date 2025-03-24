@@ -60,7 +60,7 @@ exports.createPost = catchAsync(async (req, res) => {
   const newPost = await Blog.create({
     ...req.body,
     author: req.user._id,
-    status: 'draft'
+    publishedAt: req.body.status === 'published' ? new Date() : null
   });
 
   res.status(201).json({
@@ -245,6 +245,23 @@ exports.getBlogAnalytics = catchAsync(async (req, res) => {
       current: post.analytics,
       lastMonth: lastMonth.analytics,
       daily
+    }
+  });
+});
+
+// Upload image for blog post
+exports.uploadImage = catchAsync(async (req, res, next) => {
+  if (!req.file) {
+    return next(new AppError('Please upload an image', 400));
+  }
+
+  // Get file info from middleware
+  const fileUrl = `/uploads/${req.file.filename}`;
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      url: fileUrl
     }
   });
 });

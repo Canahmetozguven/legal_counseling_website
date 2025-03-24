@@ -12,7 +12,7 @@ import {
   CloudUpload as UploadIcon,
   Delete as DeleteIcon
 } from '@mui/icons-material';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosConfig';
 
 const ImageUpload = ({ onImageUpload, initialImage = null }) => {
   const [uploading, setUploading] = useState(false);
@@ -44,14 +44,14 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await axios.post('/api/upload', formData, {
+      const response = await axiosInstance.post('/api/blog/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
       const uploadedImage = {
-        url: response.data.url,
+        url: response.data.data.url,
         caption,
         altText
       };
@@ -59,7 +59,7 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
       setImage(uploadedImage);
       onImageUpload(uploadedImage);
     } catch (err) {
-      setError('Failed to upload image. Please try again.');
+      setError('Failed to upload image: ' + (err.response?.data?.message || 'Please try again.'));
       console.error('Upload error:', err);
     } finally {
       setUploading(false);

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -7,43 +8,39 @@ import {
   CardContent,
   CardMedia,
   Box,
+  CircularProgress,
 } from '@mui/material';
 import { motion } from 'framer-motion';
-
-const practiceAreas = [
-  {
-    title: 'Corporate Law',
-    description: 'Expert legal counsel for businesses of all sizes, including contract negotiations, mergers & acquisitions, and corporate governance.',
-    image: '/images/corporate-law.jpg',
-  },
-  {
-    title: 'Real Estate Law',
-    description: 'Comprehensive legal services for property transactions, development projects, and real estate disputes.',
-    image: '/images/real-estate-law.jpg',
-  },
-  {
-    title: 'Family Law',
-    description: 'Compassionate legal support for divorce, child custody, adoption, and other family-related matters.',
-    image: '/images/family-law.jpg',
-  },
-  {
-    title: 'Criminal Defense',
-    description: 'Strong defense representation for individuals facing criminal charges, from misdemeanors to serious felonies.',
-    image: '/images/criminal-law.jpg',
-  },
-  {
-    title: 'Employment Law',
-    description: 'Protection of employee rights and employer compliance with workplace regulations and employment contracts.',
-    image: '/images/employment-law.jpg',
-  },
-  {
-    title: 'Intellectual Property',
-    description: 'Safeguarding your creative works, innovations, and brand through patents, trademarks, and copyrights.',
-    image: '/images/ip-law.jpg',
-  },
-];
+import { getAllPracticeAreas } from '../../api/practiceAreaService';
 
 const PracticeAreas = () => {
+  const navigate = useNavigate();
+  const [practiceAreas, setPracticeAreas] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchPracticeAreas = async () => {
+      try {
+        const response = await getAllPracticeAreas();
+        setPracticeAreas(response.data.data.practiceAreas);
+      } catch (error) {
+        console.error('Error fetching practice areas:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPracticeAreas();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Container maxWidth="lg" sx={{ py: 8 }}>
       <motion.div
@@ -68,18 +65,20 @@ const PracticeAreas = () => {
 
         <Grid container spacing={4}>
           {practiceAreas.map((area, index) => (
-            <Grid item xs={12} sm={6} md={4} key={area.title}>
+            <Grid item xs={12} sm={6} md={4} key={area._id}>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <Card
+                  onClick={() => navigate(`/practice-areas/${area._id}`)}
                   sx={{
                     height: '100%',
                     display: 'flex',
                     flexDirection: 'column',
                     transition: '0.3s',
+                    cursor: 'pointer',
                     '&:hover': {
                       transform: 'translateY(-8px)',
                       boxShadow: 6,

@@ -11,12 +11,13 @@ import {
   Chip,
   FormControlLabel,
   Switch,
-  LinearProgress
+  LinearProgress,
+  Snackbar
 } from '@mui/material';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosConfig';
 import ImageUpload from './ImageUpload';
 
 const modules = {
@@ -54,16 +55,18 @@ const BlogForm = () => {
       metaTitle: '',
       metaDescription: '',
       keywords: []
-    }
+    },
+    publishedAt: null
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [availableTags, setAvailableTags] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
   const fetchTags = useCallback(async () => {
     try {
-      const response = await axios.get('/api/blog/tags');
+      const response = await axiosInstance.get('/api/blog/tags');
       setAvailableTags(response.data.data || []);
     } catch (err) {
       console.error('Error fetching tags:', err);
@@ -73,7 +76,7 @@ const BlogForm = () => {
   const fetchPost = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/blog/${id}`);
+      const response = await axiosInstance.get(`/api/blog/${id}`);
       const post = response.data.data;
       setFormData({
         title: post.title,
@@ -86,7 +89,8 @@ const BlogForm = () => {
           metaTitle: '',
           metaDescription: '',
           keywords: []
-        }
+        },
+        publishedAt: post.publishedAt
       });
     } catch (err) {
       setError(err.response?.data?.message || 'Error fetching post');
@@ -136,9 +140,11 @@ const BlogForm = () => {
   };
 
   const handleStatusChange = (e) => {
+    const newStatus = e.target.checked ? 'published' : 'draft';
     setFormData(prev => ({
       ...prev,
-      status: e.target.checked ? 'published' : 'draft'
+      status: newStatus,
+      publishedAt: newStatus === 'published' ? new Date().toISOString() : null
     }));
   };
 
@@ -149,8 +155,7 @@ const BlogForm = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const submitForm = async (status) => {
     const validationErrors = validateForm(formData);
     
     if (validationErrors.length > 0) {
@@ -165,9 +170,24 @@ const BlogForm = () => {
       const method = id ? 'patch' : 'post';
       const url = id ? `/api/blog/${id}` : '/api/blog';
       
-      await axios[method](url, formData);
-
+      await axiosInstance[method](url, {
+        ...formData,
+        status,
+        publishedAt: status === 'published' ? new Date().toISOString() : null
+      });
+      
       setSuccess(true);
+      
+      // Show appropriate success message
+      const action = id ? 'updated' : 'created';
+      const statusMessage = status === 'published' ? 'published' : 'saved as draft';
+      setSnackbar({
+        open: true,
+        message: `Blog post ${action} and ${statusMessage} successfully!`,
+        severity: 'success'
+      });
+
+      // Navigate after a short delay
       setTimeout(() => {
         navigate('/blog');
       }, 2000);
@@ -177,6 +197,11 @@ const BlogForm = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await submitForm(formData.status);
   };
 
   if (loading && id) {
@@ -258,12 +283,15 @@ const BlogForm = () => {
               options={availableTags}
               value={formData.tags}
               onChange={handleTagsChange}
+              getOptionLabel={(option) => option || ''}
+              isOptionEqualToValue={(option, value) => option === value}
+              filterSelectedOptions
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
                   <Chip
-                    label={option}
+                    label={option || ''}
                     {...getTagProps({ index })}
-                    key={option}
+                    key={option || index}
                   />
                 ))
               }
@@ -272,6 +300,7 @@ const BlogForm = () => {
                   {...params}
                   label="Tags"
                   placeholder="Add tags..."
+                  helperText="Type a tag and press Enter to add it"
                 />
               )}
             />
@@ -316,17 +345,32 @@ const BlogForm = () => {
                 Cancel
               </Button>
               <Button
-                type="submit"
-                variant="contained"
+                variant="outlined"
                 color="primary"
+                onClick={() => submitForm('draft')}
                 disabled={loading}
               >
-                {loading ? 'Saving...' : formData.status === 'published' ? 'Publish' : 'Save Draft'}
+                Save as Draft
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => submitForm('published')}
+                disabled={loading}
+              >
+                Publish Now
               </Button>
             </Box>
           </Stack>
         </form>
       </Paper>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        message={snackbar.message}
+      />
     </Box>
   );
 };

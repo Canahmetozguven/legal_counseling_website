@@ -25,6 +25,10 @@ import About from './components/pages/About';
 import Contact from './components/pages/Contact';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/auth/PrivateRoute';
+import SingleBlogPost from './components/blog/SingleBlogPost';
+import PracticeAreaDetail from './components/practice-areas/PracticeAreaDetail';
+import PracticeAreaManagement from './components/practice-areas/PracticeAreaManagement';
+import AboutManagement from './components/about/AboutManagement';
 
 function App() {
   return (
@@ -40,7 +44,10 @@ function App() {
                 <Route path="register" element={<Register />} />
                 <Route path="blog" element={<PublicBlogView />} />
                 <Route path="blog/new" element={<PrivateRoute><BlogForm /></PrivateRoute>} />
+                <Route path="blog/edit/:id" element={<PrivateRoute><BlogForm /></PrivateRoute>} />
+                <Route path="blog/:id" element={<SingleBlogPost />} />
                 <Route path="practice-areas" element={<PracticeAreas />} />
+                <Route path="practice-areas/:id" element={<PracticeAreaDetail />} />
                 <Route path="about" element={<About />} />
                 <Route path="contact" element={<Contact />} />
                 <Route path="dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
@@ -57,6 +64,8 @@ function App() {
                   <Route path="blog" element={<BlogList />} />
                   <Route path="blog/new" element={<BlogForm />} />
                   <Route path="blog/:id" element={<BlogForm />} />
+                  <Route path="practice-areas" element={<PracticeAreaManagement />} />
+                  <Route path="about" element={<AboutManagement />} />
                 </Route>
               </Route>
             </Routes>
