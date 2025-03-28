@@ -81,7 +81,7 @@ const BlogAnalytics = ({ analytics, historicalData }) => {
   ];
 
   return (
-    <Box>
+    <Box p={3}>
       <Typography variant="h5" gutterBottom>
         Blog Analytics
       </Typography>
