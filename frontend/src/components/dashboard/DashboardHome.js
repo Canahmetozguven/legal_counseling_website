@@ -82,7 +82,7 @@ const DashboardHome = () => {
               {value}
             </Typography>
           </Box>
-          <Icon sx={{ fontSize: 40, color }} />
+          <Icon sx={{ fontSize: 40, color: 'primary.dark' }} />
         </Box>
       </CardContent>
     </Card>
@@ -99,6 +99,7 @@ const DashboardHome = () => {
           startIcon={<AddIcon />} 
           fullWidth
           onClick={() => navigate('/dashboard/cases/new')}
+          sx={{ backgroundColor: 'primary.dark' }}
         >
           New Case
         </Button>
@@ -107,6 +108,7 @@ const DashboardHome = () => {
           startIcon={<EventIcon />} 
           fullWidth
           onClick={() => navigate('/dashboard/appointments/new')}
+          sx={{ backgroundColor: 'primary.dark' }}
         >
           Schedule Appointment
         </Button>
@@ -115,6 +117,7 @@ const DashboardHome = () => {
           startIcon={<PeopleIcon />} 
           fullWidth
           onClick={() => navigate('/dashboard/clients/new')}
+          sx={{ backgroundColor: 'primary.dark' }}
         >
           Add Client
         </Button>
@@ -123,6 +126,7 @@ const DashboardHome = () => {
           startIcon={<ArticleIcon />} 
           fullWidth
           onClick={() => navigate('/dashboard/blog/new')}
+          sx={{ backgroundColor: 'primary.dark' }}
         >
           Create Blog Post
         </Button>

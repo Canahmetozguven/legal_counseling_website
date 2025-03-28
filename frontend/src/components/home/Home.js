@@ -26,7 +26,7 @@ const Home = () => {
         >
           Welcome to Our Legal Practice
         </Typography>
-        <Typography variant="h5" align="center" color="text.secondary" paragraph>
+        <Typography variant="h5" align="center" color="text.primary" paragraph>
           Professional legal counsel dedicated to protecting your rights and interests.
           With years of experience, we provide expert guidance across various areas of law.
         </Typography>
@@ -39,7 +39,7 @@ const Home = () => {
           <Button variant="contained" onClick={() => navigate('/contact')}>
             Contact Us
           </Button>
-          <Button variant="outlined" onClick={() => navigate('/blog')}>
+          <Button variant="contained" onClick={() => navigate('/blog')}>
             Read Our Blog
           </Button>
         </Stack>
