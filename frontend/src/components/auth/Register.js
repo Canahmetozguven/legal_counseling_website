@@ -57,7 +57,7 @@ const Register = () => {
               {error}
             </Alert>
           )}
-          <Box component="form" onSubmit={handleSubmit}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
             <TextField
               margin="normal"
               required
@@ -68,6 +68,13 @@ const Register = () => {
               autoFocus
               value={formData.name}
               onChange={handleChange}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
+              }}
             />
             <TextField
               margin="normal"
@@ -78,6 +85,13 @@ const Register = () => {
               autoComplete="email"
               value={formData.email}
               onChange={handleChange}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
+              }}
             />
             <TextField
               margin="normal"
@@ -89,6 +103,13 @@ const Register = () => {
               autoComplete="new-password"
               value={formData.password}
               onChange={handleChange}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
+              }}
             />
             <TextField
               margin="normal"
@@ -99,6 +120,13 @@ const Register = () => {
               type="password"
               value={formData.passwordConfirm}
               onChange={handleChange}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: 'primary.main',
+                  },
+                },
+              }}
             />
             <Button
               type="submit"

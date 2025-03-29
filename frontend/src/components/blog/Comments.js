@@ -90,7 +90,7 @@ const Comments = ({ postId, comments: initialComments, isAdmin }) => {
   };
 
   return (
-    <Box>
+    <Box p={3}>
       <Typography variant="h6" gutterBottom>
         Comments ({comments.filter(c => c.isApproved).length})
       </Typography>

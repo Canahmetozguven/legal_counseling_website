@@ -83,6 +83,8 @@ const PracticeAreas = () => {
                       transform: 'translateY(-8px)',
                       boxShadow: 6,
                     },
+                    padding: 2,
+                    margin: 2,
                   }}
                 >
                   <CardMedia

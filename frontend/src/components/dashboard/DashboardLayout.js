@@ -87,6 +87,7 @@ const DashboardLayout = () => {
         sx={{
           width: { md: `calc(100% - ${drawerWidth}px)` },
           ml: { md: `${drawerWidth}px` },
+          backgroundColor: 'primary.dark',
         }}
       >
         <Toolbar>
@@ -99,7 +100,7 @@ const DashboardLayout = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" color="white">
             Legal Practice Management
           </Typography>
         </Toolbar>

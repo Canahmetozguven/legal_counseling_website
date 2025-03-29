@@ -180,6 +180,7 @@ const Contact = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        sx={{ mb: 2 }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -191,6 +192,7 @@ const Contact = () => {
                         type="email"
                         value={formData.email}
                         onChange={handleChange}
+                        sx={{ mb: 2 }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -200,6 +202,7 @@ const Contact = () => {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        sx={{ mb: 2 }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -210,6 +213,7 @@ const Contact = () => {
                         name="subject"
                         value={formData.subject}
                         onChange={handleChange}
+                        sx={{ mb: 2 }}
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -222,6 +226,7 @@ const Contact = () => {
                         name="message"
                         value={formData.message}
                         onChange={handleChange}
+                        sx={{ mb: 2 }}
                       />
                     </Grid>
                     {status.message && (

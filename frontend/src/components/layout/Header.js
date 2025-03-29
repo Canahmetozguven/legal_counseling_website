@@ -130,14 +130,14 @@ const Header = () => {
 
   return (
     <HideOnScroll>
-      <AppBar position="fixed" sx={{ backgroundColor: 'white', boxShadow: 2 }}>
+      <AppBar position="fixed" sx={{ backgroundColor: 'primary.dark', boxShadow: 2 }}>
         <Container maxWidth="lg">
           <Toolbar disableGutters>
             {/* Mobile Menu Icon */}
             <IconButton
               size="large"
               edge="start"
-              color="primary"
+              color="inherit"
               aria-label="menu"
               sx={{ display: { md: 'none' }, mr: 2 }}
               onClick={toggleMobileDrawer(true)}
@@ -152,7 +152,7 @@ const Header = () => {
               component="div"
               sx={{
                 flexGrow: { xs: 1, md: 0 },
-                color: 'primary.main',
+                color: 'white',
                 fontWeight: 700,
                 cursor: 'pointer',
               }}
@@ -169,9 +169,9 @@ const Header = () => {
                   onClick={() => navigate(item.path)}
                   sx={{
                     mx: 1,
-                    color: isActivePath(item.path) ? 'primary.main' : 'text.primary',
+                    color: isActivePath(item.path) ? 'white' : 'text.primary',
                     '&:hover': {
-                      color: 'primary.main',
+                      color: 'white',
                     },
                   }}
                 >
@@ -184,7 +184,7 @@ const Header = () => {
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               {!isAuthenticated ? (
                 <Button
-                  color="primary"
+                  color="inherit"
                   variant="contained"
                   onClick={() => navigate('/login')}
                   sx={{
@@ -201,7 +201,7 @@ const Header = () => {
                     aria-controls="menu-appbar"
                     aria-haspopup="true"
                     onClick={handleMenu}
-                    color="primary"
+                    color="inherit"
                     sx={{ display: { xs: 'none', md: 'flex' } }}
                   >
                     <AccountCircle />

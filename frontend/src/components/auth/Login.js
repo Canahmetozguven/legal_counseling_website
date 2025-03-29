@@ -66,6 +66,10 @@ const Login = () => {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              padding: 2,
+              borderRadius: 2,
+              boxShadow: 3,
+              backgroundColor: 'background.paper',
             }}
           >
             <Typography component="h1" variant="h4" color="primary" gutterBottom>
