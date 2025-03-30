@@ -24,7 +24,7 @@ const About = () => {
       try {
         const response = await aboutService.getAboutContent();
         console.log('About API response:', response); // For debugging
-        setAboutData(response.data.about);
+        setAboutData(response.data.about); // Fix: aboutService returns response.data, not the full response
       } catch (error) {
         console.error('Error fetching about content:', error);
         setError('Failed to load content. Please try again later.');

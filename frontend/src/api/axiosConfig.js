@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-const baseURL = 'http://backend:5000';
+// Use window.location.hostname to determine the correct API URL
+// This will make it work both when accessed via localhost and when containers communicate
+const baseURL = process.env.NODE_ENV === 'production' 
+  ? '/api' // In production, use relative path for API calls (assuming you have a proxy)
+  : `http://${window.location.hostname}:5000`; // In development, use the browser's hostname with port 5000
 
 const axiosInstance = axios.create({
   baseURL,

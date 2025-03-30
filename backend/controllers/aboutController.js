@@ -4,10 +4,17 @@ const catchAsync = require('../utils/catchAsync');
 
 // Get about content including team members
 exports.getAboutContent = catchAsync(async (req, res, next) => {
-  const about = await About.findOne();
+  // Find the about document, or create a default one if it doesn't exist
+  let about = await About.findOne();
   
   if (!about) {
-    return next(new AppError('About content not found', 404));
+    // Instead of returning 404, create a default about document
+    about = await About.create({
+      mission: 'Our mission statement',
+      values: ['Integrity', 'Excellence', 'Client-Focused'],
+      history: 'Our company history',
+      teamMembers: []
+    });
   }
 
   res.status(200).json({
@@ -36,10 +43,16 @@ exports.updateAboutContent = catchAsync(async (req, res, next) => {
 
 // Get team members
 exports.getTeamMembers = catchAsync(async (req, res, next) => {
-  const about = await About.findOne();
+  let about = await About.findOne();
   
   if (!about) {
-    return next(new AppError('Team members not found', 404));
+    // Create a default about document instead of returning 404
+    about = await About.create({
+      mission: 'Our mission statement',
+      values: ['Integrity', 'Excellence', 'Client-Focused'],
+      history: 'Our company history',
+      teamMembers: []
+    });
   }
 
   res.status(200).json({
@@ -52,7 +65,7 @@ exports.getTeamMembers = catchAsync(async (req, res, next) => {
 
 // Add team member
 exports.addTeamMember = catchAsync(async (req, res, next) => {
-  const about = await About.findOne();
+  let about = await About.findOne();
   
   if (!about) {
     about = new About({ teamMembers: [] });

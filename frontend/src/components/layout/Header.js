@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -17,17 +17,30 @@ import {
   ListItemText,
   ListItemButton,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Divider,
+  ListItemIcon
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import PhoneIcon from '@mui/icons-material/Phone';
+import ArticleIcon from '@mui/icons-material/Article';
+import GroupsIcon from '@mui/icons-material/Groups';
+import GavelIcon from '@mui/icons-material/Gavel';
+import HomeIcon from '@mui/icons-material/Home';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 // Hide header on scroll
 function HideOnScroll(props) {
   const { children } = props;
-  const trigger = useScrollTrigger();
+  const trigger = useScrollTrigger({
+    disableHysteresis: true,
+    threshold: 100,  // Only hide after scrolling 100px
+  });
 
   return (
     <Slide appear={false} direction="down" in={!trigger}>
@@ -43,7 +56,23 @@ const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Check scroll position to apply styling changes
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY > 20;
+      if (scrolled !== isScrolled) {
+        setIsScrolled(scrolled);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isScrolled]);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -66,12 +95,19 @@ const Header = () => {
     setMobileDrawerOpen(open);
   };
 
+  // Primary navigation items
   const navigationItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Practice Areas', path: '/practice-areas' },
-    { name: 'About', path: '/about' },
-    { name: 'Blog', path: '/blog' },
-    { name: 'Contact', path: '/contact' }
+    { name: 'Home', path: '/', icon: <HomeIcon /> },
+    { name: 'Practice Areas', path: '/practice-areas', icon: <GavelIcon /> },
+    { name: 'Our Team', path: '/about', icon: <GroupsIcon /> },
+    { name: 'Resources', path: '/blog', icon: <ArticleIcon /> },
+    { name: 'Contact Us', path: '/contact', icon: <ContactSupportIcon /> }
+  ];
+
+  // Quick access buttons for key legal services
+  const legalQuickLinks = [
+    { name: 'Free Consultation', path: '/contact', highlight: true },
+    { name: 'Client Portal', path: '/client-portal', highlight: false }
   ];
 
   const isActivePath = (path) => location.pathname === path;
@@ -88,58 +124,137 @@ const Header = () => {
       onClose={toggleMobileDrawer(false)}
       sx={{
         '& .MuiDrawer-paper': {
-          width: 250,
+          width: 280,
           backgroundColor: theme.palette.background.paper,
         },
       }}
     >
+      <Box sx={{ pt: 5, pb: 3, textAlign: 'center' }}>
+        <Typography
+          variant="h6"
+          noWrap
+          component="div"
+          sx={{
+            color: theme.palette.primary.main,
+            fontWeight: 700,
+            letterSpacing: 0.5,
+            pb: 2,
+          }}
+        >
+          LEGAL COUNSEL
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Expert Legal Services
+        </Typography>
+      </Box>
+      
+      <Divider />
+      
       <List sx={{ pt: 2 }}>
         {navigationItems.map((item) => (
           <ListItem key={item.name} disablePadding>
             <ListItemButton
               onClick={() => handleNavigate(item.path)}
               selected={isActivePath(item.path)}
+              sx={{
+                py: 1.5,
+                '&.Mui-selected': {
+                  backgroundColor: 'rgba(0, 40, 85, 0.08)',
+                  borderRight: `4px solid ${theme.palette.primary.main}`,
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 40, 85, 0.12)',
+                  }
+                },
+              }}
             >
-              <ListItemText primary={item.name} />
+              <ListItemIcon sx={{ color: isActivePath(item.path) ? theme.palette.primary.main : 'inherit' }}>
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText 
+                primary={item.name} 
+                primaryTypographyProps={{
+                  fontWeight: isActivePath(item.path) ? 600 : 400
+                }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
-        {!isAuthenticated ? (
+      </List>
+      
+      <Divider sx={{ mt: 2, mb: 2 }} />
+      
+      <Box sx={{ px: 3, mb: 2 }}>
+        <Button
+          fullWidth
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={() => handleNavigate('/contact')}
+          startIcon={<PhoneIcon />}
+          sx={{ mb: 1.5 }}
+        >
+          Free Consultation
+        </Button>
+      </Box>
+      
+      <Divider />
+      
+      {isAuthenticated ? (
+        <List>
           <ListItem disablePadding>
-            <ListItemButton onClick={() => handleNavigate('/login')}>
-              <ListItemText primary="Login" />
+            <ListItemButton onClick={() => handleNavigate('/dashboard')}>
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText primary="Dashboard" />
             </ListItemButton>
           </ListItem>
-        ) : (
-          <>
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => handleNavigate('/dashboard')}>
-                <ListItemText primary="Dashboard" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding>
-              <ListItemButton onClick={handleLogout}>
-                <ListItemText primary="Logout" />
-              </ListItemButton>
-            </ListItem>
-          </>
-        )}
-      </List>
+          <ListItem disablePadding>
+            <ListItemButton onClick={handleLogout}>
+              <ListItemIcon>
+                <LogoutIcon />
+              </ListItemIcon>
+              <ListItemText primary="Logout" />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      ) : (
+        <Box sx={{ px: 3, mt: 2 }}>
+          <Button
+            fullWidth
+            variant="outlined"
+            onClick={() => handleNavigate('/login')}
+          >
+            Client Login
+          </Button>
+        </Box>
+      )}
     </Drawer>
   );
 
   return (
     <HideOnScroll>
-      <AppBar position="fixed" sx={{ backgroundColor: 'primary.dark', boxShadow: 2 }}>
+      <AppBar 
+        position="fixed" 
+        sx={{ 
+          backgroundColor: isScrolled ? 'white' : 'rgba(255, 255, 255, 0.96)',
+          color: theme.palette.primary.main,
+          boxShadow: isScrolled ? '0 2px 10px rgba(0,0,0,0.1)' : 'none',
+          transition: 'all 0.3s ease',
+        }}
+      >
         <Container maxWidth="lg">
-          <Toolbar disableGutters>
+          <Toolbar disableGutters sx={{ height: { xs: 64, md: 80 } }}>
             {/* Mobile Menu Icon */}
             <IconButton
               size="large"
               edge="start"
-              color="inherit"
               aria-label="menu"
-              sx={{ display: { md: 'none' }, mr: 2 }}
+              sx={{ 
+                display: { md: 'none' }, 
+                mr: 2,
+                color: theme.palette.primary.main 
+              }}
               onClick={toggleMobileDrawer(true)}
             >
               <MenuIcon />
@@ -147,14 +262,16 @@ const Header = () => {
 
             {/* Logo/Brand */}
             <Typography
-              variant="h6"
+              variant="h5"
               noWrap
               component="div"
               sx={{
                 flexGrow: { xs: 1, md: 0 },
-                color: 'white',
+                color: theme.palette.primary.main,
                 fontWeight: 700,
+                letterSpacing: 0.5,
                 cursor: 'pointer',
+                fontFamily: '"Merriweather", serif',
               }}
               onClick={() => navigate('/')}
             >
@@ -162,17 +279,32 @@ const Header = () => {
             </Typography>
 
             {/* Desktop Navigation */}
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, ml: 4 }}>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, ml: 6, gap: 0.5 }}>
               {navigationItems.map((item) => (
                 <Button
                   key={item.name}
                   onClick={() => navigate(item.path)}
                   sx={{
                     mx: 1,
-                    color: isActivePath(item.path) ? 'white' : 'text.primary',
+                    px: 2,
+                    py: 2.5,
+                    color: theme.palette.text.primary,
+                    position: 'relative',
+                    fontWeight: isActivePath(item.path) ? 600 : 400,
                     '&:hover': {
-                      color: 'white',
+                      backgroundColor: 'rgba(0, 40, 85, 0.04)',
                     },
+                    '&::after': isActivePath(item.path) ? {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: 0,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: '60%',
+                      height: '3px',
+                      backgroundColor: theme.palette.primary.main,
+                      borderRadius: '2px 2px 0 0'
+                    } : {}
                   }}
                 >
                   {item.name}
@@ -180,19 +312,33 @@ const Header = () => {
               ))}
             </Box>
 
-            {/* Auth Section */}
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {/* Quick Access Buttons */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
               {!isAuthenticated ? (
-                <Button
-                  color="inherit"
-                  variant="contained"
-                  onClick={() => navigate('/login')}
-                  sx={{
-                    display: { xs: 'none', md: 'flex' },
-                  }}
-                >
-                  Login
-                </Button>
+                <>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => navigate('/login')}
+                    sx={{ 
+                      borderRadius: 2,
+                      px: 2
+                    }}
+                  >
+                    Client Login
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate('/contact')}
+                    sx={{ 
+                      borderRadius: 2,
+                      px: 2
+                    }}
+                  >
+                    Free Consultation
+                  </Button>
+                </>
               ) : (
                 <>
                   <IconButton
@@ -201,8 +347,7 @@ const Header = () => {
                     aria-controls="menu-appbar"
                     aria-haspopup="true"
                     onClick={handleMenu}
-                    color="inherit"
-                    sx={{ display: { xs: 'none', md: 'flex' } }}
+                    color="primary"
                   >
                     <AccountCircle />
                   </IconButton>
@@ -220,21 +365,35 @@ const Header = () => {
                     }}
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
+                    sx={{
+                      '& .MuiPaper-root': {
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+                        borderRadius: 2,
+                      }
+                    }}
                   >
                     <MenuItem onClick={() => {
                       handleClose();
                       navigate('/dashboard');
                     }}>
+                      <ListItemIcon>
+                        <DashboardIcon fontSize="small" />
+                      </ListItemIcon>
                       Dashboard
                     </MenuItem>
-                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                    <MenuItem onClick={handleLogout}>
+                      <ListItemIcon>
+                        <LogoutIcon fontSize="small" />
+                      </ListItemIcon>
+                      Logout
+                    </MenuItem>
                   </Menu>
                 </>
               )}
             </Box>
           </Toolbar>
         </Container>
-        {matches && renderMobileDrawer()}
+        {isMobile && renderMobileDrawer()}
       </AppBar>
     </HideOnScroll>
   );
