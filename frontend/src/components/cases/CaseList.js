@@ -24,7 +24,7 @@ import {
   Search as SearchIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosConfig';
 
 const statusColors = {
   'open': 'primary',
@@ -49,7 +49,7 @@ const CaseList = () => {
 
   const fetchCases = async () => {
     try {
-      const response = await axios.get('/api/cases');
+      const response = await axiosInstance.get('/api/cases');
       setCases(response.data?.data?.cases || []);
     } catch (error) {
       console.error('Error fetching cases:', error);
@@ -62,7 +62,7 @@ const CaseList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this case?')) {
       try {
-        await axios.delete(`/api/cases/${id}`);
+        await axiosInstance.delete(`/api/cases/${id}`);
         setCases(cases.filter(case_ => case_._id !== id));
       } catch (error) {
         console.error('Error deleting case:', error);

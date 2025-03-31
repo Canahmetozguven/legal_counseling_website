@@ -10,6 +10,8 @@ import {
   CardMedia,
 } from '@mui/material';
 import { getPracticeArea } from '../../api/practiceAreaService';
+import SEO from '../../utils/seo/SEO';
+import { getPracticeAreaSchema } from '../../utils/seo/SchemaTemplates';
 
 const PracticeAreaDetail = () => {
   const { id } = useParams();
@@ -50,50 +52,81 @@ const PracticeAreaDetail = () => {
     );
   }
 
+  // Generate structured data for this practice area
+  const practiceAreaSchema = getPracticeAreaSchema({
+    name: practiceArea.title,
+    description: practiceArea.description,
+    url: window.location.href,
+    image: practiceArea.image,
+    serviceType: practiceArea.title
+  });
+
+  // Generate relevant keywords for this practice area
+  const keywords = [
+    practiceArea.title,
+    'legal services',
+    'law firm',
+    'attorney',
+    'legal counsel',
+    practiceArea.title + ' attorney',
+    practiceArea.title + ' lawyer',
+    practiceArea.title + ' legal advice'
+  ];
+
   return (
-    <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Card sx={{ mb: 4 }}>
-        <CardMedia
-          component="img"
-          height="400"
-          image={practiceArea.image}
-          alt={practiceArea.title}
-          sx={{ objectFit: 'cover' }}
-        />
-      </Card>
-      
-      <Typography
-        component="h1"
-        variant="h3"
-        color="primary"
-        gutterBottom
-        sx={{ fontWeight: 'bold' }}
-      >
-        {practiceArea.title}
-      </Typography>
+    <>
+      <SEO
+        title={`${practiceArea.title} - Musti Attorneys Legal Services`}
+        description={practiceArea.description}
+        image={practiceArea.image}
+        keywords={keywords}
+        schema={practiceAreaSchema}
+      />
 
-      <Typography 
-        variant="h6" 
-        color="text.secondary" 
-        paragraph
-        sx={{ mb: 4 }}
-      >
-        {practiceArea.description}
-      </Typography>
-
-      <Paper elevation={0} sx={{ p: 4, bgcolor: 'background.default' }}>
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <Card sx={{ mb: 4 }}>
+          <CardMedia
+            component="img"
+            height="400"
+            image={practiceArea.image}
+            alt={practiceArea.title}
+            sx={{ objectFit: 'cover' }}
+          />
+        </Card>
+        
         <Typography
-          variant="body1"
-          component="div"
-          sx={{
-            '& p': { mb: 2 },
-            '& ul': { pl: 4, mb: 2 },
-            '& li': { mb: 1 }
-          }}
-          dangerouslySetInnerHTML={{ __html: practiceArea.content }}
-        />
-      </Paper>
-    </Container>
+          component="h1"
+          variant="h3"
+          color="primary"
+          gutterBottom
+          sx={{ fontWeight: 'bold' }}
+        >
+          {practiceArea.title}
+        </Typography>
+
+        <Typography 
+          variant="h6" 
+          color="text.secondary" 
+          paragraph
+          sx={{ mb: 4 }}
+        >
+          {practiceArea.description}
+        </Typography>
+
+        <Paper elevation={0} sx={{ p: 4, bgcolor: 'background.default' }}>
+          <Typography
+            variant="body1"
+            component="div"
+            sx={{
+              '& p': { mb: 2 },
+              '& ul': { pl: 4, mb: 2 },
+              '& li': { mb: 1 }
+            }}
+            dangerouslySetInnerHTML={{ __html: practiceArea.content }}
+          />
+        </Paper>
+      </Container>
+    </>
   );
 };
 

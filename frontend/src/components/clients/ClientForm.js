@@ -11,7 +11,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosConfig';;
 
 const ClientForm = () => {
   const { id } = useParams();
@@ -30,7 +30,7 @@ const ClientForm = () => {
   const fetchClient = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/clients/${id}`);
+      const response = await axiosInstance.get(`/clients/${id}`);
       const clientData = response.data?.data?.client || {};
       setFormData({
         firstName: clientData.firstName || '',
@@ -71,11 +71,11 @@ const ClientForm = () => {
     try {
       setLoading(true);
       setError('');
-
+       
       if (id) {
-        await axios.patch(`/api/clients/${id}`, formData);
+        await axiosInstance.patch(`/clients/${id}`, formData);
       } else {
-        await axios.post('/api/clients', formData);
+        await axiosInstance.post('/clients', formData);
       }
 
       navigate('/dashboard/clients');

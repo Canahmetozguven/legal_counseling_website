@@ -1,19 +1,52 @@
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
+const crypto = require('crypto');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+const jwtErrorHandler = require('../utils/jwtErrorHandler');
+const securityLogger = require('../utils/securityLogger');
 
-// Create JWT token
+// Create JWT token with enhanced security
 const signToken = id => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN
-  });
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is required');
+  }
+  
+  return jwt.sign(
+    { 
+      id,
+      // Add random identifier to prevent token reuse across sessions
+      jti: crypto.randomBytes(16).toString('hex'),
+      // Add issued at timestamp to help with token revocation
+      iat: Math.floor(Date.now() / 1000)
+    }, 
+    process.env.JWT_SECRET, 
+    {
+      expiresIn: process.env.JWT_EXPIRES_IN || '1d',
+      algorithm: 'HS256' // Explicitly set the algorithm
+    }
+  );
 };
 
-// Create and send token with response
-const createSendToken = (user, statusCode, res) => {
+// Create and send token with response - enhanced security
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
+
+  // Set cookie options with enhanced security
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + 
+      (process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000 || 
+      7 * 24 * 60 * 60 * 1000) // Default to 7 days if not specified
+    ),
+    httpOnly: true, // Cookie cannot be accessed by client-side JS
+    sameSite: 'strict', // Protection against CSRF attacks
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https' // Only send over HTTPS
+  };
+  
+  // Send cookie
+  res.cookie('jwt', token, cookieOptions);
   
   // Remove password from output
   user.password = undefined;
@@ -37,7 +70,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     role: req.body.role
   });
 
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 // Login user
@@ -46,6 +79,15 @@ exports.login = catchAsync(async (req, res, next) => {
 
   // Check if email and password exist
   if (!email || !password) {
+    // Log failed login attempt with missing credentials
+    securityLogger.logAuthAttempt(
+      false, 
+      null, 
+      email || 'not provided', 
+      req.ip, 
+      req.headers['user-agent'],
+      { reason: 'Missing credentials' }
+    );
     return next(new AppError('Please provide email and password', 400));
   }
 
@@ -53,17 +95,70 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email }).select('+password');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
+    // Log failed login attempt with invalid credentials
+    securityLogger.logAuthAttempt(
+      false, 
+      user ? user._id : null,
+      email, 
+      req.ip, 
+      req.headers['user-agent'],
+      { reason: 'Invalid credentials' }
+    );
     return next(new AppError('Incorrect email or password', 401));
   }
 
+  // Log successful login
+  securityLogger.logAuthAttempt(
+    true,
+    user._id,
+    email,
+    req.ip,
+    req.headers['user-agent']
+  );
+
   // Send token to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 // Logout user
 exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000), // 10 seconds
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https'
+  });
+  
   res.status(200).json({ status: 'success' });
 };
+
+// Refresh token
+exports.refreshToken = catchAsync(async (req, res, next) => {
+  // 1) Get current user from token
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    return next(new AppError('No token found', 401));
+  }
+
+  // 2) Verify token
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET, { 
+    algorithms: ['HS256']
+  });
+
+  // 3) Check if user still exists
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next(new AppError('The user belonging to this token no longer exists.', 401));
+  }
+
+  // 4) Create new token
+  const newToken = signToken(currentUser._id);
+
+  res.status(200).json({
+    status: 'success',
+    token: newToken
+  });
+});
 
 // Protect routes - middleware to check if user is logged in
 exports.protect = catchAsync(async (req, res, next) => {
@@ -72,39 +167,64 @@ exports.protect = catchAsync(async (req, res, next) => {
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   } else if (req.cookies && req.cookies.jwt) {
-    // Also check for token in cookies if not in headers
     token = req.cookies.jwt;
   }
+
+  console.log('[AUTH DEBUG] Incoming token:', token?.substring(0, 10) + '...');
+  console.log('[AUTH DEBUG] Request headers:', req.headers);
 
   if (!token) {
     return next(new AppError('You are not logged in. Please log in to get access.', 401));
   }
 
   try {
-    // 2) Verify token with a timeout
-    const decoded = await Promise.race([
-      promisify(jwt.verify)(token, process.env.JWT_SECRET),
-      new Promise((_, reject) => 
-        setTimeout(() => reject(new AppError('Token verification timed out', 500)), 5000)
-      )
-    ]);
+    // 2) Verify token
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET, { 
+      algorithms: ['HS256']
+    });
+    
+    console.log('[AUTH DEBUG] Token verification result:', decoded);
+    
+    console.log("Token successfully verified, decoded payload:", {
+      id: decoded.id,
+      iat: decoded.iat,
+      jti: decoded.jti,
+      exp: decoded.exp
+    });
 
     // 3) Check if user still exists
-    const currentUser = await User.findById(decoded.id);
+    const currentUser = await User.findById(decoded.id)
+      .select('+passwordChangedAt')
+      .lean();
+    
+    console.log('[AUTH DEBUG] User found:', currentUser?._id);
+    
     if (!currentUser) {
+      console.log("User not found for id:", decoded.id);
       return next(new AppError('The user belonging to this token no longer exists.', 401));
     }
 
-    // 4) Check if user changed password after the token was issued
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
-      return next(new AppError('User recently changed password. Please log in again.', 401));
+    // 4) If user's password was changed after token issuance
+    if (currentUser.passwordChangedAt) {
+      const changedTimestamp = parseInt(currentUser.passwordChangedAt.getTime() / 1000, 10);
+      console.log("Debug - currentUser.passwordChangedAt:", currentUser.passwordChangedAt, 
+                  "decoded iat:", decoded.iat, 
+                  "Password changed?:", decoded.iat < changedTimestamp);
+
+      if (decoded.iat < changedTimestamp) {
+        return next(new AppError('User recently changed password. Please log in again.', 401));
+      }
     }
+
+    // Remove sensitive data
+    delete currentUser.passwordChangedAt;
 
     // Grant access to protected route
     req.user = currentUser;
     next();
   } catch (error) {
-    return next(new AppError(`Authentication failed: ${error.message}`, 401));
+    console.error("Error in protect middleware:", error);
+    return jwtErrorHandler(error, req, res, next);
   }
 });
 
@@ -134,7 +254,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   // 4) Log user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 // Get current user

@@ -1,4 +1,5 @@
 const AppError = require('../utils/appError');
+const { handleJWTError, handleJWTExpiredError } = require('../utils/jwtErrorHandler');
 
 // Error handler for development environment
 const sendErrorDev = (err, res) => {
@@ -51,13 +52,6 @@ const handleValidationErrorDB = err => {
   return new AppError(message, 400);
 };
 
-// Handle JWT errors
-const handleJWTError = () =>
-  new AppError('Invalid token. Please log in again!', 401);
-
-const handleJWTExpiredError = () =>
-  new AppError('Your token has expired! Please log in again.', 401);
-
 // Global error handling middleware
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
@@ -68,6 +62,7 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
     error.message = err.message;
+    error.name = err.name;
 
     // Handle specific error cases
     if (error.name === 'CastError') error = handleCastErrorDB(error);

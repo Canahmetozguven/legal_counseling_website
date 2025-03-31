@@ -1,5 +1,6 @@
 import axiosInstance from './axiosConfig';
 
+// With the updated axiosConfig, these paths will automatically get prefixed with /api
 const clientService = {
   getAllClients: async () => {
     const response = await axiosInstance.get('/clients');

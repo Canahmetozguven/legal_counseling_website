@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosConfig';
 
 const AppointmentForm = () => {
   const { id } = useParams();
@@ -45,8 +45,8 @@ const AppointmentForm = () => {
       try {
         // Fetch clients and lawyers in parallel
         const [clientsResponse, lawyersResponse] = await Promise.all([
-          axios.get('/api/clients'),
-          axios.get('/api/users/lawyers')
+          axiosInstance.get('/api/clients'),
+          axiosInstance.get('/api/users/lawyers')
         ]);
         
         // Extract clients data
@@ -86,7 +86,7 @@ const AppointmentForm = () => {
 
   const fetchAppointment = async (appointmentId, clientsList, lawyersList) => {
     try {
-      const response = await axios.get(`/api/appointments/${appointmentId}`);
+      const response = await axiosInstance.get(`/api/appointments/${appointmentId}`);
       console.log('Appointment API response:', response.data);
       
       // Correctly extract the appointment data from the response
@@ -241,9 +241,9 @@ const AppointmentForm = () => {
 
       // Send to backend
       if (id) {
-        await axios.patch(`/api/appointments/${id}`, submitData);
+        await axiosInstance.patch(`/api/appointments/${id}`, submitData);
       } else {
-        await axios.post('/api/appointments', submitData);
+        await axiosInstance.post('/api/appointments', submitData);
       }
 
       navigate('/dashboard/appointments');

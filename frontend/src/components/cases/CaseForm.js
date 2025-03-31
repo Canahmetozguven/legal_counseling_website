@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosConfig';
 
 const CaseForm = () => {
   const { id } = useParams();
@@ -39,7 +39,7 @@ const CaseForm = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get('/api/clients');
+      const response = await axiosInstance.get('/api/clients');
       console.log('API response:', response.data);
       
       // Handle the correct nested structure
@@ -64,7 +64,7 @@ const CaseForm = () => {
   const fetchCase = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`/api/cases/${id}`);
+      const response = await axiosInstance.get(`/api/cases/${id}`);
       const caseData = response.data.data;
       setFormData({
         ...caseData,
@@ -121,9 +121,9 @@ const CaseForm = () => {
       };
 
       if (id) {
-        await axios.patch(`/api/cases/${id}`, submitData);
+        await axiosInstance.patch(`/api/cases/${id}`, submitData);
       } else {
-        await axios.post('/api/cases', submitData);
+        await axiosInstance.post('/api/cases', submitData);
       }
 
       navigate('/dashboard/cases');

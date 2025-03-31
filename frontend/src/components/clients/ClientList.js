@@ -23,7 +23,7 @@ import {
   Search as SearchIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosConfig';
 import { debounce } from 'lodash';
 
 const ClientList = () => {
@@ -34,7 +34,7 @@ const ClientList = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axios.get('/api/clients', {
+      const response = await axiosInstance.get('/clients', {
         // Add retry logic
         retry: 3,
         retryDelay: (retryCount) => {
@@ -61,12 +61,12 @@ const ClientList = () => {
   useEffect(() => {
     debouncedFetchClients();
     return () => debouncedFetchClients.cancel();
-  }, []);
+  }, [debouncedFetchClients]);
 
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this client?')) {
       try {
-        await axios.delete(`/api/clients/${id}`);
+        await axiosInstance.delete(`/clients/${id}`);
         setClients(clients.filter(client => client._id !== id));
       } catch (error) {
         console.error('Error deleting client:', error);

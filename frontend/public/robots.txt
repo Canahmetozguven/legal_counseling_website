@@ -1,3 +1,20 @@
+# Musti Attorneys Website Robots.txt
 # https://www.robotstxt.org/robotstxt.html
+
+# Allow all crawlers access to most content
 User-agent: *
-Disallow:
+Allow: /
+Allow: /about
+Allow: /practice-areas
+Allow: /blog
+Allow: /contact
+Allow: /sitemap.xml
+
+# Disallow admin and authentication pages
+Disallow: /dashboard/
+Disallow: /login
+Disallow: /register
+Disallow: /admin
+
+# Sitemap location
+Sitemap: https://mustiattorneys.com/sitemap.xml

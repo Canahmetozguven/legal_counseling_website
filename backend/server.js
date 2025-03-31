@@ -11,11 +11,21 @@ process.on('uncaughtException', err => {
 // Load environment variables
 dotenv.config({ path: './config.env' });
 
+// Validate configuration before starting
+const { validateConfig } = require('./utils/configValidator');
+
+try {
+  validateConfig();
+} catch (error) {
+  console.error('Configuration error:', error.message);
+  process.exit(1);
+}
+
 // Import app after environment variables are loaded
 const app = require('./app');
 
 // Database connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/lawyer-website';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('MongoDB connected successfully'))
@@ -24,7 +34,7 @@ mongoose.connect(MONGODB_URI)
 // Start server
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
 });
 
 // Handle unhandled rejections

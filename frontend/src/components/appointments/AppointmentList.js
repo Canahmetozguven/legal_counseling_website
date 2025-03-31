@@ -22,7 +22,7 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../api/axiosConfig';
 
 const statusColors = {
   'scheduled': 'primary',
@@ -43,7 +43,7 @@ const AppointmentList = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get('/api/appointments');
+      const response = await axiosInstance.get('/api/appointments');
       setAppointments(response.data?.data?.appointments || []);
     } catch (error) {
       console.error('Error fetching appointments:', error);
@@ -56,7 +56,7 @@ const AppointmentList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this appointment?')) {
       try {
-        await axios.delete(`/api/appointments/${id}`);
+        await axiosInstance.delete(`/api/appointments/${id}`);
         setAppointments(appointments.filter(appointment => appointment._id !== id));
       } catch (error) {
         console.error('Error deleting appointment:', error);
