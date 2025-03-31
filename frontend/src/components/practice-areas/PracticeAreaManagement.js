@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Typography,
@@ -23,12 +23,14 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
+  Image as ImageIcon,
 } from '@mui/icons-material';
 import {
   getAllPracticeAreas,
   createPracticeArea,
   updatePracticeArea,
   deletePracticeArea,
+  uploadPracticeAreaImage,
 } from '../../api/practiceAreaService';
 
 const PracticeAreaManagement = () => {
@@ -43,6 +45,8 @@ const PracticeAreaManagement = () => {
     content: '',
     order: 0,
   });
+  const [imageFile, setImageFile] = useState(null);
+  const imageInputRef = useRef(null);
 
   const fetchPracticeAreas = async () => {
     try {
@@ -88,8 +92,18 @@ const PracticeAreaManagement = () => {
     });
   };
 
+  const handleFileSelect = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // First, upload image if one is selected
+    if (imageFile && currentArea) {
+      await handleImageUpload();
+    }
+    
     try {
       if (currentArea) {
         await updatePracticeArea(currentArea._id, formData);
@@ -111,6 +125,39 @@ const PracticeAreaManagement = () => {
       } catch (error) {
         console.error('Error deleting practice area:', error);
       }
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!imageFile) return;
+    
+    const imageFormData = new FormData();
+    imageFormData.append('image', imageFile);
+    
+    try {
+      setLoading(true);
+      const response = await uploadPracticeAreaImage(currentArea ? currentArea._id : null, imageFormData);
+      
+      console.log('Upload response:', response); // Debug logging
+      
+      // Update form data with the image path - fix to correctly access the data
+      if (response && response.data && response.data.data && response.data.data.imagePath) {
+        setFormData(prev => ({
+          ...prev,
+          image: response.data.data.imagePath
+        }));
+        
+        console.log('Image path updated to:', response.data.data.imagePath);
+      } else {
+        console.error('Invalid response structure:', response);
+      }
+      
+      setImageFile(null);
+      if (imageInputRef.current) imageInputRef.current.value = null;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -194,15 +241,60 @@ const PracticeAreaManagement = () => {
               value={formData.description}
               onChange={handleInputChange}
             />
+            
+            {/* Image Preview */}
+            {formData.image && (
+              <Box sx={{ mt: 2, mb: 2, display: 'flex', justifyContent: 'center' }}>
+                <img 
+                  src={formData.image.startsWith('http') 
+                    ? formData.image 
+                    : `${process.env.REACT_APP_API_URL}/uploads/${formData.image}`}
+                  alt={formData.title}
+                  style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'contain' }}
+                />
+              </Box>
+            )}
+            
+            <Box sx={{ mt: 2, display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Button
+                variant="outlined"
+                component="label"
+                startIcon={<ImageIcon />}
+              >
+                Select Image
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  ref={imageInputRef}
+                />
+              </Button>
+              {imageFile && (
+                <Button 
+                  variant="contained" 
+                  color="primary" 
+                  onClick={handleImageUpload}
+                  disabled={loading}
+                >
+                  Upload Image
+                </Button>
+              )}
+              <Typography variant="body2" color="textSecondary">
+                {imageFile ? `Selected: ${imageFile.name}` : 'No file selected'}
+              </Typography>
+            </Box>
+            
             <TextField
               margin="normal"
-              required
               fullWidth
-              label="Image URL"
+              label="Or enter image URL"
               name="image"
               value={formData.image}
               onChange={handleInputChange}
+              helperText="You can either upload a new image or enter a URL"
             />
+            
             <TextField
               margin="normal"
               required

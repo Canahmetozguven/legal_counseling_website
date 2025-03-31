@@ -60,6 +60,13 @@ let theme = createTheme({
       fontWeight: 600,
       color: '#002855',
       marginBottom: '0.5rem',
+      '&.white': {
+        color: '#ffffff',
+      },
+      '&.contrast': {
+        color: '#ffffff',
+        textShadow: '0px 1px 2px rgba(0,0,0,0.3)',
+      },
     },
     subtitle1: {
       fontSize: '1rem',

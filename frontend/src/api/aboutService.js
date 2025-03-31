@@ -29,6 +29,15 @@ const aboutService = {
   deleteTeamMember: async (memberId) => {
     const response = await axiosInstance.delete(`/about/team/${memberId}`);
     return response.data;
+  },
+  
+  uploadTeamMemberImage: async (formData) => {
+    const response = await axiosInstance.post('/about/upload-image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
   }
 };
 

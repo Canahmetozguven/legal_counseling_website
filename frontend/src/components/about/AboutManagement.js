@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Typography,
@@ -8,6 +8,7 @@ import {
   Grid,
   Card,
   CardContent,
+  CardMedia,
   IconButton,
   Alert,
   Dialog,
@@ -20,7 +21,7 @@ import {
   ListItemSecondaryAction,
   Divider,
 } from '@mui/material';
-import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon, Image as ImageIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 import aboutService from '../../api/aboutService';
 
@@ -46,6 +47,7 @@ const AboutManagement = () => {
   const [selectedValue, setSelectedValue] = useState(null);
   const [newValue, setNewValue] = useState('');
   const [editIndex, setEditIndex] = useState(-1);
+  const imageInputRef = useRef(null);
 
   useEffect(() => {
     fetchAboutContent();
@@ -177,6 +179,32 @@ const AboutManagement = () => {
     }
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Create FormData for file upload
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      setLoading(true);
+      // Upload the image
+      const response = await aboutService.uploadTeamMemberImage(formData);
+      // Update the form with the image path
+      setMemberForm(prev => ({
+        ...prev,
+        image: response.data.imagePath
+      }));
+      toast.success('Image uploaded successfully');
+    } catch (err) {
+      toast.error('Failed to upload image');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Container maxWidth="lg">
       <Typography variant="h4" sx={{ mb: 4 }}>
@@ -283,7 +311,18 @@ const AboutManagement = () => {
           <Grid container spacing={2}>
             {aboutData.teamMembers.map((member) => (
               <Grid item xs={12} sm={6} md={4} key={member._id}>
-                <Card>
+                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                  {member.image && (
+                    <CardMedia
+                      component="img"
+                      height="140"
+                      image={member.image.startsWith('http') 
+                        ? member.image 
+                        : `${process.env.REACT_APP_API_URL}/uploads/${member.image}`}
+                      alt={member.name}
+                      sx={{ objectFit: 'cover' }}
+                    />
+                  )}
                   <CardContent>
                     <Typography variant="h6">{member.name}</Typography>
                     <Typography color="textSecondary">{member.title}</Typography>
@@ -341,13 +380,42 @@ const AboutManagement = () => {
             onChange={handleMemberFormChange}
             sx={{ mb: 2 }}
           />
-          <TextField
-            fullWidth
-            label="Image URL"
-            name="image"
-            value={memberForm.image}
-            onChange={handleMemberFormChange}
-            sx={{ mb: 2 }}
+          
+          {/* Image Preview */}
+          {memberForm.image && (
+            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
+              <img 
+                src={memberForm.image.startsWith('http') 
+                  ? memberForm.image 
+                  : `${process.env.REACT_APP_API_URL}/uploads/${memberForm.image}`} 
+                alt="Team member preview"
+                style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'contain' }}
+              />
+            </Box>
+          )}
+          
+          <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
+            <Button
+              variant="outlined"
+              startIcon={<ImageIcon />}
+              onClick={() => imageInputRef.current.click()}
+            >
+              Upload Image
+            </Button>
+            <TextField
+              fullWidth
+              label="Or enter image URL"
+              name="image"
+              value={memberForm.image}
+              onChange={handleMemberFormChange}
+            />
+          </Box>
+          <input
+            type="file"
+            accept="image/*"
+            ref={imageInputRef}
+            onChange={handleImageUpload}
+            style={{ display: 'none' }}
           />
           <TextField
             fullWidth

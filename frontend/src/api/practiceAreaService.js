@@ -19,3 +19,11 @@ export const updatePracticeArea = (id, data) => {
 export const deletePracticeArea = (id) => {
   return axios.delete(`/practice-areas/${id}`);
 };
+
+export const uploadPracticeAreaImage = (id, formData) => {
+  return axios.post('/practice-areas/upload-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};

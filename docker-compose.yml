@@ -16,6 +16,7 @@ services:
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
+      - uploads_volume:/usr/src/app/public/uploads
     depends_on:
       mongodb:
         condition: service_started
@@ -83,3 +84,4 @@ networks:
 
 volumes:
   mongodb_data:
+  uploads_volume:

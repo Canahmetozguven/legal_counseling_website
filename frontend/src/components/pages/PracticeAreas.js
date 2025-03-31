@@ -63,7 +63,7 @@ const PracticeAreas = () => {
           </Typography>
         </Box>
 
-        <Grid container spacing={4}>
+        <Grid container spacing={4} justifyContent="center">
           {practiceAreas.map((area, index) => (
             <Grid item xs={12} sm={6} md={4} key={area._id}>
               <motion.div
@@ -84,7 +84,6 @@ const PracticeAreas = () => {
                       boxShadow: 6,
                     },
                     padding: 2,
-                    margin: 2,
                   }}
                 >
                   <CardMedia
@@ -94,7 +93,7 @@ const PracticeAreas = () => {
                     alt={area.title}
                     sx={{ objectFit: 'cover' }}
                   />
-                  <CardContent sx={{ flexGrow: 1 }}>
+                  <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
                     <Typography gutterBottom variant="h5" component="h2" color="primary">
                       {area.title}
                     </Typography>

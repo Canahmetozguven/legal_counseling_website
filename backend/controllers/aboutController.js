@@ -129,3 +129,18 @@ exports.deleteTeamMember = catchAsync(async (req, res, next) => {
     data: null
   });
 });
+
+// Upload team member image
+exports.uploadTeamMemberImage = catchAsync(async (req, res, next) => {
+  if (!req.file) {
+    return next(new AppError('No file uploaded', 400));
+  }
+
+  // Return the path to the uploaded image
+  res.status(200).json({
+    status: 'success',
+    data: {
+      imagePath: req.file.filename
+    }
+  });
+});

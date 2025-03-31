@@ -38,35 +38,49 @@ const About = () => {
     fetchAboutContent();
   }, []);
 
-  const renderValue = (value, index) => (
-    <Grid item xs={12} sm={6} md={4} key={index}>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: index * 0.1 }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            p: 3,
-            height: '100%',
-            textAlign: 'center',
-            backgroundColor: 'primary.main',
-            color: 'white',
-            transition: '0.3s',
-            '&:hover': {
-              transform: 'translateY(-8px)',
-              boxShadow: 6,
-            },
-          }}
+  const renderValue = (value, index) => {
+    return (
+      <Grid item xs={12} sm={6} md={4} key={index}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: index * 0.1 }}
         >
-          <Typography variant="h6" gutterBottom>
-            {value}
-          </Typography>
-        </Paper>
-      </motion.div>
-    </Grid>
-  );
+          <Paper
+            elevation={3}
+            sx={{
+              p: 3,
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              textAlign: 'center',
+              backgroundColor: 'primary.main',
+              transition: '0.3s',
+              '&:hover': {
+                transform: 'translateY(-8px)',
+                boxShadow: 6,
+              },
+            }}
+          >
+            <Typography 
+              variant="h6" 
+              className="contrast"
+              gutterBottom 
+              sx={{ 
+                fontWeight: 'bold',
+                fontSize: '1.1rem',
+                lineHeight: 1.4
+              }}
+            >
+              {value}
+            </Typography>
+          </Paper>
+        </motion.div>
+      </Grid>
+    );
+  };
 
   if (loading) {
     return (
@@ -167,10 +181,10 @@ const About = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
-                <Typography variant="h4" color="primary" gutterBottom>
+                <Typography variant="h4" color="primary" gutterBottom align="center">
                   Our Values
                 </Typography>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} justifyContent="center">
                   {aboutData.values.map((value, index) => renderValue(value, index))}
                 </Grid>
               </motion.div>
@@ -182,7 +196,7 @@ const About = () => {
             <Typography variant="h4" color="primary" gutterBottom textAlign="center">
               Our Team
             </Typography>
-            <Grid container spacing={4} mt={2}>
+            <Grid container spacing={4} mt={2} justifyContent="center">
               {aboutData.teamMembers
                 .sort((a, b) => a.order - b.order)
                 .map((member, index) => (
@@ -207,7 +221,7 @@ const About = () => {
                         }}
                       >
                         <Avatar
-                          src={member.image}
+                          src={member.image.startsWith('http') ? member.image : `${process.env.REACT_APP_API_URL}/${member.image}`}
                           alt={member.name}
                           sx={{
                             width: 120,

@@ -18,35 +18,35 @@ const practiceAreas = [
   {
     title: 'Corporate Law',
     description: 'Expert legal solutions for businesses of all sizes',
-    image: 'https://example.com/corporate-law.jpg',
+    image: 'https://picsum.photos/200',
     content: 'Our corporate law practice provides comprehensive legal services including business formation, mergers and acquisitions, corporate governance, compliance, commercial contracts, and complex business transactions. With decades of combined experience, our attorneys help businesses navigate legal challenges and capitalize on opportunities in today\'s complex regulatory environment.',
     order: 1
   },
   {
     title: 'Family Law',
     description: 'Compassionate legal support for family matters',
-    image: 'https://example.com/family-law.jpg',
+    image: 'https://picsum.photos/200',
     content: 'We handle divorce, custody, child support, spousal maintenance, adoption, and other family legal matters with sensitivity and expertise. Our family law attorneys understand the emotional complexity of these cases and strive to achieve resolutions that protect your interests and the well-being of your family members.',
     order: 2
   },
   {
     title: 'Criminal Defense',
     description: 'Skilled defense in criminal cases',
-    image: 'https://example.com/criminal-law.jpg',
+      image: 'https://picsum.photos/200',
     content: 'Our criminal defense team protects your rights throughout the legal process, from arrest through trial and appeal. We handle misdemeanors, felonies, white-collar crimes, drug offenses, DUI/DWI cases, and more. Every client receives a vigorous defense and personalized attention regardless of the charges they face.',
     order: 3
   },
   {
     title: 'Real Estate Law',
     description: 'Comprehensive real estate legal services',
-    image: 'https://example.com/real-estate-law.jpg',
+    image: 'https://picsum.photos/200',
     content: 'Our real estate practice covers residential and commercial transactions, landlord-tenant disputes, zoning issues, land use planning, property development, and real estate litigation. We represent buyers, sellers, developers, landlords, tenants, and financial institutions in all aspects of real estate law.',
     order: 4
   },
   {
     title: 'Personal Injury',
     description: 'Fighting for fair compensation for injury victims',
-    image: 'https://example.com/personal-injury.jpg',
+    image: 'https://picsum.photos/200',
     content: 'If you\'ve been injured due to someone else\'s negligence, our personal injury attorneys will help you secure the compensation you deserve. We handle auto accidents, slip and falls, medical malpractice, product liability, workplace injuries, and wrongful death cases, working on a contingency fee basis.',
     order: 5
   }
@@ -66,28 +66,28 @@ const aboutData = {
     {
       name: 'John Smith',
       title: 'Senior Partner',
-      image: 'https://example.com/john-smith.jpg',
+      image: 'https://picsum.photos/200',
       description: '20 years of experience in corporate law with a focus on mergers and acquisitions. John has successfully negotiated over 100 major corporate transactions and is recognized as a leader in the field.',
       order: 1
     },
     {
       name: 'Sarah Johnson',
       title: 'Managing Partner',
-      image: 'https://example.com/sarah-johnson.jpg',
+      image: 'https://picsum.photos/200',
       description: 'Specialist in family law with 15 years of experience representing clients in complex divorce and custody matters. Sarah is known for her compassionate approach and strong advocacy skills.',
       order: 2
     },
     {
       name: 'David Chen',
       title: 'Partner',
-      image: 'https://example.com/david-chen.jpg',
+      image: 'https://picsum.photos/200',
       description: 'Criminal defense attorney with 12 years of experience and over 50 jury trials. David specializes in complex felony cases and has secured numerous acquittals and favorable plea agreements.',
       order: 3
     },
     {
       name: 'Maria Rodriguez',
       title: 'Associate Attorney',
-      image: 'https://example.com/maria-rodriguez.jpg',
+      image: 'https://picsum.photos/200',
       description: 'Real estate law specialist with 8 years of experience in commercial and residential transactions. Maria has handled property deals valued at over $100 million throughout her career.',
       order: 4
     }
