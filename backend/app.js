@@ -58,7 +58,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       connectSrc: ["'self'", process.env.FRONTEND_URL || 'http://localhost:3000'],
-      imgSrc: ["'self'", "data:", "blob:", "https://picsum.photos"],
+      imgSrc: ["'self'", "data:", "blob:", "https://picsum.photos", "https://example.com"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       fontSrc: ["'self'", "data:"],
       objectSrc: ["'none'"],

@@ -1,44 +1,45 @@
-import axiosInstance from './axiosConfig';
+import axios from './axiosConfig';
+
+export const getAboutContent = () => {
+  return axios.get('/about');
+};
+
+export const updateAboutContent = (data) => {
+  return axios.patch('/about', data);
+};
+
+export const getTeamMembers = () => {
+  return axios.get('/about/team');
+};
+
+export const addTeamMember = (data) => {
+  return axios.post('/about/team', data);
+};
+
+export const updateTeamMember = (memberId, data) => {
+  return axios.patch(`/about/team/${memberId}`, data);
+};
+
+export const deleteTeamMember = (memberId) => {
+  return axios.delete(`/about/team/${memberId}`);
+};
+
+export const uploadTeamMemberImage = (formData) => {
+  return axios.post('/about/upload-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};
 
 const aboutService = {
-  getAboutContent: async () => {
-    const response = await axiosInstance.get('/about');
-    return response.data;
-  },
-
-  updateAboutContent: async (data) => {
-    const response = await axiosInstance.patch('/about', data);
-    return response.data;
-  },
-
-  getTeamMembers: async () => {
-    const response = await axiosInstance.get('/about/team');
-    return response.data;
-  },
-
-  addTeamMember: async (memberData) => {
-    const response = await axiosInstance.post('/about/team', memberData);
-    return response.data;
-  },
-
-  updateTeamMember: async (memberId, memberData) => {
-    const response = await axiosInstance.patch(`/about/team/${memberId}`, memberData);
-    return response.data;
-  },
-
-  deleteTeamMember: async (memberId) => {
-    const response = await axiosInstance.delete(`/about/team/${memberId}`);
-    return response.data;
-  },
-  
-  uploadTeamMemberImage: async (formData) => {
-    const response = await axiosInstance.post('/about/upload-image', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-    return response.data;
-  }
+  getAboutContent,
+  updateAboutContent,
+  getTeamMembers,
+  addTeamMember,
+  updateTeamMember,
+  deleteTeamMember,
+  uploadTeamMemberImage
 };
 
 export default aboutService;

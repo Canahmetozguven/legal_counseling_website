@@ -69,8 +69,11 @@ axiosInstance.interceptors.request.use(
         }
       }
 
-      // Ensure /api prefix
-      if (config.url && !config.url.startsWith('/api') && !config.url.startsWith('http')) {
+      // Ensure /api prefix for API requests, but exclude /uploads paths
+      if (config.url && 
+          !config.url.startsWith('/api') && 
+          !config.url.startsWith('http') &&
+          !config.url.startsWith('/uploads')) {
         config.url = `/api${config.url}`;
       }
 

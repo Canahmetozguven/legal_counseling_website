@@ -48,6 +48,31 @@ const PracticeAreaManagement = () => {
   const [imageFile, setImageFile] = useState(null);
   const imageInputRef = useRef(null);
 
+  // Helper function to get the correct image URL with fallback
+  const getImageUrl = (imagePath) => {
+    // If no image path provided, return a data URI for a gray placeholder
+    if (!imagePath) {
+      return 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgNDAwIDIwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UsIHNhbnMtc2VyaWYiIGZpbGw9IiM1NTU1NTUiPkxlZ2FsIFNlcnZpY2VzPC90ZXh0Pjwvc3ZnPg==';
+    }
+    
+    // If it's already a full URL, return it as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    
+    // For development environment, use the backend directly
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? `${window.location.protocol}//${window.location.hostname}`
+      : 'http://localhost:5000';
+    
+    // For image filenames, make sure they point to backend uploads
+    // Strip any leading slashes to avoid double slashes
+    const cleanPath = imagePath.replace(/^\/+/, '');
+    
+    // Return complete URL - ensure no /api/ prefix
+    return `${baseUrl}/uploads/${cleanPath}`;
+  };
+
   const fetchPracticeAreas = async () => {
     try {
       const response = await getAllPracticeAreas();
@@ -100,7 +125,7 @@ const PracticeAreaManagement = () => {
     e.preventDefault();
     
     // First, upload image if one is selected
-    if (imageFile && currentArea) {
+    if (imageFile) {
       await handleImageUpload();
     }
     
@@ -159,6 +184,13 @@ const PracticeAreaManagement = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Create an onError handler for images
+  const handleImageError = (e) => {
+    console.error('Image failed to load:', e.target.src);
+    // Use a data URI that complies with CSP rather than an external URL
+    e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgNDAwIDIwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJtb25vc3BhY2UsIHNhbnMtc2VyaWYiIGZpbGw9IiNkZDAwMDAiPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4=';
   };
 
   if (loading) {
@@ -246,11 +278,10 @@ const PracticeAreaManagement = () => {
             {formData.image && (
               <Box sx={{ mt: 2, mb: 2, display: 'flex', justifyContent: 'center' }}>
                 <img 
-                  src={formData.image.startsWith('http') 
-                    ? formData.image 
-                    : `${process.env.REACT_APP_API_URL}/uploads/${formData.image}`}
+                  src={getImageUrl(formData.image)}
                   alt={formData.title}
                   style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'contain' }}
+                  onError={handleImageError}
                 />
               </Box>
             )}
