@@ -23,6 +23,7 @@ import BlogForm from './components/blog/BlogForm';
 import PublicBlogView from './components/blog/PublicBlogView';
 import PracticeAreas from './components/pages/PracticeAreas';
 import About from './components/pages/About';
+import TeamMemberDetail from './components/team/TeamMemberDetail';
 import Contact from './components/pages/Contact';
 import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './components/auth/PrivateRoute';
@@ -53,6 +54,7 @@ function App() {
                   <Route path="practice-areas" element={<PracticeAreas />} />
                   <Route path="practice-areas/:id" element={<PracticeAreaDetail />} />
                   <Route path="about" element={<About />} />
+                  <Route path="about/team/:memberId" element={<TeamMemberDetail />} />
                   <Route path="contact" element={<Contact />} />
                   <Route path="dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
                     <Route index element={<DashboardHome />} />

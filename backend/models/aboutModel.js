@@ -14,6 +14,20 @@ const teamMemberSchema = new mongoose.Schema({
   order: {
     type: Number,
     default: 0
+  },
+  // New fields for team member profiles
+  expertise: [{
+    type: String
+  }],
+  education: [{
+    type: String
+  }],
+  awards: [{
+    type: String
+  }],
+  contact: {
+    email: String,
+    phone: String
   }
 });
 

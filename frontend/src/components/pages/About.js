@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -10,6 +11,7 @@ import {
   CircularProgress,
   Alert,
   Paper,
+  CardActionArea,
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import aboutService from '../../api/aboutService';
@@ -26,7 +28,12 @@ const About = () => {
       try {
         const response = await aboutService.getAboutContent();
         console.log('About API response:', response); // For debugging
-        setAboutData(response.data.about); // Fix: aboutService returns response.data, not the full response
+        
+        // Fix: Correctly access the nested about data structure
+        const aboutContent = response.data?.data?.about || response.data?.about || null;
+        console.log('Extracted about content:', aboutContent); // For debugging
+        
+        setAboutData(aboutContent);
       } catch (error) {
         console.error('Error fetching about content:', error);
         setError('Failed to load content. Please try again later.');
@@ -220,33 +227,55 @@ const About = () => {
                           },
                         }}
                       >
-                        <Avatar
-                          src={member.image.startsWith('http') ? member.image : `${process.env.REACT_APP_API_URL}/${member.image}`}
-                          alt={member.name}
-                          sx={{
-                            width: 120,
-                            height: 120,
-                            mb: 2,
-                            border: '3px solid',
-                            borderColor: 'primary.main',
+                        <CardActionArea 
+                          component={Link} 
+                          to={`/about/team/${member._id}`} 
+                          sx={{ 
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            width: '100%',
+                            height: '100%',
+                            p: 1
                           }}
-                        />
-                        <CardContent>
-                          <Typography variant="h6" component="h3" gutterBottom align="center">
-                            {member.name}
-                          </Typography>
-                          <Typography
-                            variant="subtitle1"
-                            color="primary"
-                            gutterBottom
-                            align="center"
-                          >
-                            {member.title}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" align="center">
-                            {member.description}
-                          </Typography>
-                        </CardContent>
+                        >
+                          <Avatar
+                            src={member.image?.startsWith('http') ? member.image : `${process.env.REACT_APP_API_URL}/uploads/${member.image}`}
+                            alt={member.name}
+                            sx={{
+                              width: 120,
+                              height: 120,
+                              mb: 2,
+                              border: '3px solid',
+                              borderColor: 'primary.main',
+                            }}
+                          />
+                          <CardContent>
+                            <Typography variant="h6" component="h3" gutterBottom align="center">
+                              {member.name}
+                            </Typography>
+                            <Typography
+                              variant="subtitle1"
+                              color="primary"
+                              gutterBottom
+                              align="center"
+                            >
+                              {member.title}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" align="center">
+                              {member.description && member.description.length > 100 
+                                ? `${member.description.substring(0, 100)}...` 
+                                : member.description}
+                            </Typography>
+                            <Typography 
+                              variant="body2" 
+                              color="primary" 
+                              sx={{ mt: 1, fontWeight: 'bold', textAlign: 'center' }}
+                            >
+                              View Profile
+                            </Typography>
+                          </CardContent>
+                        </CardActionArea>
                       </Card>
                     </motion.div>
                   </Grid>
