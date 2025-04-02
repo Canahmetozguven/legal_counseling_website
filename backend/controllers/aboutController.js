@@ -136,8 +136,14 @@ exports.uploadTeamMemberImage = catchAsync(async (req, res, next) => {
     return next(new AppError('No file uploaded', 400));
   }
 
+  // Log the req.file object for debugging
+  console.log('Uploaded file details:', req.file);
+
   // Construct the full path for the uploaded image
   const imagePath = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+  // Log the constructed imagePath for debugging
+  console.log('Constructed image path:', imagePath);
 
   res.status(200).json({
     status: 'success',

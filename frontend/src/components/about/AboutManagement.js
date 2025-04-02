@@ -279,6 +279,30 @@ const AboutManagement = () => {
     }
   };
 
+  // Helper function to get the correct image URL with fallback
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) {
+      return '';
+    }
+
+    // If it's already a full URL, return it as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+
+    // For development environment, use the backend directly without /api prefix
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? `${window.location.protocol}//${window.location.hostname}`
+      : 'http://localhost:5000';
+
+    // Remove any filename path and ensure path starts directly with the filename
+    // This avoids issues with /api or /uploads prefixes
+    const filename = imagePath.split('/').pop();
+    
+    // Return complete URL pointing directly to uploads folder
+    return `${baseUrl}/uploads/${filename}`;
+  };
+
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -291,20 +315,29 @@ const AboutManagement = () => {
       setLoading(true);
       // Upload the image
       const response = await aboutService.uploadTeamMemberImage(formData);
-      
-      // Get image filename from response
-      const imageName = response.data.imagePath;
-      
-      // Store complete path for the image instead of just the filename
-      const imagePath = `uploads/${imageName}`;
-      
-      // Log for debugging
-      console.log('Uploaded image path:', imagePath);
-      
-      // Update the form with the image path
+
+      // Debugging log to verify the full response
+      console.log('Full image upload response:', response);
+
+      // Correctly access imagePath from response.data.data.imagePath
+      const imagePath = response.data?.data?.imagePath;
+
+      if (!imagePath) {
+        console.error('Image path is missing in the response:', response);
+        toast.error('Failed to retrieve image path from the server.');
+        return;
+      }
+
+      // Extract only the image filename by removing the base URL and 'uploads/' part
+      const imageName = imagePath.split('/').pop();
+
+      // Debugging log to verify the extracted image name
+      console.log('Extracted image name:', imageName);
+
+      // Update the form with the image filename
       setMemberForm(prev => ({
         ...prev,
-        image: imagePath
+        image: imageName
       }));
       toast.success('Image uploaded successfully');
     } catch (err) {
@@ -484,11 +517,14 @@ const AboutManagement = () => {
                     <CardMedia
                       component="img"
                       height="140"
-                      image={member.image.startsWith('http') 
-                        ? member.image 
-                        : `${process.env.REACT_APP_API_URL}/uploads/${member.image}`}
+                      image={getImageUrl(member.image)}
                       alt={member.name}
                       sx={{ objectFit: 'cover' }}
+                      onError={(e) => {
+                        console.error('Image failed to load:', e.target.src);
+                        e.target.onerror = null;
+                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgNDAwIDIwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzg4OCIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
+                      }}
                     />
                   )}
                   <CardContent>
@@ -599,9 +635,22 @@ const AboutManagement = () => {
                 <img 
                   src={memberForm.image.startsWith('http') 
                     ? memberForm.image 
-                    : `${process.env.REACT_APP_API_URL}/uploads/${memberForm.image}`} 
+                    : `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/uploads/${memberForm.image}`} 
                   alt="Team member preview"
                   style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'contain' }}
+                  onError={(e) => {
+                    console.error('Image failed to load:', e.target.src);
+                    // If URL contains '/api/uploads/', try removing the '/api' segment
+                    if (e.target.src.includes('/api/uploads/')) {
+                      const correctedSrc = e.target.src.replace('/api/uploads/', '/uploads/');
+                      console.log('Attempting with corrected URL:', correctedSrc);
+                      e.target.src = correctedSrc;
+                    } else {
+                      // Fallback to placeholder if correction doesn't help
+                      e.target.onerror = null; // Prevent infinite loop
+                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgNDAwIDIwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzg4OCIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
+                    }
+                  }}
                 />
               </Box>
             )}

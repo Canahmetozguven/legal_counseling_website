@@ -240,7 +240,11 @@ const About = () => {
                           }}
                         >
                           <Avatar
-                            src={member.image?.startsWith('http') ? member.image : `${process.env.REACT_APP_API_URL}/uploads/${member.image}`}
+                            src={member.image ? 
+                              member.image.startsWith('http') 
+                                ? member.image 
+                                : `http://localhost:5000/uploads/${member.image}`
+                              : null}
                             alt={member.name}
                             sx={{
                               width: 120,
