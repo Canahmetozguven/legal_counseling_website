@@ -10,7 +10,7 @@ const generateSitemap = async () => {
   try {
     // Get site domain from environment variable or use default
     const siteDomain = process.env.SITE_DOMAIN || 'https://mustiattorneys.com';
-    
+
     // Define static routes - these should match your React Router routes
     const staticRoutes = [
       { url: '/', changefreq: 'weekly', priority: 1.0 },
@@ -19,17 +19,17 @@ const generateSitemap = async () => {
       { url: '/practice-areas', changefreq: 'monthly', priority: 0.9 },
       { url: '/blog', changefreq: 'weekly', priority: 0.8 },
     ];
-    
+
     // Create sitemap object
     const sitemap = createSitemap({
       hostname: siteDomain,
       urls: staticRoutes,
     });
-    
+
     // Write sitemap to file
     const sitemapPath = path.join(process.cwd(), 'public', 'sitemap.xml');
     fs.writeFileSync(sitemapPath, sitemap.toString());
-    
+
     console.log(`Sitemap generated at ${sitemapPath}`);
   } catch (error) {
     console.error('Error generating sitemap:', error);

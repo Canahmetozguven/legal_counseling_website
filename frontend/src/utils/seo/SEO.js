@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 
 /**
  * SEO component for managing all meta tags, including Open Graph and Twitter Cards
- * 
+ *
  * @param {Object} props Component props
  * @param {string} props.title Page title
  * @param {string} props.description Meta description
@@ -26,18 +26,18 @@ const SEO = ({
   type = 'website',
   publishedAt,
   updatedAt,
-  author
+  author,
 }) => {
   // Base URL for constructing full URLs
   const siteUrl = window.location.origin;
   const currentUrl = window.location.href;
-  
+
   // Default image for social sharing
   const defaultImage = `${siteUrl}/logo512.png`;
-  
+
   // Default site name
   const siteName = 'Musti Attorneys';
-  
+
   // Construct full image URL if relative path
   const imageUrl = image ? (image.startsWith('http') ? image : `${siteUrl}${image}`) : defaultImage;
 
@@ -48,7 +48,7 @@ const SEO = ({
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords.join(', ')} />}
       <link rel="canonical" href={canonical || currentUrl} />
-      
+
       {/* Open Graph meta tags for Facebook */}
       <meta property="og:site_name" content={siteName} />
       <meta property="og:url" content={canonical || currentUrl} />
@@ -56,13 +56,13 @@ const SEO = ({
       <meta property="og:description" content={description} />
       <meta property="og:type" content={type} />
       <meta property="og:image" content={imageUrl} />
-      
+
       {/* Twitter Card meta tags */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
-      
+
       {/* Article specific meta tags */}
       {type === 'article' && publishedAt && (
         <meta property="article:published_time" content={publishedAt} />
@@ -70,16 +70,10 @@ const SEO = ({
       {type === 'article' && updatedAt && (
         <meta property="article:modified_time" content={updatedAt} />
       )}
-      {type === 'article' && author && (
-        <meta property="article:author" content={author} />
-      )}
-      
+      {type === 'article' && author && <meta property="article:author" content={author} />}
+
       {/* JSON-LD structured data */}
-      {schema && (
-        <script type="application/ld+json">
-          {JSON.stringify(schema)}
-        </script>
-      )}
+      {schema && <script type="application/ld+json">{JSON.stringify(schema)}</script>}
     </Helmet>
   );
 };

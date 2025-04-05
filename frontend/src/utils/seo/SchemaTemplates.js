@@ -9,47 +9,47 @@
  * @returns {Object} - JSON-LD schema object
  */
 export const getLawFirmSchema = ({
-  name = "Musti Attorneys",
-  description = "Expert legal services for individuals and businesses",
-  url = "https://mustiattorneys.com",
-  logo = "https://mustiattorneys.com/logo512.png",
+  name = 'Musti Attorneys',
+  description = 'Expert legal services for individuals and businesses',
+  url = 'https://mustiattorneys.com',
+  logo = 'https://mustiattorneys.com/logo512.png',
   address = {
-    street: "123 Law Street",
-    city: "Cityville",
-    state: "ST",
-    postalCode: "12345",
-    country: "US"
+    street: '123 Law Street',
+    city: 'Cityville',
+    state: 'ST',
+    postalCode: '12345',
+    country: 'US',
   },
-  telephone = "(555) 123-4567",
-  email = "info@mustiattorneys.com",
+  telephone = '(555) 123-4567',
+  email = 'info@mustiattorneys.com',
   sameAs = [
-    "https://www.facebook.com/mustiattorneys",
-    "https://www.linkedin.com/company/mustiattorneys",
-    "https://twitter.com/mustiattorneys",
-    "https://instagram.com/mustiattorneys"
+    'https://www.facebook.com/mustiattorneys',
+    'https://www.linkedin.com/company/mustiattorneys',
+    'https://twitter.com/mustiattorneys',
+    'https://instagram.com/mustiattorneys',
   ],
-  priceRange = "$$$"
+  priceRange = '$$$',
 } = {}) => {
   return {
-    "@context": "https://schema.org",
-    "@type": "LegalService",
-    "@id": `${url}#legalservice`,
-    "name": name,
-    "description": description,
-    "url": url,
-    "logo": logo,
-    "telephone": telephone,
-    "email": email,
-    "priceRange": priceRange,
-    "sameAs": sameAs,
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": address.street,
-      "addressLocality": address.city,
-      "addressRegion": address.state,
-      "postalCode": address.postalCode,
-      "addressCountry": address.country
-    }
+    '@context': 'https://schema.org',
+    '@type': 'LegalService',
+    '@id': `${url}#legalservice`,
+    name: name,
+    description: description,
+    url: url,
+    logo: logo,
+    telephone: telephone,
+    email: email,
+    priceRange: priceRange,
+    sameAs: sameAs,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: address.street,
+      addressLocality: address.city,
+      addressRegion: address.state,
+      postalCode: address.postalCode,
+      addressCountry: address.country,
+    },
   };
 };
 
@@ -66,19 +66,19 @@ export const getAttorneySchema = ({
   telephone,
   email,
   url,
-  sameAs = []
+  sameAs = [],
 } = {}) => {
   return {
-    "@context": "https://schema.org",
-    "@type": "Attorney",
-    "name": name,
-    "jobTitle": jobTitle,
-    "description": description,
-    "image": image,
-    "telephone": telephone,
-    "email": email,
-    "url": url,
-    "sameAs": sameAs
+    '@context': 'https://schema.org',
+    '@type': 'Attorney',
+    name: name,
+    jobTitle: jobTitle,
+    description: description,
+    image: image,
+    telephone: telephone,
+    email: email,
+    url: url,
+    sameAs: sameAs,
   };
 };
 
@@ -89,16 +89,16 @@ export const getAttorneySchema = ({
  */
 export const getFaqSchema = (faqs = []) => {
   return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": faqs.map(faq => ({
-      "@type": "Question",
-      "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer
-      }
-    }))
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(faq => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
   };
 };
 
@@ -114,34 +114,34 @@ export const getBlogPostSchema = ({
   datePublished,
   dateModified,
   authorName,
-  publisherName = "Musti Attorneys",
-  publisherLogo = "https://mustiattorneys.com/logo512.png",
-  url
+  publisherName = 'Musti Attorneys',
+  publisherLogo = 'https://mustiattorneys.com/logo512.png',
+  url,
 } = {}) => {
   return {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": headline,
-    "description": description,
-    "image": image,
-    "datePublished": datePublished,
-    "dateModified": dateModified || datePublished,
-    "author": {
-      "@type": "Person",
-      "name": authorName
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: headline,
+    description: description,
+    image: image,
+    datePublished: datePublished,
+    dateModified: dateModified || datePublished,
+    author: {
+      '@type': 'Person',
+      name: authorName,
     },
-    "publisher": {
-      "@type": "Organization",
-      "name": publisherName,
-      "logo": {
-        "@type": "ImageObject",
-        "url": publisherLogo
-      }
+    publisher: {
+      '@type': 'Organization',
+      name: publisherName,
+      logo: {
+        '@type': 'ImageObject',
+        url: publisherLogo,
+      },
     },
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": url
-    }
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': url,
+    },
   };
 };
 
@@ -155,17 +155,17 @@ export const getPracticeAreaSchema = ({
   description,
   url,
   image,
-  areaServed = "Global",
-  serviceType
+  areaServed = 'Global',
+  serviceType,
 } = {}) => {
   return {
-    "@context": "https://schema.org",
-    "@type": "ProfessionalService",
-    "name": name,
-    "description": description,
-    "url": url,
-    "image": image,
-    "areaServed": areaServed,
-    "serviceType": serviceType
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: name,
+    description: description,
+    url: url,
+    image: image,
+    areaServed: areaServed,
+    serviceType: serviceType,
   };
 };
