@@ -24,6 +24,22 @@ exports.getDashboardStats = catchAsync(async (req, res) => {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
+  // Add case status aggregation
+  const caseStatusAggregation = await Case.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 }
+      }
+    }
+  ]);
+
+  // Transform the aggregation result into a format for the pie chart
+  const caseStatusCounts = {};
+  caseStatusAggregation.forEach(item => {
+    caseStatusCounts[item._id] = item.count;
+  });
+
   const [
     totalClients,
     totalCases,
@@ -63,6 +79,7 @@ exports.getDashboardStats = catchAsync(async (req, res) => {
       activeCases,
       monthlyAppointments,
       recentContacts,
+      caseStatusCounts,
       lastUpdated: new Date()
     }
   });

@@ -22,6 +22,7 @@ const blogRoutes = require('./routes/blogRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const practiceAreaRoutes = require('./routes/practiceAreaRoutes');
 const aboutRoutes = require('./routes/aboutRoutes');
+const homeCardRoutes = require('./routes/homeCardRoutes');
 
 const app = express();
 
@@ -158,6 +159,7 @@ app.use('/api/blog', blogRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/practice-areas', practiceAreaRoutes);
 app.use('/api/about', aboutRoutes);
+app.use('/api/home-cards', homeCardRoutes);
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));

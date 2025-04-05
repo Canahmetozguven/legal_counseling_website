@@ -1,12 +1,12 @@
-FROM node:18-alpine as builder
+FROM node:20-alpine as builder
 
 WORKDIR /usr/src/build
 
 # Copy package files first for better caching
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies with legacy-peer-deps flag to handle dependency conflicts
+RUN npm ci --legacy-peer-deps
 
 # Copy the rest of the application
 COPY . .

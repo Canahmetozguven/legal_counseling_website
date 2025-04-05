@@ -25,6 +25,7 @@ import {
   Article as BlogIcon,
   Business as PracticeAreasIcon,
   Info as AboutIcon,
+  ViewCarousel as CardIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -38,6 +39,7 @@ const menuItems = [
   { text: 'Blog', icon: <BlogIcon />, path: '/dashboard/blog' },
   { text: 'Practice Areas', icon: <PracticeAreasIcon />, path: '/dashboard/practice-areas' },
   { text: 'About Page', icon: <AboutIcon />, path: '/dashboard/about' },
+  { text: 'Home Cards', icon: <CardIcon />, path: '/dashboard/home-cards' },
 ];
 
 const DashboardLayout = () => {

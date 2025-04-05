@@ -26,7 +26,7 @@ import {
 } from '@mui/icons-material';
 import { ResponsivePie } from '@nivo/pie';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider, DateCalendar } from '@mui/x-date-pickers';
+import { LocalizationProvider, CalendarPicker } from '@mui/x-date-pickers';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,6 +41,7 @@ const DashboardHome = () => {
   const [recentAppointments, setRecentAppointments] = useState([]);
   const [caseData, setCaseData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -50,18 +51,39 @@ const DashboardHome = () => {
           axios.get('/api/appointments/recent')
         ]);
         
-        setStats(statsRes.data?.data || statsRes.data || {});
+        const statsData = statsRes.data?.data || statsRes.data || {};
+        setStats(statsData);
         setRecentAppointments(appointmentsRes.data?.data?.appointments || []);
         
-        // Mock case status data (replace with actual API call)
-        setCaseData([
-          { id: 'Active', value: 35, color: '#2196f3' },
-          { id: 'Closed', value: 25, color: '#4caf50' },
-          { id: 'Pending', value: 20, color: '#ff9800' },
-          { id: 'On Hold', value: 15, color: '#f44336' },
-        ]);
+        // Transform case status counts into the format needed for the pie chart
+        if (statsData.caseStatusCounts) {
+          const statusColors = {
+            'open': '#2196f3',      // blue
+            'active': '#2196f3',    // blue
+            'ongoing': '#2196f3',   // blue
+            'closed': '#4caf50',    // green
+            'completed': '#4caf50', // green
+            'pending': '#ff9800',   // orange
+            'on hold': '#f44336',   // red
+            'cancelled': '#f44336'  // red
+          };
+          
+          const pieData = Object.entries(statsData.caseStatusCounts).map(([status, count]) => ({
+            id: status.charAt(0).toUpperCase() + status.slice(1), // Capitalize status
+            value: count,
+            color: statusColors[status.toLowerCase()] || '#9e9e9e' // Default to grey if no color defined
+          }));
+          
+          setCaseData(pieData);
+        } else {
+          console.warn('No case status data available from API');
+          // Fallback to empty array if no data
+          setCaseData([]);
+        }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
+        // Fallback to empty array if error
+        setCaseData([]);
       } finally {
         setLoading(false);
       }
@@ -229,7 +251,7 @@ const DashboardHome = () => {
               Calendar
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <DateCalendar />
+              <CalendarPicker date={selectedDate} onChange={(newDate) => setSelectedDate(newDate)} />
             </LocalizationProvider>
           </Paper>
         </Grid>

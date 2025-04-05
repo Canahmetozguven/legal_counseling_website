@@ -31,6 +31,7 @@ import SingleBlogPost from './components/blog/SingleBlogPost';
 import PracticeAreaDetail from './components/practice-areas/PracticeAreaDetail';
 import PracticeAreaManagement from './components/practice-areas/PracticeAreaManagement';
 import AboutManagement from './components/about/AboutManagement';
+import HomeCardManagement from './components/home/HomeCardManagement';
 
 function App() {
   console.log('App initialized - Auth setup starting');
@@ -72,6 +73,7 @@ function App() {
                     <Route path="blog/:id" element={<BlogForm />} />
                     <Route path="practice-areas" element={<PracticeAreaManagement />} />
                     <Route path="about" element={<AboutManagement />} />
+                    <Route path="home-cards" element={<HomeCardManagement />} />
                   </Route>
                 </Route>
               </Routes>

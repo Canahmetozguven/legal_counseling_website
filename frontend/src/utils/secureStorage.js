@@ -3,32 +3,62 @@
  * Provides encrypted storage capabilities for sensitive data
  */
 
+// Simple storage without encryption as fallback
+const fallbackStorage = {
+  setItem(key, value) {
+    try {
+      localStorage.setItem(`fallback_${key}`, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Fallback storage error setting ${key}:`, error);
+    }
+  },
+  getItem(key) {
+    try {
+      const item = localStorage.getItem(`fallback_${key}`);
+      return item ? JSON.parse(item) : null;
+    } catch (error) {
+      console.warn(`Fallback storage error getting ${key}:`, error);
+      return null;
+    }
+  },
+  removeItem(key) {
+    try {
+      localStorage.removeItem(`fallback_${key}`);
+    } catch (error) {
+      console.error(`Fallback storage error removing ${key}:`, error);
+    }
+  }
+};
+
+// Check if Web Crypto API is supported in secure context
+const isCryptoSupported = () => {
+  return window.crypto && window.crypto.subtle && window.isSecureContext !== false;
+};
+
 // Simple encryption/decryption helper using built-in browser crypto
 const encrypt = async (text, key = 'default-key') => {
-  try {
-    // Convert key to a consistent format
-    const keyMaterial = await window.crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(key),
-      { name: 'PBKDF2' },
-      false,
-      ['deriveKey']
-    );
+  // If crypto isn't supported, return a basic encoding
+  if (!isCryptoSupported()) {
+    console.warn('Web Crypto API not supported, using simple encoding');
+    return `simple:${btoa(unescape(encodeURIComponent(text)))}`;
+  }
 
+  try {
+    // Create a consistent key using SHA-256
+    const keyBuffer = await window.crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(key)
+    );
+    
     // Use a salt for added security
     const salt = window.crypto.getRandomValues(new Uint8Array(16));
     const iv = window.crypto.getRandomValues(new Uint8Array(12));
     
-    // Derive an actual key for encryption
-    const cryptoKey = await window.crypto.subtle.deriveKey(
-      {
-        name: 'PBKDF2',
-        salt,
-        iterations: 100000,
-        hash: 'SHA-256'
-      },
-      keyMaterial,
-      { name: 'AES-GCM', length: 256 },
+    // Import the key for AES-GCM
+    const cryptoKey = await window.crypto.subtle.importKey(
+      'raw',
+      keyBuffer,
+      { name: 'AES-GCM' },
       false,
       ['encrypt']
     );
@@ -45,104 +75,161 @@ const encrypt = async (text, key = 'default-key') => {
 
     // Combine salt, iv, and encrypted data for storage
     const result = {
-      salt: Array.from(new Uint8Array(salt)),
-      iv: Array.from(new Uint8Array(iv)),
-      data: Array.from(new Uint8Array(encryptedData))
+      v: 2, // version indicator
+      s: Array.from(new Uint8Array(salt)),
+      i: Array.from(new Uint8Array(iv)),
+      d: Array.from(new Uint8Array(encryptedData))
     };
 
-    return btoa(JSON.stringify(result));
+    return `encrypted:${btoa(JSON.stringify(result))}`;
   } catch (error) {
-    console.error('Encryption failed:', error);
-    return text; // Fallback to unencrypted on error
+    console.warn('Encryption failed, using simple encoding:', error);
+    return `simple:${btoa(unescape(encodeURIComponent(text)))}`;
   }
 };
 
 const decrypt = async (encryptedText, key = 'default-key') => {
+  // Handle unencrypted or simply encoded data
+  if (!encryptedText) {
+    return null;
+  }
+  
+  // Handle simple encoding (fallback)
+  if (encryptedText.startsWith('simple:')) {
+    try {
+      return decodeURIComponent(escape(atob(encryptedText.substring(7))));
+    } catch (e) {
+      console.warn('Failed to decode simple encoding:', e);
+      return null;
+    }
+  }
+  
+  // Handle our v2 encrypted format
+  if (encryptedText.startsWith('encrypted:')) {
+    // If crypto isn't supported, return null
+    if (!isCryptoSupported()) {
+      console.warn('Web Crypto API not supported, cannot decrypt');
+      return null;
+    }
+
+    try {
+      const payload = encryptedText.substring(10); // remove 'encrypted:' prefix
+      const { v, s, i, d } = JSON.parse(atob(payload));
+      
+      // Ensure we're handling the right version
+      if (v !== 2) {
+        throw new Error(`Unsupported encryption version: ${v}`);
+      }
+      
+      // Convert back to ArrayBuffers
+      const saltBuffer = new Uint8Array(s).buffer;
+      const ivBuffer = new Uint8Array(i).buffer;
+      const dataBuffer = new Uint8Array(d).buffer;
+      
+      // Create a consistent key using SHA-256
+      const keyBuffer = await window.crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(key)
+      );
+      
+      // Import the key for AES-GCM
+      const cryptoKey = await window.crypto.subtle.importKey(
+        'raw',
+        keyBuffer,
+        { name: 'AES-GCM' },
+        false,
+        ['decrypt']
+      );
+
+      // Decrypt the data
+      const decryptedData = await window.crypto.subtle.decrypt(
+        {
+          name: 'AES-GCM',
+          iv: ivBuffer
+        },
+        cryptoKey,
+        dataBuffer
+      );
+
+      return new TextDecoder().decode(decryptedData);
+    } catch (error) {
+      console.error('Decryption failed:', error);
+      return null;
+    }
+  }
+  
+  // Legacy format handling - attempt to parse directly, but likely will fail
   try {
-    // Parse the combined data
-    const { salt, iv, data } = JSON.parse(atob(encryptedText));
+    // Check if it might be a JSON object already
+    if (encryptedText.startsWith('{') && encryptedText.endsWith('}')) {
+      return encryptedText;
+    }
     
-    // Convert back to ArrayBuffers
-    const saltBuffer = new Uint8Array(salt).buffer;
-    const ivBuffer = new Uint8Array(iv).buffer;
-    const dataBuffer = new Uint8Array(data).buffer;
-
-    // Import the key material
-    const keyMaterial = await window.crypto.subtle.importKey(
-      'raw',
-      new TextEncoder().encode(key),
-      { name: 'PBKDF2' },
-      false,
-      ['deriveKey']
-    );
-
-    // Derive the same key for decryption
-    const cryptoKey = await window.crypto.subtle.deriveKey(
-      {
-        name: 'PBKDF2',
-        salt: saltBuffer,
-        iterations: 100000,
-        hash: 'SHA-256'
-      },
-      keyMaterial,
-      { name: 'AES-GCM', length: 256 },
-      false,
-      ['decrypt']
-    );
-
-    // Decrypt the data
-    const decryptedData = await window.crypto.subtle.decrypt(
-      {
-        name: 'AES-GCM',
-        iv: ivBuffer
-      },
-      cryptoKey,
-      dataBuffer
-    );
-
-    return new TextDecoder().decode(decryptedData);
+    // Check if it might be base64 directly
+    try {
+      return atob(encryptedText);
+    } catch (e) {
+      // Not valid base64
+    }
+    
+    return null;
   } catch (error) {
-    console.error('Decryption failed:', error);
+    console.error('Failed to process legacy format:', error);
     return null;
   }
 };
 
-// Gets a cryptographically secure random key
-const generateSessionKey = () => {
-  const array = new Uint8Array(16);
-  window.crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-};
-
-// Store the session key (generated once per session)
-let sessionKey = window.sessionStorage.getItem('__sk') || generateSessionKey();
-window.sessionStorage.setItem('__sk', sessionKey);
+// Use a fixed app key
+const APP_KEY = 'musti-app-v1-2025';
 
 const secureStorage = {
   // Set a value securely
   async setItem(key, value) {
     try {
-      // Encrypt the value with the session key
-      const encryptedValue = await encrypt(JSON.stringify(value), sessionKey);
+      if (value === undefined || value === null) {
+        this.removeItem(key);
+        return;
+      }
+      
+      // First, try to remove any existing corrupted data
+      this.removeItem(key);
+      fallbackStorage.removeItem(key);
+      
+      // Try to encrypt the value
+      const encryptedValue = await encrypt(JSON.stringify(value), APP_KEY);
       localStorage.setItem(key, encryptedValue);
     } catch (error) {
-      console.error(`Error storing ${key}:`, error);
+      console.error(`Error storing ${key}, using fallback:`, error);
+      fallbackStorage.setItem(key, value);
     }
   },
 
   // Get a value securely
   async getItem(key) {
     try {
+      // Try fallback storage first if it exists
+      const fallbackValue = fallbackStorage.getItem(key);
+      if (fallbackValue !== null) {
+        return fallbackValue;
+      }
+      
       const encryptedValue = localStorage.getItem(key);
       if (!encryptedValue) return null;
       
-      const decryptedValue = await decrypt(encryptedValue, sessionKey);
-      if (!decryptedValue) return null;
+      const decryptedValue = await decrypt(encryptedValue, APP_KEY);
+      if (!decryptedValue) {
+        return null;
+      }
       
-      return JSON.parse(decryptedValue);
+      try {
+        return JSON.parse(decryptedValue);
+      } catch (jsonError) {
+        // If it's not valid JSON, return the raw value
+        return decryptedValue;
+      }
     } catch (error) {
-      console.error(`Error retrieving ${key}:`, error);
-      return null;
+      console.error(`Error retrieving ${key}, trying fallback:`, error);
+      return fallbackStorage.getItem(key);
     }
   },
 
@@ -150,6 +237,7 @@ const secureStorage = {
   removeItem(key) {
     try {
       localStorage.removeItem(key);
+      fallbackStorage.removeItem(key);
     } catch (error) {
       console.error(`Error removing ${key}:`, error);
     }
@@ -164,6 +252,8 @@ const secureStorage = {
       Object.keys(localStorage).forEach(key => {
         if (securePrefixes.some(prefix => key.startsWith(prefix))) {
           localStorage.removeItem(key);
+          // Also remove fallback items
+          fallbackStorage.removeItem(key);
         }
       });
     } catch (error) {
@@ -171,10 +261,36 @@ const secureStorage = {
     }
   },
 
+  // Clear all corrupted storage (emergency reset)
+  clearCorrupted() {
+    try {
+      const securePrefixes = ['auth_', 'user_', 'token_'];
+      Object.keys(localStorage).forEach(key => {
+        if (securePrefixes.some(prefix => key.startsWith(prefix))) {
+          try {
+            const value = localStorage.getItem(key);
+            if (value && !value.startsWith('simple:') && !value.startsWith('encrypted:')) {
+              console.warn(`Removing corrupted storage for ${key}`);
+              localStorage.removeItem(key);
+            }
+          } catch (e) {
+            // Remove item if we couldn't even read it
+            localStorage.removeItem(key);
+          }
+        }
+      });
+    } catch (error) {
+      console.error('Error clearing corrupted storage:', error);
+    }
+  },
+
   // Store sensitive auth data
   async setAuthData(token, user) {
-    console.log('[STORAGE DEBUG] Setting auth token:', token.substring(0, 10) + '...');
-    console.log('[STORAGE DEBUG] Setting user data:', user);
+    if (token) {
+      console.log('[STORAGE] Setting auth token:', token.substring(0, 10) + '...');
+    } else {
+      console.log('[STORAGE] Clearing auth token');
+    }
     await this.setItem('auth_token', token);
     await this.setItem('auth_user', user);
   },
@@ -201,5 +317,8 @@ const secureStorage = {
     this.removeItem('auth_user');
   }
 };
+
+// Immediately clear corrupted tokens on module load
+secureStorage.clearCorrupted();
 
 export default secureStorage;
