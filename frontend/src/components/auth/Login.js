@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Button, 
-  TextField, 
-  Typography, 
-  Container, 
-  Alert, 
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Container,
+  Alert,
   CircularProgress,
   InputAdornment,
-  IconButton
+  IconButton,
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { motion } from 'framer-motion';
@@ -40,11 +40,11 @@ const Login = () => {
   const { login, isAuthenticated } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [formErrors, setFormErrors] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -67,7 +67,7 @@ const Login = () => {
       setIsLocked(true);
       const remainingTime = Math.ceil((parseInt(lockedUntil) - Date.now()) / 1000);
       setLockTimer(remainingTime);
-      
+
       // Start countdown timer
       const interval = setInterval(() => {
         setLockTimer(prev => {
@@ -80,7 +80,7 @@ const Login = () => {
           return prev - 1;
         });
       }, 1000);
-      
+
       return () => clearInterval(interval);
     } else if (lockedUntil) {
       localStorage.removeItem('loginLockedUntil');
@@ -89,7 +89,7 @@ const Login = () => {
 
   const validateInput = (name, value) => {
     let error = '';
-    
+
     switch (name) {
       case 'email':
         if (!value) {
@@ -98,7 +98,7 @@ const Login = () => {
           error = 'Please enter a valid email address';
         }
         break;
-        
+
       case 'password':
         if (!value) {
           error = 'Password is required';
@@ -106,56 +106,56 @@ const Login = () => {
           error = 'Password must be at least 8 characters';
         }
         break;
-        
+
       default:
         break;
     }
-    
+
     return error;
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    
+
     // Sanitize input before storing
     const sanitizedValue = DOMPurify.sanitize(value);
-    
+
     setFormData({
       ...formData,
-      [name]: sanitizedValue
+      [name]: sanitizedValue,
     });
-    
+
     // Validate on change
     setFormErrors({
       ...formErrors,
-      [name]: validateInput(name, sanitizedValue)
+      [name]: validateInput(name, sanitizedValue),
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    
+
     // Final validation before submission
     const emailError = validateInput('email', formData.email);
     const passwordError = validateInput('password', formData.password);
-    
+
     setFormErrors({
       email: emailError,
-      password: passwordError
+      password: passwordError,
     });
-    
+
     // Stop if there are validation errors
     if (emailError || passwordError) {
       return;
     }
-    
+
     // Check if account is locked
     if (isLocked) {
       setError(`Too many failed attempts. Try again in ${lockTimer} seconds.`);
       return;
     }
-    
+
     setLoading(true);
 
     try {
@@ -167,15 +167,15 @@ const Login = () => {
     } catch (err) {
       console.error('Login error:', err);
       setError(err.response?.data?.message || 'Invalid email or password');
-      
+
       // Increment attempt counter
       const newAttemptCount = attemptCount + 1;
       setAttemptCount(newAttemptCount);
-      
+
       // Lock account after 5 failed attempts
       if (newAttemptCount >= 5) {
         const lockDuration = 60; // 1 minute (in seconds)
-        const lockedUntil = Date.now() + (lockDuration * 1000);
+        const lockedUntil = Date.now() + lockDuration * 1000;
         localStorage.setItem('loginLockedUntil', lockedUntil.toString());
         setIsLocked(true);
         setLockTimer(lockDuration);
@@ -251,7 +251,7 @@ const Login = () => {
                 helperText={formErrors.email}
                 inputProps={{
                   maxLength: 100,
-                  'data-testid': 'email-input' 
+                  'data-testid': 'email-input',
                 }}
                 sx={{
                   '& .MuiOutlinedInput-root': {
@@ -267,7 +267,7 @@ const Login = () => {
                 fullWidth
                 name="password"
                 label="Password"
-                type={showPassword ? "text" : "password"}
+                type={showPassword ? 'text' : 'password'}
                 id="password"
                 autoComplete="current-password"
                 value={formData.password}
@@ -276,7 +276,7 @@ const Login = () => {
                 helperText={formErrors.password}
                 inputProps={{
                   maxLength: 100,
-                  'data-testid': 'password-input'
+                  'data-testid': 'password-input',
                 }}
                 InputProps={{
                   endAdornment: (
@@ -312,11 +312,7 @@ const Login = () => {
                 disabled={loading || isLocked}
                 data-testid="login-button"
               >
-                {loading ? (
-                  <CircularProgress size={24} sx={{ position: 'absolute' }} />
-                ) : (
-                  'Login'
-                )}
+                {loading ? <CircularProgress size={24} sx={{ position: 'absolute' }} /> : 'Login'}
               </Button>
             </Box>
           </Box>

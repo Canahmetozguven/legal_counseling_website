@@ -1,5 +1,16 @@
 import React from 'react';
-import { Container, Typography, Grid, Paper, Box, Button, Card, CardContent, Divider, useTheme } from '@mui/material';
+import {
+  Container,
+  Typography,
+  Grid,
+  Paper,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  useTheme,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import GavelIcon from '@mui/icons-material/Gavel';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -13,26 +24,30 @@ const Home = () => {
   const theme = useTheme();
 
   const practicedAreas = [
-    { 
-      title: 'Corporate Law', 
-      description: 'Expert guidance in business formations, contracts, mergers & acquisitions, and corporate governance.',
-      icon: <BusinessIcon sx={{ fontSize: 50, color: 'primary.main' }} />
+    {
+      title: 'Corporate Law',
+      description:
+        'Expert guidance in business formations, contracts, mergers & acquisitions, and corporate governance.',
+      icon: <BusinessIcon sx={{ fontSize: 50, color: 'primary.main' }} />,
     },
-    { 
-      title: 'Civil Litigation', 
-      description: 'Strong advocacy in civil disputes, personal injury cases, and complex commercial litigation.',
-      icon: <GavelIcon sx={{ fontSize: 50, color: 'primary.main' }} />
+    {
+      title: 'Civil Litigation',
+      description:
+        'Strong advocacy in civil disputes, personal injury cases, and complex commercial litigation.',
+      icon: <GavelIcon sx={{ fontSize: 50, color: 'primary.main' }} />,
     },
-    { 
-      title: 'Family Law', 
-      description: 'Compassionate representation in divorce, custody, and other family-related legal matters.',
-      icon: <FamilyRestroomIcon sx={{ fontSize: 50, color: 'primary.main' }} />
+    {
+      title: 'Family Law',
+      description:
+        'Compassionate representation in divorce, custody, and other family-related legal matters.',
+      icon: <FamilyRestroomIcon sx={{ fontSize: 50, color: 'primary.main' }} />,
     },
-    { 
-      title: 'Real Estate', 
-      description: 'Comprehensive legal services for property transactions, leases, and real estate litigation.',
-      icon: <AccountBalanceIcon sx={{ fontSize: 50, color: 'primary.main' }} />
-    }
+    {
+      title: 'Real Estate',
+      description:
+        'Comprehensive legal services for property transactions, leases, and real estate litigation.',
+      icon: <AccountBalanceIcon sx={{ fontSize: 50, color: 'primary.main' }} />,
+    },
   ];
 
   return (
@@ -40,42 +55,51 @@ const Home = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          backgroundImage: 'linear-gradient(rgba(0, 40, 85, 0.9), rgba(0, 40, 85, 0.85)), url("/images/law-office.jpg")',
+          backgroundImage:
+            'linear-gradient(rgba(0, 40, 85, 0.9), rgba(0, 40, 85, 0.85)), url("/images/law-office.jpg")',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           color: 'white',
           py: { xs: 12, md: 18 },
-          mb: 8
+          mb: 8,
         }}
       >
         <Container maxWidth="lg">
           <Box sx={{ maxWidth: 'md', mx: 'auto', textAlign: 'center' }}>
-            <Typography 
-              variant="h1" 
-              component="h1" 
+            <Typography
+              variant="h1"
+              component="h1"
               gutterBottom
-              sx={{ 
+              sx={{
                 fontFamily: '"Merriweather", serif',
                 fontSize: { xs: '2.5rem', md: '3.75rem' },
                 fontWeight: 700,
-                mb: 4
+                mb: 4,
               }}
             >
               Expert Legal Counseling
             </Typography>
-            <Typography 
-              variant="h5" 
+            <Typography
+              variant="h5"
               gutterBottom
-              sx={{ mb: 6, fontWeight: 400, fontSize: { xs: '1.2rem', md: '1.4rem' }, lineHeight: 1.6, maxWidth: '80%', mx: 'auto' }}
+              sx={{
+                mb: 6,
+                fontWeight: 400,
+                fontSize: { xs: '1.2rem', md: '1.4rem' },
+                lineHeight: 1.6,
+                maxWidth: '80%',
+                mx: 'auto',
+              }}
             >
-              Dedicated to protecting your rights and interests with over 20 years of legal excellence and personalized guidance
+              Dedicated to protecting your rights and interests with over 20 years of legal
+              excellence and personalized guidance
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center' }}>
               <Button
                 variant="contained"
                 size="large"
                 onClick={() => navigate('/contact')}
-                sx={{ 
+                sx={{
                   py: 2,
                   px: 4,
                   fontSize: '1.1rem',
@@ -84,7 +108,7 @@ const Home = () => {
                   color: theme.palette.primary.main,
                   '&:hover': {
                     backgroundColor: '#f0f0f0',
-                  }
+                  },
                 }}
               >
                 Free Consultation
@@ -93,7 +117,7 @@ const Home = () => {
                 variant="outlined"
                 size="large"
                 onClick={() => navigate('/practice-areas')}
-                sx={{ 
+                sx={{
                   py: 2,
                   px: 4,
                   fontSize: '1.1rem',
@@ -102,7 +126,7 @@ const Home = () => {
                   '&:hover': {
                     borderColor: '#f0f0f0',
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  }
+                  },
                 }}
               >
                 Our Services
@@ -114,12 +138,12 @@ const Home = () => {
 
       {/* Legal Expertise Banner */}
       <Container maxWidth="lg">
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             mb: 10,
             py: 3,
             px: 4,
-            display: 'flex', 
+            display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexWrap: 'wrap',
@@ -134,14 +158,22 @@ const Home = () => {
               Expert Legal Advice
             </Typography>
           </Box>
-          <Divider orientation="vertical" flexItem sx={{ mx: 2, display: { xs: 'none', md: 'block' } }} />
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{ mx: 2, display: { xs: 'none', md: 'block' } }}
+          />
           <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
             <PersonIcon sx={{ fontSize: 30, mr: 2, color: theme.palette.primary.main }} />
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               Client-Focused Approach
             </Typography>
           </Box>
-          <Divider orientation="vertical" flexItem sx={{ mx: 2, display: { xs: 'none', md: 'block' } }} />
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{ mx: 2, display: { xs: 'none', md: 'block' } }}
+          />
           <Box sx={{ display: 'flex', alignItems: 'center', my: 2 }}>
             <ScheduleIcon sx={{ fontSize: 30, mr: 2, color: theme.palette.primary.main }} />
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -153,22 +185,17 @@ const Home = () => {
 
       {/* Practice Areas Section */}
       <Container maxWidth="lg">
-        <Typography 
-          variant="h2" 
-          component="h2" 
-          gutterBottom 
-          textAlign="center"
-          sx={{ mb: 2 }}
-        >
+        <Typography variant="h2" component="h2" gutterBottom textAlign="center" sx={{ mb: 2 }}>
           Our Practice Areas
         </Typography>
-        <Typography 
-          variant="subtitle1" 
-          textAlign="center" 
+        <Typography
+          variant="subtitle1"
+          textAlign="center"
           color="text.secondary"
           sx={{ mb: 8, maxWidth: '700px', mx: 'auto', fontSize: '1.1rem' }}
         >
-          Our attorneys specialize in diverse legal fields to provide comprehensive counseling for all your legal needs
+          Our attorneys specialize in diverse legal fields to provide comprehensive counseling for
+          all your legal needs
         </Typography>
         <Grid container spacing={4}>
           {practicedAreas.map((area, index) => (
@@ -187,10 +214,13 @@ const Home = () => {
                 }}
               >
                 <CardContent sx={{ textAlign: 'center', flexGrow: 1, p: 4 }}>
-                  <Box sx={{ mb: 3 }}>
-                    {area.icon}
-                  </Box>
-                  <Typography variant="h5" gutterBottom component="h3" sx={{ mb: 2, fontWeight: 600 }}>
+                  <Box sx={{ mb: 3 }}>{area.icon}</Box>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    component="h3"
+                    sx={{ mb: 2, fontWeight: 600 }}
+                  >
                     {area.title}
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ lineHeight: 1.7 }}>
@@ -202,10 +232,10 @@ const Home = () => {
           ))}
         </Grid>
         <Box sx={{ textAlign: 'center', mt: 6 }}>
-          <Button 
-            variant="outlined" 
-            color="primary" 
-            size="large" 
+          <Button
+            variant="outlined"
+            color="primary"
+            size="large"
             onClick={() => navigate('/practice-areas')}
             sx={{ fontWeight: 600 }}
           >
@@ -218,42 +248,86 @@ const Home = () => {
           <Typography variant="h2" component="h2" gutterBottom textAlign="center" sx={{ mb: 2 }}>
             Why Choose Our Legal Counsel
           </Typography>
-          <Typography 
-            variant="subtitle1" 
-            textAlign="center" 
+          <Typography
+            variant="subtitle1"
+            textAlign="center"
             color="text.secondary"
             sx={{ mb: 8, maxWidth: '700px', mx: 'auto', fontSize: '1.1rem' }}
           >
-            We are committed to providing exceptional legal representation with integrity and dedication
+            We are committed to providing exceptional legal representation with integrity and
+            dedication
           </Typography>
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
-              <Paper sx={{ p: 5, height: '100%', backgroundColor: 'white', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', border: '1px solid', borderColor: 'primary.light', borderRadius: 2 }}>
-                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', fontWeight: 600, mb: 3 }}>
+              <Paper
+                sx={{
+                  p: 5,
+                  height: '100%',
+                  backgroundColor: 'white',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+                  border: '1px solid',
+                  borderColor: 'primary.light',
+                  borderRadius: 2,
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{ color: 'primary.main', fontWeight: 600, mb: 3 }}
+                >
                   Experienced Legal Team
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                  Our attorneys bring decades of combined experience and a track record of success in various areas of law, ensuring you receive expert guidance for your specific situation.
+                  Our attorneys bring decades of combined experience and a track record of success
+                  in various areas of law, ensuring you receive expert guidance for your specific
+                  situation.
                 </Typography>
               </Paper>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Paper sx={{ p: 5, height: '100%', backgroundColor: 'primary.main', color: 'white', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', borderRadius: 2 }}>
+              <Paper
+                sx={{
+                  p: 5,
+                  height: '100%',
+                  backgroundColor: 'primary.main',
+                  color: 'white',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  borderRadius: 2,
+                }}
+              >
                 <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
                   Client-Focused Approach
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                  We prioritize understanding your unique needs and provide personalized legal solutions tailored to your situation, with clear communication throughout the process.
+                  We prioritize understanding your unique needs and provide personalized legal
+                  solutions tailored to your situation, with clear communication throughout the
+                  process.
                 </Typography>
               </Paper>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Paper sx={{ p: 5, height: '100%', backgroundColor: 'white', boxShadow: '0 4px 20px rgba(0,0,0,0.06)', border: '1px solid', borderColor: 'primary.light', borderRadius: 2 }}>
-                <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', fontWeight: 600, mb: 3 }}>
+              <Paper
+                sx={{
+                  p: 5,
+                  height: '100%',
+                  backgroundColor: 'white',
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+                  border: '1px solid',
+                  borderColor: 'primary.light',
+                  borderRadius: 2,
+                }}
+              >
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{ color: 'primary.main', fontWeight: 600, mb: 3 }}
+                >
                   Proven Track Record
                 </Typography>
                 <Typography variant="body1" sx={{ lineHeight: 1.7 }}>
-                  Our firm has successfully handled numerous complex cases and achieved favorable outcomes for our clients, building a reputation for excellence in legal counseling.
+                  Our firm has successfully handled numerous complex cases and achieved favorable
+                  outcomes for our clients, building a reputation for excellence in legal
+                  counseling.
                 </Typography>
               </Paper>
             </Grid>
@@ -261,9 +335,9 @@ const Home = () => {
         </Box>
 
         {/* Call to Action Section */}
-        <Box 
-          sx={{ 
-            textAlign: 'center', 
+        <Box
+          sx={{
+            textAlign: 'center',
             py: 10,
             px: { xs: 3, md: 8 },
             backgroundColor: 'rgba(0, 40, 85, 0.03)',
@@ -277,8 +351,12 @@ const Home = () => {
           <Typography variant="h3" gutterBottom sx={{ fontFamily: '"Merriweather", serif', mb: 3 }}>
             Ready to Discuss Your Case?
           </Typography>
-          <Typography variant="h6" sx={{ mb: 5, maxWidth: 'md', mx: 'auto', fontWeight: 400, color: 'text.secondary' }}>
-            Contact us today for a confidential consultation with our experienced legal team. We're here to protect your rights and interests.
+          <Typography
+            variant="h6"
+            sx={{ mb: 5, maxWidth: 'md', mx: 'auto', fontWeight: 400, color: 'text.secondary' }}
+          >
+            Contact us today for a confidential consultation with our experienced legal team. We're
+            here to protect your rights and interests.
           </Typography>
           <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Button
@@ -286,11 +364,11 @@ const Home = () => {
               color="primary"
               size="large"
               onClick={() => navigate('/contact')}
-              sx={{ 
-                py: 2, 
-                px: 4, 
+              sx={{
+                py: 2,
+                px: 4,
                 fontSize: '1.1rem',
-                fontWeight: 600
+                fontWeight: 600,
               }}
             >
               Schedule Consultation
@@ -300,11 +378,11 @@ const Home = () => {
               color="primary"
               size="large"
               onClick={() => navigate('/about')}
-              sx={{ 
-                py: 2, 
-                px: 4, 
+              sx={{
+                py: 2,
+                px: 4,
                 fontSize: '1.1rem',
-                fontWeight: 600
+                fontWeight: 600,
               }}
             >
               Meet Our Attorneys

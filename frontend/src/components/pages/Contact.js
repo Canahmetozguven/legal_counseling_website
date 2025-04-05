@@ -36,14 +36,14 @@ const Contact = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     try {
@@ -91,19 +91,20 @@ const Contact = () => {
 
   // Create a detailed law firm schema with full contact information
   const contactSchema = getLawFirmSchema({
-    name: "Musti Attorneys",
-    description: "Expert legal services for individuals and businesses with personalized attention to your unique needs.",
+    name: 'Musti Attorneys',
+    description:
+      'Expert legal services for individuals and businesses with personalized attention to your unique needs.',
     url: window.location.origin,
     logo: `${window.location.origin}/logo512.png`,
     address: {
-      street: "123 Legal Street, Suite 100",
-      city: "City",
-      state: "State",
-      postalCode: "12345",
-      country: "US"
+      street: '123 Legal Street, Suite 100',
+      city: 'City',
+      state: 'State',
+      postalCode: '12345',
+      country: 'US',
     },
-    telephone: "+1 (555) 123-4567",
-    email: "info@lawfirm.com"
+    telephone: '+1 (555) 123-4567',
+    email: 'info@lawfirm.com',
   });
 
   return (
@@ -111,7 +112,14 @@ const Contact = () => {
       <SEO
         title="Contact Our Law Firm | Musti Attorneys"
         description="Contact Musti Attorneys for expert legal advice and representation. Schedule a consultation with our experienced attorneys to discuss your legal needs."
-        keywords={["contact attorney", "legal consultation", "law firm contact", "schedule consultation", "legal advice", "lawyer contact"]}
+        keywords={[
+          'contact attorney',
+          'legal consultation',
+          'law firm contact',
+          'schedule consultation',
+          'legal advice',
+          'lawyer contact',
+        ]}
         schema={contactSchema}
       />
 

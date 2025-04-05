@@ -1,10 +1,10 @@
-const User = require('../models/userModel');
-const Client = require('../models/clientModel');
-const Contact = require('../models/contactModel');
-const Case = require('../models/caseModel');
-const Appointment = require('../models/appointmentModel');
-const Blog = require('../models/blogModel');
-const catchAsync = require('../utils/catchAsync');
+const User = require("../models/userModel");
+const Client = require("../models/clientModel");
+const Contact = require("../models/contactModel");
+const Case = require("../models/caseModel");
+const Appointment = require("../models/appointmentModel");
+const Blog = require("../models/blogModel");
+const catchAsync = require("../utils/catchAsync");
 
 // Controller to fetch dashboard data
 exports.getDashboardData = catchAsync(async (req, res) => {
@@ -29,14 +29,14 @@ exports.getDashboardStats = catchAsync(async (req, res) => {
     {
       $group: {
         _id: "$status",
-        count: { $sum: 1 }
-      }
-    }
+        count: { $sum: 1 },
+      },
+    },
   ]);
 
   // Transform the aggregation result into a format for the pie chart
   const caseStatusCounts = {};
-  caseStatusAggregation.forEach(item => {
+  caseStatusAggregation.forEach((item) => {
     caseStatusCounts[item._id] = item.count;
   });
 
@@ -48,28 +48,28 @@ exports.getDashboardStats = catchAsync(async (req, res) => {
     activeClients,
     activeCases,
     monthlyAppointments,
-    recentContacts
+    recentContacts,
   ] = await Promise.all([
     Client.countDocuments(),
     Case.countDocuments(),
     Appointment.countDocuments(),
-    Appointment.countDocuments({ 
+    Appointment.countDocuments({
       date: { $gte: now },
-      status: 'scheduled'
+      status: "scheduled",
     }),
     Client.countDocuments({ active: true }),
-    Case.countDocuments({ status: { $in: ['open', 'ongoing', 'pending'] } }),
+    Case.countDocuments({ status: { $in: ["open", "ongoing", "pending"] } }),
     Appointment.countDocuments({
-      date: { $gte: startOfMonth, $lte: now }
+      date: { $gte: startOfMonth, $lte: now },
     }),
     Contact.find()
       .sort({ createdAt: -1 })
       .limit(5)
-      .select('name email subject status createdAt')
+      .select("name email subject status createdAt"),
   ]);
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
       totalClients,
       totalCases,
@@ -80,7 +80,7 @@ exports.getDashboardStats = catchAsync(async (req, res) => {
       monthlyAppointments,
       recentContacts,
       caseStatusCounts,
-      lastUpdated: new Date()
-    }
+      lastUpdated: new Date(),
+    },
   });
 });

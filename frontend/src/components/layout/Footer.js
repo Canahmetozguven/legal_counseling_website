@@ -1,5 +1,16 @@
 import React from 'react';
-import { Box, Container, Grid, Typography, Link, Divider, IconButton, Button, Paper, useTheme } from '@mui/material';
+import {
+  Box,
+  Container,
+  Grid,
+  Typography,
+  Link,
+  Divider,
+  IconButton,
+  Button,
+  Paper,
+  useTheme,
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -27,45 +38,55 @@ const Footer = () => {
     { name: 'Client Resources', path: '/resources/client' },
     { name: 'Legal Articles', path: '/blog' },
     { name: 'FAQs', path: '/faqs' },
-    { name: 'Testimonials', path: '/testimonials' }
+    { name: 'Testimonials', path: '/testimonials' },
   ];
-  
+
   return (
     <Box component="footer">
       {/* Newsletter/CTA Section */}
-      <Box sx={{ 
-        bgcolor: 'rgba(0, 40, 85, 0.03)', 
-        py: 6,
-        borderTop: '1px solid',
-        borderColor: 'primary.light',
-      }}>
+      <Box
+        sx={{
+          bgcolor: 'rgba(0, 40, 85, 0.03)',
+          py: 6,
+          borderTop: '1px solid',
+          borderColor: 'primary.light',
+        }}
+      >
         <Container maxWidth="lg">
-          <Paper elevation={0} sx={{ 
-            p: { xs: 3, md: 5 }, 
-            borderRadius: 4, 
-            backgroundColor: theme.palette.background.paper,
-            border: '1px solid rgba(0, 40, 85, 0.1)',
-          }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 3, md: 5 },
+              borderRadius: 4,
+              backgroundColor: theme.palette.background.paper,
+              border: '1px solid rgba(0, 40, 85, 0.1)',
+            }}
+          >
             <Grid container spacing={4} alignItems="center">
               <Grid item xs={12} md={7}>
-                <Typography variant="h4" component="h3" sx={{ mb: 2, fontFamily: '"Merriweather", serif', }}>
+                <Typography
+                  variant="h4"
+                  component="h3"
+                  sx={{ mb: 2, fontFamily: '"Merriweather", serif' }}
+                >
                   Need Legal Assistance?
                 </Typography>
                 <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 3 }}>
-                  Contact us today for a confidential consultation with our expert legal team. We're ready to help you navigate your legal challenges.
+                  Contact us today for a confidential consultation with our expert legal team. We're
+                  ready to help you navigate your legal challenges.
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                  <Button 
-                    variant="contained" 
-                    color="primary" 
+                  <Button
+                    variant="contained"
+                    color="primary"
                     size="large"
                     onClick={() => navigate('/contact')}
                   >
                     Schedule Consultation
                   </Button>
-                  <Button 
-                    variant="outlined" 
-                    color="primary" 
+                  <Button
+                    variant="outlined"
+                    color="primary"
                     size="large"
                     onClick={() => navigate('/practice-areas')}
                     endIcon={<ArrowForwardIcon />}
@@ -75,21 +96,25 @@ const Footer = () => {
                 </Box>
               </Grid>
               <Grid item xs={12} md={5}>
-                <Box sx={{ 
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 2
-                }}>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                  }}
+                >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ 
-                      bgcolor: 'primary.main',
-                      borderRadius: '50%',
-                      width: 45,
-                      height: 45,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
+                    <Box
+                      sx={{
+                        bgcolor: 'primary.main',
+                        borderRadius: '50%',
+                        width: 45,
+                        height: 45,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       <PhoneIcon sx={{ color: 'white' }} />
                     </Box>
                     <Box>
@@ -107,17 +132,19 @@ const Footer = () => {
                       </Typography>
                     </Box>
                   </Box>
-                  
+
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ 
-                      bgcolor: 'primary.main',
-                      borderRadius: '50%',
-                      width: 45,
-                      height: 45,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
+                    <Box
+                      sx={{
+                        bgcolor: 'primary.main',
+                        borderRadius: '50%',
+                        width: 45,
+                        height: 45,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       <EmailIcon sx={{ color: 'white' }} />
                     </Box>
                     <Box>
@@ -153,13 +180,18 @@ const Footer = () => {
         <Container maxWidth="lg">
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
-              <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', fontFamily: '"Merriweather", serif', mb: 3 }}>
+              <Typography
+                variant="h5"
+                gutterBottom
+                sx={{ fontWeight: 'bold', fontFamily: '"Merriweather", serif', mb: 3 }}
+              >
                 LEGAL COUNSEL
               </Typography>
               <Typography variant="body2" sx={{ mb: 3, lineHeight: 1.7, opacity: 0.9 }}>
-                Providing exceptional legal services and counsel for individuals and businesses. Our team of experienced attorneys is dedicated to protecting your rights and interests.
+                Providing exceptional legal services and counsel for individuals and businesses. Our
+                team of experienced attorneys is dedicated to protecting your rights and interests.
               </Typography>
-              
+
               <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
                 <LocationOnIcon sx={{ mr: 1, mt: 0.3, opacity: 0.9, fontSize: '1.2rem' }} />
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
@@ -168,7 +200,7 @@ const Footer = () => {
                   Cityville, ST 12345
                 </Typography>
               </Box>
-              
+
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                 <PhoneIcon sx={{ mr: 1, opacity: 0.9, fontSize: '1.2rem' }} />
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
@@ -181,7 +213,7 @@ const Footer = () => {
                   </Link>
                 </Typography>
               </Box>
-              
+
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 <EmailIcon sx={{ mr: 1, opacity: 0.9, fontSize: '1.2rem' }} />
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
@@ -195,12 +227,12 @@ const Footer = () => {
                 </Typography>
               </Box>
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={2}>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
                 Practice Areas
               </Typography>
-              {practiceAreas.map((area) => (
+              {practiceAreas.map(area => (
                 <Link
                   key={area.name}
                   component="button"
@@ -212,19 +244,19 @@ const Footer = () => {
                     textAlign: 'left',
                     textDecoration: 'none',
                     opacity: 0.9,
-                    '&:hover': { textDecoration: 'underline' }
+                    '&:hover': { textDecoration: 'underline' },
                   }}
                 >
                   {area.name}
                 </Link>
               ))}
             </Grid>
-            
+
             <Grid item xs={12} sm={6} md={3}>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
                 Resources
               </Typography>
-              {legalResources.map((resource) => (
+              {legalResources.map(resource => (
                 <Link
                   key={resource.name}
                   component="button"
@@ -236,7 +268,7 @@ const Footer = () => {
                     textAlign: 'left',
                     textDecoration: 'none',
                     opacity: 0.9,
-                    '&:hover': { textDecoration: 'underline' }
+                    '&:hover': { textDecoration: 'underline' },
                   }}
                 >
                   {resource.name}
@@ -252,7 +284,7 @@ const Footer = () => {
                   textAlign: 'left',
                   textDecoration: 'none',
                   opacity: 0.9,
-                  '&:hover': { textDecoration: 'underline' }
+                  '&:hover': { textDecoration: 'underline' },
                 }}
               >
                 About Our Firm
@@ -267,19 +299,20 @@ const Footer = () => {
                   textAlign: 'left',
                   textDecoration: 'none',
                   opacity: 0.9,
-                  '&:hover': { textDecoration: 'underline' }
+                  '&:hover': { textDecoration: 'underline' },
                 }}
               >
                 Contact Us
               </Link>
             </Grid>
-            
+
             <Grid item xs={12} md={3}>
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
                 Connect With Us
               </Typography>
               <Typography variant="body2" paragraph sx={{ mb: 3, opacity: 0.9, lineHeight: 1.7 }}>
-                Follow us on social media for legal insights, firm news, and updates on relevant legal developments.
+                Follow us on social media for legal insights, firm news, and updates on relevant
+                legal developments.
               </Typography>
               <Box sx={{ mb: 3 }}>
                 <IconButton
@@ -287,7 +320,12 @@ const Footer = () => {
                   href="https://facebook.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  sx={{ mr: 1, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
+                  sx={{
+                    mr: 1,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255,255,255,0.1)',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
+                  }}
                   aria-label="Facebook"
                 >
                   <FacebookIcon />
@@ -297,7 +335,12 @@ const Footer = () => {
                   href="https://twitter.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  sx={{ mr: 1, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
+                  sx={{
+                    mr: 1,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255,255,255,0.1)',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
+                  }}
                   aria-label="Twitter"
                 >
                   <TwitterIcon />
@@ -307,7 +350,12 @@ const Footer = () => {
                   href="https://linkedin.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  sx={{ mr: 1, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
+                  sx={{
+                    mr: 1,
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255,255,255,0.1)',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
+                  }}
                   aria-label="LinkedIn"
                 >
                   <LinkedInIcon />
@@ -317,7 +365,11 @@ const Footer = () => {
                   href="https://instagram.com"
                   target="_blank"
                   rel="noopener noreferrer"
-                  sx={{ borderRadius: 2, bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
+                  sx={{
+                    borderRadius: 2,
+                    bgcolor: 'rgba(255,255,255,0.1)',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' },
+                  }}
                   aria-label="Instagram"
                 >
                   <InstagramIcon />
@@ -327,7 +379,7 @@ const Footer = () => {
           </Grid>
         </Container>
       </Box>
-      
+
       {/* Legal Disclaimers Section */}
       <Box
         sx={{
@@ -344,10 +396,17 @@ const Footer = () => {
                 Legal Disclaimer
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.8, mb: 2, lineHeight: 1.7 }}>
-                The information provided on this website is for general informational purposes only and should not be construed as legal advice on any subject matter. No recipients of content from this site should act or refrain from acting on the basis of any content included in the site without seeking the appropriate legal or other professional advice on the particular facts and circumstances at issue from an attorney licensed in the recipient's state.
+                The information provided on this website is for general informational purposes only
+                and should not be construed as legal advice on any subject matter. No recipients of
+                content from this site should act or refrain from acting on the basis of any content
+                included in the site without seeking the appropriate legal or other professional
+                advice on the particular facts and circumstances at issue from an attorney licensed
+                in the recipient's state.
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.8, lineHeight: 1.7 }}>
-                The content of this website contains general information and may not reflect current legal developments, verdicts, or settlements. We expressly disclaim all liability in respect to actions taken or not taken based on any or all the contents of this site.
+                The content of this website contains general information and may not reflect current
+                legal developments, verdicts, or settlements. We expressly disclaim all liability in
+                respect to actions taken or not taken based on any or all the contents of this site.
               </Typography>
             </Grid>
             <Grid item xs={12} md={5}>
@@ -366,7 +425,7 @@ const Footer = () => {
                       textAlign: 'left',
                       textDecoration: 'none',
                       opacity: 0.8,
-                      '&:hover': { textDecoration: 'underline' }
+                      '&:hover': { textDecoration: 'underline' },
                     }}
                   >
                     Privacy Policy
@@ -381,7 +440,7 @@ const Footer = () => {
                       textAlign: 'left',
                       textDecoration: 'none',
                       opacity: 0.8,
-                      '&:hover': { textDecoration: 'underline' }
+                      '&:hover': { textDecoration: 'underline' },
                     }}
                   >
                     Terms of Service
@@ -396,7 +455,7 @@ const Footer = () => {
                       textAlign: 'left',
                       textDecoration: 'none',
                       opacity: 0.8,
-                      '&:hover': { textDecoration: 'underline' }
+                      '&:hover': { textDecoration: 'underline' },
                     }}
                   >
                     Cookie Policy

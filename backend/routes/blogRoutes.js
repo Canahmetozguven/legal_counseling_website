@@ -1,6 +1,6 @@
-const express = require('express');
-const { protect, restrictTo } = require('../controllers/authController');
-const upload = require('../utils/uploadConfig');
+const express = require("express");
+const { protect, restrictTo } = require("../controllers/authController");
+const upload = require("../utils/uploadConfig");
 const {
   getAllPosts,
   getPublishedPosts,
@@ -15,40 +15,36 @@ const {
   approveComment,
   deleteComment,
   getBlogAnalytics,
-  uploadImage
-} = require('../controllers/blogController');
+  uploadImage,
+} = require("../controllers/blogController");
 
 const router = express.Router();
 
 // Public routes
-router.get('/published', getPublishedPosts);
-router.get('/tags', getTags);
-router.get('/:id', getPost);
-router.post('/:id/like', likePost);
-router.post('/:id/share', sharePost);
-router.post('/:id/comments', addComment);
+router.get("/published", getPublishedPosts);
+router.get("/tags", getTags);
+router.get("/:id", getPost);
+router.post("/:id/like", likePost);
+router.post("/:id/share", sharePost);
+router.post("/:id/comments", addComment);
 
 // Protected routes
 router.use(protect);
 
 // Upload route - must be before the routes with URL parameters
-router.post('/upload', upload.single('image'), uploadImage);
+router.post("/upload", upload.single("image"), uploadImage);
 
-router.route('/')
-  .get(getAllPosts)
-  .post(createPost);
+router.route("/").get(getAllPosts).post(createPost);
 
-router.route('/:id')
-  .patch(updatePost)
-  .delete(deletePost);
+router.route("/:id").patch(updatePost).delete(deletePost);
 
 // Admin only routes
-router.use(restrictTo('admin'));
+router.use(restrictTo("admin"));
 
-router.route('/:id/analytics')
-  .get(getBlogAnalytics);
+router.route("/:id/analytics").get(getBlogAnalytics);
 
-router.route('/:id/comments/:commentId')
+router
+  .route("/:id/comments/:commentId")
   .patch(approveComment)
   .delete(deleteComment);
 

@@ -1,6 +1,6 @@
-const Contact = require('../models/contactModel');
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
+const Contact = require("../models/contactModel");
+const AppError = require("../utils/appError");
+const catchAsync = require("../utils/catchAsync");
 
 // Get all contacts
 exports.getAllContacts = catchAsync(async (req, res, next) => {
@@ -19,11 +19,11 @@ exports.getAllContacts = catchAsync(async (req, res, next) => {
   const contacts = await Contact.find(filter).sort({ createdAt: -1 });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     results: contacts.length,
     data: {
-      contacts
-    }
+      contacts,
+    },
   });
 });
 
@@ -32,14 +32,14 @@ exports.getContact = catchAsync(async (req, res, next) => {
   const contact = await Contact.findById(req.params.id);
 
   if (!contact) {
-    return next(new AppError('No contact found with that ID', 404));
+    return next(new AppError("No contact found with that ID", 404));
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      contact
-    }
+      contact,
+    },
   });
 });
 
@@ -51,14 +51,14 @@ exports.createContact = catchAsync(async (req, res, next) => {
     phone: req.body.phone,
     subject: req.body.subject,
     message: req.body.message,
-    source: req.body.source || 'website'
+    source: req.body.source || "website",
   });
 
   res.status(201).json({
-    status: 'success',
+    status: "success",
     data: {
-      contact: newContact
-    }
+      contact: newContact,
+    },
   });
 });
 
@@ -66,18 +66,18 @@ exports.createContact = catchAsync(async (req, res, next) => {
 exports.updateContact = catchAsync(async (req, res, next) => {
   const contact = await Contact.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-    runValidators: true
+    runValidators: true,
   });
 
   if (!contact) {
-    return next(new AppError('No contact found with that ID', 404));
+    return next(new AppError("No contact found with that ID", 404));
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      contact
-    }
+      contact,
+    },
   });
 });
 
@@ -86,49 +86,51 @@ exports.deleteContact = catchAsync(async (req, res, next) => {
   const contact = await Contact.findByIdAndDelete(req.params.id);
 
   if (!contact) {
-    return next(new AppError('No contact found with that ID', 404));
+    return next(new AppError("No contact found with that ID", 404));
   }
 
   res.status(204).json({
-    status: 'success',
-    data: null
+    status: "success",
+    data: null,
   });
 });
 
 // Assign a contact to a user
 exports.assignContact = catchAsync(async (req, res, next) => {
   if (!req.body.assignedTo) {
-    return next(new AppError('Please provide a user ID to assign this contact to', 400));
+    return next(
+      new AppError("Please provide a user ID to assign this contact to", 400)
+    );
   }
 
   const contact = await Contact.findByIdAndUpdate(
     req.params.id,
     {
       assignedTo: req.body.assignedTo,
-      status: 'in-progress'
+      status: "in-progress",
     },
     {
       new: true,
-      runValidators: true
+      runValidators: true,
     }
-  ).populate('assignedTo');
+  ).populate("assignedTo");
 
   if (!contact) {
-    return next(new AppError('No contact found with that ID', 404));
+    return next(new AppError("No contact found with that ID", 404));
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      contact
-    }
+      contact,
+    },
   });
 });
 
 // Respond to a contact
 exports.respondToContact = catchAsync(async (req, res, next) => {
   if (!req.body.content) {
-    return next(new AppError('Please provide a response content', 400));
+    return next(new AppError("Please provide a response content", 400));
   }
 
   const contact = await Contact.findByIdAndUpdate(
@@ -137,28 +139,28 @@ exports.respondToContact = catchAsync(async (req, res, next) => {
       response: {
         content: req.body.content,
         date: new Date(),
-        by: req.user.id
+        by: req.user.id,
       },
-      status: 'responded'
+      status: "responded",
     },
     {
       new: true,
-      runValidators: true
+      runValidators: true,
     }
   );
 
   if (!contact) {
-    return next(new AppError('No contact found with that ID', 404));
+    return next(new AppError("No contact found with that ID", 404));
   }
 
   // Here you would typically send an email to the contact
   // This is a placeholder for that functionality
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      contact
-    }
+      contact,
+    },
   });
 });
 
@@ -167,19 +169,21 @@ exports.convertToClient = catchAsync(async (req, res, next) => {
   const contact = await Contact.findById(req.params.id);
 
   if (!contact) {
-    return next(new AppError('No contact found with that ID', 404));
+    return next(new AppError("No contact found with that ID", 404));
   }
 
   // Check if contact is already converted
   if (contact.convertedToClient) {
-    return next(new AppError('This contact has already been converted to a client', 400));
+    return next(
+      new AppError("This contact has already been converted to a client", 400)
+    );
   }
 
   // Here you would typically create a new client
   // For now, we'll just mark the contact as converted
   contact.convertedToClient = true;
-  contact.status = 'closed';
-  
+  contact.status = "closed";
+
   // If clientId is provided, link to the client
   if (req.body.clientId) {
     contact.clientId = req.body.clientId;
@@ -188,9 +192,9 @@ exports.convertToClient = catchAsync(async (req, res, next) => {
   await contact.save();
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      contact
-    }
+      contact,
+    },
   });
 });

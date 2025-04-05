@@ -1,11 +1,11 @@
-const Case = require('../models/caseModel');
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
+const Case = require("../models/caseModel");
+const AppError = require("../utils/appError");
+const catchAsync = require("../utils/catchAsync");
 
 // Get all cases
 exports.getAllCases = catchAsync(async (req, res, next) => {
   let filter = {};
-  
+
   // If clientId is specified in the query, filter cases by client
   if (req.query.clientId) {
     filter.client = req.query.clientId;
@@ -14,27 +14,27 @@ exports.getAllCases = catchAsync(async (req, res, next) => {
   const cases = await Case.find(filter);
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     results: cases.length,
     data: {
-      cases
-    }
+      cases,
+    },
   });
 });
 
 // Get a specific case
 exports.getCase = catchAsync(async (req, res, next) => {
-  const caseDoc = await Case.findById(req.params.id).populate('appointments');
+  const caseDoc = await Case.findById(req.params.id).populate("appointments");
 
   if (!caseDoc) {
-    return next(new AppError('No case found with that ID', 404));
+    return next(new AppError("No case found with that ID", 404));
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      case: caseDoc
-    }
+      case: caseDoc,
+    },
   });
 });
 
@@ -48,10 +48,10 @@ exports.createCase = catchAsync(async (req, res, next) => {
   const newCase = await Case.create(req.body);
 
   res.status(201).json({
-    status: 'success',
+    status: "success",
     data: {
-      case: newCase
-    }
+      case: newCase,
+    },
   });
 });
 
@@ -59,18 +59,18 @@ exports.createCase = catchAsync(async (req, res, next) => {
 exports.updateCase = catchAsync(async (req, res, next) => {
   const caseDoc = await Case.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-    runValidators: true
+    runValidators: true,
   });
 
   if (!caseDoc) {
-    return next(new AppError('No case found with that ID', 404));
+    return next(new AppError("No case found with that ID", 404));
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      case: caseDoc
-    }
+      case: caseDoc,
+    },
   });
 });
 
@@ -79,12 +79,12 @@ exports.deleteCase = catchAsync(async (req, res, next) => {
   const caseDoc = await Case.findByIdAndDelete(req.params.id);
 
   if (!caseDoc) {
-    return next(new AppError('No case found with that ID', 404));
+    return next(new AppError("No case found with that ID", 404));
   }
 
   res.status(204).json({
-    status: 'success',
-    data: null
+    status: "success",
+    data: null,
   });
 });
 
@@ -93,11 +93,11 @@ exports.getMyCases = catchAsync(async (req, res, next) => {
   const cases = await Case.find({ assignedLawyer: req.user.id });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     results: cases.length,
     data: {
-      cases
-    }
+      cases,
+    },
   });
 });
 
@@ -106,17 +106,17 @@ exports.addCaseDocument = catchAsync(async (req, res, next) => {
   const caseDoc = await Case.findById(req.params.id);
 
   if (!caseDoc) {
-    return next(new AppError('No case found with that ID', 404));
+    return next(new AppError("No case found with that ID", 404));
   }
 
   caseDoc.documents.push(req.body);
   await caseDoc.save();
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      case: caseDoc
-    }
+      case: caseDoc,
+    },
   });
 });
 
@@ -125,22 +125,22 @@ exports.addCaseNote = catchAsync(async (req, res, next) => {
   const caseDoc = await Case.findById(req.params.id);
 
   if (!caseDoc) {
-    return next(new AppError('No case found with that ID', 404));
+    return next(new AppError("No case found with that ID", 404));
   }
 
   const note = {
     content: req.body.content,
     author: req.user.id,
-    date: new Date()
+    date: new Date(),
   };
 
   caseDoc.notes.push(note);
   await caseDoc.save();
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      case: caseDoc
-    }
+      case: caseDoc,
+    },
   });
 });

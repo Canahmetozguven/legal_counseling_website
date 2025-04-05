@@ -37,9 +37,9 @@ const ClientList = () => {
       const response = await axiosInstance.get('/clients', {
         // Add retry logic
         retry: 3,
-        retryDelay: (retryCount) => {
+        retryDelay: retryCount => {
           return retryCount * 1000; // Wait 1s, 2s, 3s between retries
-        }
+        },
       });
       setClients(response.data?.data?.clients || []);
     } catch (error) {
@@ -63,7 +63,7 @@ const ClientList = () => {
     return () => debouncedFetchClients.cancel();
   }, [debouncedFetchClients]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async id => {
     if (window.confirm('Are you sure you want to delete this client?')) {
       try {
         await axiosInstance.delete(`/clients/${id}`);
@@ -74,9 +74,10 @@ const ClientList = () => {
     }
   };
 
-  const filteredClients = clients.filter(client =>
-    `${client.firstName} ${client.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredClients = clients.filter(
+    client =>
+      `${client.firstName} ${client.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) {
@@ -109,7 +110,7 @@ const ClientList = () => {
           fullWidth
           placeholder="Search clients..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           InputProps={{
             startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
           }}
@@ -135,7 +136,7 @@ const ClientList = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredClients.map((client) => (
+              filteredClients.map(client => (
                 <TableRow key={client._id}>
                   <TableCell>{`${client.firstName} ${client.lastName}`}</TableCell>
                   <TableCell>{client.email}</TableCell>
@@ -148,10 +149,7 @@ const ClientList = () => {
                     >
                       <EditIcon />
                     </IconButton>
-                    <IconButton
-                      onClick={() => handleDelete(client._id)}
-                      color="error"
-                    >
+                    <IconButton onClick={() => handleDelete(client._id)} color="error">
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>

@@ -29,9 +29,15 @@ const Dashboard = () => {
         <Card style={{ padding: '20px' }}>
           <Typography variant="h5">Navigation</Typography>
           <ul>
-            <li><a href="/clients">Clients</a></li>
-            <li><a href="/contact">Contact</a></li>
-            <li><a href="/">Home</a></li>
+            <li>
+              <a href="/clients">Clients</a>
+            </li>
+            <li>
+              <a href="/contact">Contact</a>
+            </li>
+            <li>
+              <a href="/">Home</a>
+            </li>
           </ul>
         </Card>
       </Grid>

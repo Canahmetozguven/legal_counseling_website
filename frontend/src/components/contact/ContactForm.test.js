@@ -12,25 +12,25 @@ describe('ContactForm Component', () => {
 
   const fillForm = () => {
     fireEvent.change(screen.getByLabelText(/name/i), {
-      target: { value: 'John Doe' }
+      target: { value: 'John Doe' },
     });
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: 'john@example.com' }
+      target: { value: 'john@example.com' },
     });
     fireEvent.change(screen.getByLabelText(/phone/i), {
-      target: { value: '1234567890' }
+      target: { value: '1234567890' },
     });
     fireEvent.change(screen.getByLabelText(/subject/i), {
-      target: { value: 'Legal Consultation' }
+      target: { value: 'Legal Consultation' },
     });
     fireEvent.change(screen.getByLabelText(/message/i), {
-      target: { value: 'I need legal advice regarding my case.' }
+      target: { value: 'I need legal advice regarding my case.' },
     });
   };
 
   it('renders all form fields', () => {
     render(<ContactForm />);
-    
+
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/phone/i)).toBeInTheDocument();
@@ -42,12 +42,12 @@ describe('ContactForm Component', () => {
   it('handles successful form submission', async () => {
     contactService.submitContact.mockResolvedValueOnce({
       status: 'success',
-      message: 'Contact form submitted successfully'
+      message: 'Contact form submitted successfully',
     });
 
     render(<ContactForm />);
     fillForm();
-    
+
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
@@ -56,7 +56,7 @@ describe('ContactForm Component', () => {
         email: 'john@example.com',
         phone: '1234567890',
         subject: 'Legal Consultation',
-        message: 'I need legal advice regarding my case.'
+        message: 'I need legal advice regarding my case.',
       });
       expect(screen.getByText(/submitted successfully/i)).toBeInTheDocument();
     });
@@ -64,7 +64,7 @@ describe('ContactForm Component', () => {
 
   it('shows validation errors for empty required fields', async () => {
     render(<ContactForm />);
-    
+
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
@@ -79,11 +79,11 @@ describe('ContactForm Component', () => {
 
   it('validates email format', async () => {
     render(<ContactForm />);
-    
+
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: 'invalid-email' }
+      target: { value: 'invalid-email' },
     });
-    
+
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
@@ -97,7 +97,7 @@ describe('ContactForm Component', () => {
 
     render(<ContactForm />);
     fillForm();
-    
+
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {
@@ -108,12 +108,12 @@ describe('ContactForm Component', () => {
   it('clears form after successful submission', async () => {
     contactService.submitContact.mockResolvedValueOnce({
       status: 'success',
-      message: 'Contact form submitted successfully'
+      message: 'Contact form submitted successfully',
     });
 
     render(<ContactForm />);
     fillForm();
-    
+
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
     await waitFor(() => {

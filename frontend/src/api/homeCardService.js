@@ -13,7 +13,7 @@ const homeCardService = {
   },
 
   // Get a single home card by ID
-  getHomeCard: async (id) => {
+  getHomeCard: async id => {
     try {
       const response = await axiosInstance.get(`/api/home-cards/${id}`);
       return response.data;
@@ -24,7 +24,7 @@ const homeCardService = {
   },
 
   // Create a new home card
-  createHomeCard: async (cardData) => {
+  createHomeCard: async cardData => {
     try {
       const response = await axiosInstance.post('/api/home-cards', cardData);
       return response.data;
@@ -46,7 +46,7 @@ const homeCardService = {
   },
 
   // Delete a home card
-  deleteHomeCard: async (id) => {
+  deleteHomeCard: async id => {
     try {
       const response = await axiosInstance.delete(`/api/home-cards/${id}`);
       return response.data;
@@ -57,7 +57,7 @@ const homeCardService = {
   },
 
   // Update the order of multiple cards
-  updateCardsOrder: async (cardsArray) => {
+  updateCardsOrder: async cardsArray => {
     try {
       const response = await axiosInstance.patch('/api/home-cards/order', { cards: cardsArray });
       return response.data;
@@ -68,19 +68,19 @@ const homeCardService = {
   },
 
   // Upload an image for a home card
-  uploadCardImage: async (formData) => {
+  uploadCardImage: async formData => {
     try {
       const response = await axiosInstance.post('/api/home-cards/upload-image', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
       return response.data;
     } catch (error) {
       console.error('Error uploading image:', error);
       throw error;
     }
-  }
+  },
 };
 
 export default homeCardService;

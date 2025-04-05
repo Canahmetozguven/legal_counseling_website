@@ -16,13 +16,9 @@ import {
   DialogContent,
   DialogActions,
   Alert,
-  Stack
+  Stack,
 } from '@mui/material';
-import {
-  Check as ApproveIcon,
-  Delete as DeleteIcon,
-  Flag as FlagIcon
-} from '@mui/icons-material';
+import { Check as ApproveIcon, Delete as DeleteIcon, Flag as FlagIcon } from '@mui/icons-material';
 import axios from 'axios';
 
 const Comments = ({ postId, comments: initialComments, isAdmin }) => {
@@ -30,25 +26,25 @@ const Comments = ({ postId, comments: initialComments, isAdmin }) => {
   const [newComment, setNewComment] = useState({
     name: '',
     email: '',
-    content: ''
+    content: '',
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedComment, setSelectedComment] = useState(null);
 
-  const handleCommentChange = (field) => (event) => {
+  const handleCommentChange = field => event => {
     setNewComment({
       ...newComment,
-      [field]: event.target.value
+      [field]: event.target.value,
     });
   };
 
-  const handleSubmitComment = async (e) => {
+  const handleSubmitComment = async e => {
     e.preventDefault();
     try {
       const response = await axios.post(`/api/blog/${postId}/comments`, newComment);
-      
+
       setComments([...comments, response.data.data]);
       setNewComment({ name: '', email: '', content: '' });
       setSuccess('Comment submitted successfully! Waiting for approval.');
@@ -59,21 +55,21 @@ const Comments = ({ postId, comments: initialComments, isAdmin }) => {
     }
   };
 
-  const handleApproveComment = async (commentId) => {
+  const handleApproveComment = async commentId => {
     try {
       await axios.patch(`/api/blog/${postId}/comments/${commentId}/approve`);
-      setComments(comments.map(comment => 
-        comment._id === commentId 
-          ? { ...comment, isApproved: true }
-          : comment
-      ));
+      setComments(
+        comments.map(comment =>
+          comment._id === commentId ? { ...comment, isApproved: true } : comment
+        )
+      );
     } catch (err) {
       setError('Failed to approve comment');
       setTimeout(() => setError(''), 5000);
     }
   };
 
-  const openDeleteDialog = (comment) => {
+  const openDeleteDialog = comment => {
     setSelectedComment(comment);
     setDeleteDialogOpen(true);
   };
@@ -141,16 +137,8 @@ const Comments = ({ postId, comments: initialComments, isAdmin }) => {
                 <ListItemText
                   primary={
                     <Box display="flex" alignItems="center" gap={1}>
-                      <Typography variant="subtitle2">
-                        {comment.author.name}
-                      </Typography>
-                      {!comment.isApproved && (
-                        <Chip
-                          size="small"
-                          label="Pending"
-                          color="warning"
-                        />
-                      )}
+                      <Typography variant="subtitle2">{comment.author.name}</Typography>
+                      {!comment.isApproved && <Chip size="small" label="Pending" color="warning" />}
                     </Box>
                   }
                   secondary={
@@ -204,25 +192,16 @@ const Comments = ({ postId, comments: initialComments, isAdmin }) => {
               required
               fullWidth
             />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-            >
+            <Button type="submit" variant="contained" color="primary">
               Submit Comment
             </Button>
           </Stack>
         </form>
       </Paper>
 
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-      >
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Delete Comment</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this comment?
-        </DialogContent>
+        <DialogContent>Are you sure you want to delete this comment?</DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
           <Button onClick={handleDeleteComment} color="error" variant="contained">

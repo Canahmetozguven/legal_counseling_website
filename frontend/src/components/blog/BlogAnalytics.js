@@ -9,14 +9,14 @@ import {
   Stack,
   LinearProgress,
   IconButton,
-  Tooltip
+  Tooltip,
 } from '@mui/material';
 import {
   Visibility as ViewsIcon,
   ThumbUp as LikesIcon,
   Share as SharesIcon,
   Timer as TimerIcon,
-  TrendingUp as TrendingIcon
+  TrendingUp as TrendingIcon,
 } from '@mui/icons-material';
 import { ResponsiveLine } from '@nivo/line';
 import { ResponsivePie } from '@nivo/pie';
@@ -25,23 +25,20 @@ const StatCard = ({ icon, title, value, trend, color }) => (
   <Card>
     <CardContent>
       <Stack direction="row" alignItems="center" spacing={2}>
-        <Box sx={{ color: `${color}.main` }}>
-          {icon}
-        </Box>
+        <Box sx={{ color: `${color}.main` }}>{icon}</Box>
         <Box flexGrow={1}>
           <Typography variant="body2" color="text.secondary">
             {title}
           </Typography>
-          <Typography variant="h6">
-            {value}
-          </Typography>
+          <Typography variant="h6">{value}</Typography>
         </Box>
         {trend && (
           <Tooltip title="Trend vs. last month">
             <Box sx={{ color: trend >= 0 ? 'success.main' : 'error.main' }}>
               <TrendingIcon />
               <Typography variant="caption">
-                {trend > 0 ? '+' : ''}{trend}%
+                {trend > 0 ? '+' : ''}
+                {trend}%
               </Typography>
             </Box>
           </Tooltip>
@@ -52,9 +49,18 @@ const StatCard = ({ icon, title, value, trend, color }) => (
 );
 
 const BlogAnalytics = ({ analytics, historicalData }) => {
-  const viewsTrend = ((analytics.views - historicalData.lastMonth.views) / historicalData.lastMonth.views * 100).toFixed(1);
-  const likesTrend = ((analytics.likes - historicalData.lastMonth.likes) / historicalData.lastMonth.likes * 100).toFixed(1);
-  const sharesTrend = ((analytics.shares - historicalData.lastMonth.shares) / historicalData.lastMonth.shares * 100).toFixed(1);
+  const viewsTrend = (
+    ((analytics.views - historicalData.lastMonth.views) / historicalData.lastMonth.views) *
+    100
+  ).toFixed(1);
+  const likesTrend = (
+    ((analytics.likes - historicalData.lastMonth.likes) / historicalData.lastMonth.likes) *
+    100
+  ).toFixed(1);
+  const sharesTrend = (
+    ((analytics.shares - historicalData.lastMonth.shares) / historicalData.lastMonth.shares) *
+    100
+  ).toFixed(1);
 
   const viewsData = [
     {
@@ -62,22 +68,22 @@ const BlogAnalytics = ({ analytics, historicalData }) => {
       color: 'hsl(207, 70%, 50%)',
       data: historicalData.daily.map(d => ({
         x: new Date(d.date).toLocaleDateString(),
-        y: d.views
-      }))
-    }
+        y: d.views,
+      })),
+    },
   ];
 
   const engagementData = [
     {
       id: 'Likes',
       value: analytics.likes,
-      color: 'hsl(0, 70%, 50%)'
+      color: 'hsl(0, 70%, 50%)',
     },
     {
       id: 'Shares',
       value: analytics.shares,
-      color: 'hsl(120, 70%, 50%)'
-    }
+      color: 'hsl(120, 70%, 50%)',
+    },
   ];
 
   return (
@@ -128,7 +134,7 @@ const BlogAnalytics = ({ analytics, historicalData }) => {
                 yScale={{ type: 'linear', min: 'auto', max: 'auto' }}
                 curve="monotoneX"
                 axisBottom={{
-                  tickRotation: -45
+                  tickRotation: -45,
                 }}
                 pointSize={8}
                 pointColor={{ theme: 'background' }}

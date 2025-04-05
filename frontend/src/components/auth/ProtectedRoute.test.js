@@ -20,7 +20,7 @@ const mockUnauthContext = {
 };
 
 // Setup render function with different auth states
-const renderWithAuth = (authValue) => {
+const renderWithAuth = authValue => {
   return render(
     <BrowserRouter>
       <AuthProvider value={authValue}>

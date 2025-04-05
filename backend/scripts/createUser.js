@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-const User = require('../models/userModel');
-const dotenv = require('dotenv');
-const path = require('path');
+const mongoose = require("mongoose");
+const User = require("../models/userModel");
+const dotenv = require("dotenv");
+const path = require("path");
 
-dotenv.config({ path: path.join(__dirname, '../config.env') });
+dotenv.config({ path: path.join(__dirname, "../config.env") });
 
 const createUser = async (name, email, password, role) => {
   try {
@@ -20,16 +20,16 @@ const createUser = async (name, email, password, role) => {
       role,
     });
 
-    console.log('User created successfully:', user);
+    console.log("User created successfully:", user);
     process.exit();
   } catch (err) {
-    console.error('Error creating user:', err);
+    console.error("Error creating user:", err);
     process.exit(1);
   }
 };
 
 if (process.argv.length < 6) {
-  console.error('Usage: node createUser.js <name> <email> <password> <role>');
+  console.error("Usage: node createUser.js <name> <email> <password> <role>");
   process.exit(1);
 }
 

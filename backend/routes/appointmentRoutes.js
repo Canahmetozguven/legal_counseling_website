@@ -1,6 +1,6 @@
-const express = require('express');
-const appointmentController = require('../controllers/appointmentController');
-const authController = require('../controllers/authController');
+const express = require("express");
+const appointmentController = require("../controllers/appointmentController");
+const authController = require("../controllers/authController");
 
 const router = express.Router();
 
@@ -8,19 +8,22 @@ const router = express.Router();
 router.use(authController.protect);
 
 // Get my appointments route
-router.get('/my-appointments', appointmentController.getMyAppointments);
+router.get("/my-appointments", appointmentController.getMyAppointments);
 
 // Get recent appointments
-router.get('/recent', appointmentController.getRecentAppointments);
+router.get("/recent", appointmentController.getRecentAppointments);
 
 // Standard CRUD routes
 router
-  .route('/')
-  .get(authController.restrictTo('admin', 'lawyer'), appointmentController.getAllAppointments)
+  .route("/")
+  .get(
+    authController.restrictTo("admin", "lawyer"),
+    appointmentController.getAllAppointments
+  )
   .post(appointmentController.createAppointment);
 
 router
-  .route('/:id')
+  .route("/:id")
   .get(appointmentController.getAppointment)
   .patch(appointmentController.updateAppointment)
   .delete(appointmentController.deleteAppointment);

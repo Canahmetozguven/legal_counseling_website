@@ -6,12 +6,9 @@ import {
   Typography,
   Paper,
   IconButton,
-  LinearProgress
+  LinearProgress,
 } from '@mui/material';
-import {
-  CloudUpload as UploadIcon,
-  Delete as DeleteIcon
-} from '@mui/icons-material';
+import { CloudUpload as UploadIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axiosInstance from '../../api/axiosConfig';
 
 const ImageUpload = ({ onImageUpload, initialImage = null }) => {
@@ -21,7 +18,7 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
   const [altText, setAltText] = useState(initialImage?.altText || '');
   const [error, setError] = useState('');
 
-  const handleFileSelect = async (event) => {
+  const handleFileSelect = async event => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -46,14 +43,14 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
 
       const response = await axiosInstance.post('/api/blog/upload', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       const uploadedImage = {
         url: response.data.data.url,
         caption,
-        altText
+        altText,
       };
 
       setImage(uploadedImage);
@@ -83,7 +80,7 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
     if (image) {
       const updatedImage = {
         ...image,
-        [field]: value
+        [field]: value,
       };
       setImage(updatedImage);
       onImageUpload(updatedImage);
@@ -111,8 +108,8 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
               position: 'relative',
               mb: 2,
               '&:hover .delete-button': {
-                opacity: 1
-              }
+                opacity: 1,
+              },
             }}
           >
             <img
@@ -122,7 +119,7 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
                 width: '100%',
                 maxHeight: '300px',
                 objectFit: 'cover',
-                borderRadius: '4px'
+                borderRadius: '4px',
               }}
             />
             <IconButton
@@ -135,8 +132,8 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
                 opacity: 0,
                 transition: 'opacity 0.2s',
                 '&:hover': {
-                  bgcolor: 'background.paper'
-                }
+                  bgcolor: 'background.paper',
+                },
               }}
               onClick={handleRemoveImage}
             >
@@ -148,7 +145,7 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
             fullWidth
             label="Image Caption"
             value={caption}
-            onChange={(e) => handleMetadataChange('caption', e.target.value)}
+            onChange={e => handleMetadataChange('caption', e.target.value)}
             sx={{ mb: 2 }}
           />
 
@@ -156,7 +153,7 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
             fullWidth
             label="Alt Text"
             value={altText}
-            onChange={(e) => handleMetadataChange('altText', e.target.value)}
+            onChange={e => handleMetadataChange('altText', e.target.value)}
             helperText="Describe the image for accessibility"
           />
         </Box>
@@ -169,12 +166,7 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
           disabled={uploading}
         >
           Upload Image
-          <input
-            type="file"
-            hidden
-            accept="image/*"
-            onChange={handleFileSelect}
-          />
+          <input type="file" hidden accept="image/*" onChange={handleFileSelect} />
         </Button>
       )}
     </Paper>

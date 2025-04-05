@@ -27,7 +27,7 @@ import {
   ListItemText,
   Checkbox,
   Badge,
-  CardActionArea
+  CardActionArea,
 } from '@mui/material';
 import {
   Search as SearchIcon,
@@ -37,7 +37,7 @@ import {
   LinkedIn as LinkedInIcon,
   Timer as TimerIcon,
   Label as LabelIcon,
-  WhatsApp as WhatsAppIcon
+  WhatsApp as WhatsAppIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosConfig';
@@ -48,8 +48,8 @@ const BlogCard = ({ post, onShare }) => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  
-  const handleShareClick = (event) => {
+
+  const handleShareClick = event => {
     event.stopPropagation(); // Prevent card click when clicking share
     setAnchorEl(event.currentTarget);
   };
@@ -62,7 +62,7 @@ const BlogCard = ({ post, onShare }) => {
     navigate(`/blog/${post._id}`);
   };
 
-  const handleSocialShare = (platform) => {
+  const handleSocialShare = platform => {
     const url = encodeURIComponent(window.location.href);
     const title = encodeURIComponent(post.title);
     let shareUrl;
@@ -90,17 +90,19 @@ const BlogCard = ({ post, onShare }) => {
   };
 
   return (
-    <Card sx={{ 
-      height: '100%', 
-      display: 'flex', 
-      flexDirection: 'column',
-      cursor: 'pointer',
-      '&:hover': {
-        boxShadow: 6,
-        transform: 'translateY(-4px)',
-        transition: 'all 0.3s ease-in-out'
-      }
-    }}>
+    <Card
+      sx={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        cursor: 'pointer',
+        '&:hover': {
+          boxShadow: 6,
+          transform: 'translateY(-4px)',
+          transition: 'all 0.3s ease-in-out',
+        },
+      }}
+    >
       <CardActionArea onClick={handleCardClick}>
         {post.featuredImage && (
           <CardMedia
@@ -118,13 +120,8 @@ const BlogCard = ({ post, onShare }) => {
             {post.summary}
           </Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 2 }}>
-            {post.tags.map((tag) => (
-              <Chip
-                key={tag}
-                label={tag}
-                size="small"
-                sx={{ mb: 1 }}
-              />
+            {post.tags.map(tag => (
+              <Chip key={tag} label={tag} size="small" sx={{ mb: 1 }} />
             ))}
           </Stack>
           <Stack direction="row" spacing={1} alignItems="center">
@@ -143,19 +140,15 @@ const BlogCard = ({ post, onShare }) => {
         </CardContent>
       </CardActionArea>
       <Divider />
-      <CardActions onClick={(e) => e.stopPropagation()}>
-        <Button
-          size="small"
-          startIcon={<ShareIcon />}
-          onClick={handleShareClick}
-        >
+      <CardActions onClick={e => e.stopPropagation()}>
+        <Button size="small" startIcon={<ShareIcon />} onClick={handleShareClick}>
           Share
         </Button>
         <Menu
           anchorEl={anchorEl}
           open={open}
           onClose={handleClose}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           <MenuItem onClick={() => handleSocialShare('facebook')}>
             <FacebookIcon sx={{ mr: 1 }} /> Facebook
@@ -194,11 +187,7 @@ const TagsSidebar = ({ tags, selectedTags, onTagToggle, postCounts }) => {
                 disableRipple
               />
               <ListItemText primary={tag} />
-              <Badge
-                badgeContent={postCounts[tag] || 0}
-                color="primary"
-                sx={{ ml: 1 }}
-              />
+              <Badge badgeContent={postCounts[tag] || 0} color="primary" sx={{ ml: 1 }} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -261,56 +250,51 @@ const PublicBlogView = () => {
     }
   };
 
-  const handleShare = async (postId) => {
+  const handleShare = async postId => {
     try {
       await axiosInstance.post(`/api/blog/${postId}/share`);
-      setPosts(posts.map(post => 
-        post._id === postId
-          ? { ...post, analytics: { ...post.analytics, shares: post.analytics.shares + 1 } }
-          : post
-      ));
+      setPosts(
+        posts.map(post =>
+          post._id === postId
+            ? { ...post, analytics: { ...post.analytics, shares: post.analytics.shares + 1 } }
+            : post
+        )
+      );
     } catch (error) {
       console.error('Error updating share count:', error);
     }
   };
 
-  const handleTagToggle = (tag) => {
-    setSelectedTags(prev => 
-      prev.includes(tag)
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
-    );
+  const handleTagToggle = tag => {
+    setSelectedTags(prev => (prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]));
     setPage(1);
   };
 
   const filteredPosts = posts
-    .filter(post => 
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.summary.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter(
+      post =>
+        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.summary.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    .filter(post => 
-      selectedTags.length === 0 ? true :
-      selectedTags.every(tag => post.tags.includes(tag))
+    .filter(post =>
+      selectedTags.length === 0 ? true : selectedTags.every(tag => post.tags.includes(tag))
     );
 
   const pageCount = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
-  const displayedPosts = filteredPosts.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
+  const displayedPosts = filteredPosts.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   return (
     <Container maxWidth="xl" sx={{ py: 8 }}>
       <Typography variant="h3" component="h1" gutterBottom align="center">
         Blog
       </Typography>
-      
+
       <Box sx={{ mb: 4 }}>
         <TextField
           fullWidth
           placeholder="Search posts..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -335,12 +319,9 @@ const PublicBlogView = () => {
         {/* Blog Posts Grid */}
         <Grid item xs={12} md={9}>
           <Grid container spacing={4}>
-            {displayedPosts.map((post) => (
+            {displayedPosts.map(post => (
               <Grid item key={post._id} xs={12} sm={6} lg={4}>
-                <BlogCard
-                  post={post}
-                  onShare={() => handleShare(post._id)}
-                />
+                <BlogCard post={post} onShare={() => handleShare(post._id)} />
               </Grid>
             ))}
           </Grid>

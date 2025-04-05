@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
       try {
         setLoading(true);
         const isValid = await authService.initAuth();
-        
+
         if (isValid) {
           const currentUser = await authService.getCurrentUser();
           setUser(currentUser);
@@ -66,12 +66,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const token = await authService.getAuthToken();
       const isValid = !!token;
-      
+
       // Update state if it doesn't match current status
       if (isValid !== isAuthenticated) {
         setIsAuthenticated(isValid);
       }
-      
+
       return isValid;
     } catch (error) {
       console.error('[AUTH] Error checking auth status:', error);
@@ -86,14 +86,10 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     logout,
-    checkAuthStatus // Expose this function separately if needed
+    checkAuthStatus, // Expose this function separately if needed
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

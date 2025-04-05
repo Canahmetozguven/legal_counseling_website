@@ -27,14 +27,14 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosConfig';
 
 const statusColors = {
-  'open': 'primary',
-  'ongoing': 'warning',
-  'closed': 'success',
-  'pending': 'info',
-  'won': 'success',
-  'lost': 'error',
-  'settled': 'success',
-  'appealed': 'warning'
+  open: 'primary',
+  ongoing: 'warning',
+  closed: 'success',
+  pending: 'info',
+  won: 'success',
+  lost: 'error',
+  settled: 'success',
+  appealed: 'warning',
 };
 
 const CaseList = () => {
@@ -59,7 +59,7 @@ const CaseList = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async id => {
     if (window.confirm('Are you sure you want to delete this case?')) {
       try {
         await axiosInstance.delete(`/api/cases/${id}`);
@@ -70,10 +70,13 @@ const CaseList = () => {
     }
   };
 
-  const filteredCases = cases.filter(case_ =>
-    case_.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    case_.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    `${case_.client?.firstName} ${case_.client?.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredCases = cases.filter(
+    case_ =>
+      case_.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      case_.caseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${case_.client?.firstName} ${case_.client?.lastName}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) {
@@ -106,7 +109,7 @@ const CaseList = () => {
           fullWidth
           placeholder="Search cases..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           InputProps={{
             startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
           }}
@@ -133,7 +136,7 @@ const CaseList = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              filteredCases.map((case_) => (
+              filteredCases.map(case_ => (
                 <TableRow key={case_._id}>
                   <TableCell>{case_.caseNumber}</TableCell>
                   <TableCell>{case_.title}</TableCell>
@@ -159,10 +162,7 @@ const CaseList = () => {
                     >
                       <EditIcon />
                     </IconButton>
-                    <IconButton
-                      onClick={() => handleDelete(case_._id)}
-                      color="error"
-                    >
+                    <IconButton onClick={() => handleDelete(case_._id)} color="error">
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>

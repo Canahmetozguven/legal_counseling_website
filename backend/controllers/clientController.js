@@ -1,33 +1,35 @@
-const Client = require('../models/clientModel');
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
+const Client = require("../models/clientModel");
+const AppError = require("../utils/appError");
+const catchAsync = require("../utils/catchAsync");
 
 // Get all clients
 exports.getAllClients = catchAsync(async (req, res, next) => {
   const clients = await Client.find();
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     results: clients.length,
     data: {
-      clients
-    }
+      clients,
+    },
   });
 });
 
 // Get a specific client
 exports.getClient = catchAsync(async (req, res, next) => {
-  const client = await Client.findById(req.params.id).populate('cases appointments');
+  const client = await Client.findById(req.params.id).populate(
+    "cases appointments"
+  );
 
   if (!client) {
-    return next(new AppError('No client found with that ID', 404));
+    return next(new AppError("No client found with that ID", 404));
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      client
-    }
+      client,
+    },
   });
 });
 
@@ -41,10 +43,10 @@ exports.createClient = catchAsync(async (req, res, next) => {
   const newClient = await Client.create(req.body);
 
   res.status(201).json({
-    status: 'success',
+    status: "success",
     data: {
-      client: newClient
-    }
+      client: newClient,
+    },
   });
 });
 
@@ -52,18 +54,18 @@ exports.createClient = catchAsync(async (req, res, next) => {
 exports.updateClient = catchAsync(async (req, res, next) => {
   const client = await Client.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
-    runValidators: true
+    runValidators: true,
   });
 
   if (!client) {
-    return next(new AppError('No client found with that ID', 404));
+    return next(new AppError("No client found with that ID", 404));
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      client
-    }
+      client,
+    },
   });
 });
 
@@ -72,12 +74,12 @@ exports.deleteClient = catchAsync(async (req, res, next) => {
   const client = await Client.findByIdAndDelete(req.params.id);
 
   if (!client) {
-    return next(new AppError('No client found with that ID', 404));
+    return next(new AppError("No client found with that ID", 404));
   }
 
   res.status(204).json({
-    status: 'success',
-    data: null
+    status: "success",
+    data: null,
   });
 });
 
@@ -86,10 +88,10 @@ exports.getMyClients = catchAsync(async (req, res, next) => {
   const clients = await Client.find({ assignedLawyer: req.user.id });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     results: clients.length,
     data: {
-      clients
-    }
+      clients,
+    },
   });
 });

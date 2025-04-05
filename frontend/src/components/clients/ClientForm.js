@@ -11,7 +11,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
-import axiosInstance from '../../api/axiosConfig';;
+import axiosInstance from '../../api/axiosConfig';
 
 const ClientForm = () => {
   const { id } = useParams();
@@ -59,19 +59,19 @@ const ClientForm = () => {
     }
   }, [id, fetchClient]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       setLoading(true);
       setError('');
-       
+
       if (id) {
         await axiosInstance.patch(`/clients/${id}`, formData);
       } else {

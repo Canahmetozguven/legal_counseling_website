@@ -3,28 +3,28 @@ import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 let theme = createTheme({
   palette: {
     primary: {
-      main: '#002855',  // deep blue for trust and professionalism
+      main: '#002855', // deep blue for trust and professionalism
       light: '#336d9e',
       dark: '#001935',
     },
     secondary: {
-      main: '#575757',  // slate gray for a refined look
+      main: '#575757', // slate gray for a refined look
       light: '#7a7a7a',
       dark: '#3e3e3e',
     },
     background: {
-      default: '#ffffff',  // clean white background
-      paper: '#f7f7f7',    // light gray for card backgrounds
+      default: '#ffffff', // clean white background
+      paper: '#f7f7f7', // light gray for card backgrounds
     },
     text: {
-      primary: '#002855',  // dark blue for headings
-      secondary: '#575757' // slate gray for body text
-    }
+      primary: '#002855', // dark blue for headings
+      secondary: '#575757', // slate gray for body text
+    },
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
-      fontFamily: '"Merriweather", serif',  // serif font for headings adds gravitas
+      fontFamily: '"Merriweather", serif', // serif font for headings adds gravitas
       fontSize: '2.5rem',
       fontWeight: 700,
       color: '#002855',

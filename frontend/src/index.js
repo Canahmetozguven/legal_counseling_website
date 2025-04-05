@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import monitoring from './utils/monitoring';
+
+// Initialize monitoring system
+monitoring.init();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -11,7 +15,13 @@ root.render(
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+// Report web vitals to monitoring system
+reportWebVitals(({ name, value }) => {
+  // Store the metric in monitoring
+  monitoring.performanceMetrics[name.toLowerCase()] = value;
+
+  // Log metrics in development
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`Web Vital: ${name} = ${value}`);
+  }
+});

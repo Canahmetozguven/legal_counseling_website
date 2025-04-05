@@ -46,17 +46,17 @@ const AppointmentForm = () => {
         // Fetch clients and lawyers in parallel
         const [clientsResponse, lawyersResponse] = await Promise.all([
           axiosInstance.get('/api/clients'),
-          axiosInstance.get('/api/users/lawyers')
+          axiosInstance.get('/api/users/lawyers'),
         ]);
-        
+
         // Extract clients data
         const clientsData = clientsResponse.data.data?.clients || [];
         setClients(clientsData);
-        
+
         // Extract lawyers data - handle different response structures
         let lawyerUsers = [];
         const lawyersData = lawyersResponse.data;
-        
+
         if (lawyersData.data?.lawyers) {
           lawyerUsers = lawyersData.data.lawyers;
         } else if (lawyersData.lawyers) {
@@ -66,9 +66,9 @@ const AppointmentForm = () => {
         } else if (Array.isArray(lawyersData)) {
           lawyerUsers = lawyersData;
         }
-        
+
         setLawyers(lawyerUsers);
-        
+
         // If we're editing, fetch the appointment data after clients and lawyers are loaded
         if (id) {
           await fetchAppointment(id, clientsData, lawyerUsers);
@@ -80,7 +80,7 @@ const AppointmentForm = () => {
         setLoading(false);
       }
     };
-    
+
     loadInitialData();
   }, [id]); // Only depend on id
 
@@ -88,39 +88,42 @@ const AppointmentForm = () => {
     try {
       const response = await axiosInstance.get(`/api/appointments/${appointmentId}`);
       console.log('Appointment API response:', response.data);
-      
+
       // Correctly extract the appointment data from the response
       // The API returns { status: 'success', data: { appointment: {...} } }
-      const appointmentData = response.data.data?.appointment || response.data.appointment || response.data;
-      
+      const appointmentData =
+        response.data.data?.appointment || response.data.appointment || response.data;
+
       if (!appointmentData) {
         throw new Error('No appointment data found');
       }
-      
+
       console.log('Extracted appointment data:', appointmentData);
 
       // Find matching client
       let clientMatch = null;
       if (appointmentData.client) {
-        const clientId = typeof appointmentData.client === 'object' 
-          ? appointmentData.client._id 
-          : appointmentData.client;
-          
+        const clientId =
+          typeof appointmentData.client === 'object'
+            ? appointmentData.client._id
+            : appointmentData.client;
+
         clientMatch = clientsList.find(c => c._id === clientId);
         console.log('Matched client:', clientMatch);
       }
-      
+
       // Find matching lawyer
       let lawyerMatch = null;
       if (appointmentData.lawyer) {
-        const lawyerId = typeof appointmentData.lawyer === 'object'
-          ? appointmentData.lawyer._id
-          : appointmentData.lawyer;
-          
+        const lawyerId =
+          typeof appointmentData.lawyer === 'object'
+            ? appointmentData.lawyer._id
+            : appointmentData.lawyer;
+
         lawyerMatch = lawyersList.find(l => l._id === lawyerId);
         console.log('Matched lawyer:', lawyerMatch);
       }
-      
+
       // Parse date
       let dateTime = null;
       if (appointmentData.date) {
@@ -128,14 +131,14 @@ const AppointmentForm = () => {
       } else if (appointmentData.dateTime) {
         dateTime = new Date(appointmentData.dateTime);
       }
-      
+
       console.log('Setting form data with parsed values:', {
         title: appointmentData.title,
         client: clientMatch,
         lawyer: lawyerMatch,
-        dateTime: dateTime
+        dateTime: dateTime,
       });
-      
+
       // Set form data
       setFormData({
         title: appointmentData.title || '',
@@ -154,14 +157,14 @@ const AppointmentForm = () => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       setLoading(true);
@@ -191,27 +194,27 @@ const AppointmentForm = () => {
       const startDate = new Date(formData.dateTime);
       const endDate = new Date(startDate);
       endDate.setMinutes(startDate.getMinutes() + Number(formData.duration));
-      
+
       // Format dates
       const formattedDate = startDate.toLocaleDateString('tr-TR', {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
-        timeZone: 'Europe/Istanbul'
+        timeZone: 'Europe/Istanbul',
       });
-      
+
       const formattedStartTime = startDate.toLocaleTimeString('tr-TR', {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false,
-        timeZone: 'Europe/Istanbul'
+        timeZone: 'Europe/Istanbul',
       });
-      
+
       const formattedEndTime = endDate.toLocaleTimeString('tr-TR', {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false,
-        timeZone: 'Europe/Istanbul'
+        timeZone: 'Europe/Istanbul',
       });
 
       // Create data to submit - IMPORTANT CHANGE: Keep the client ID!
@@ -281,10 +284,10 @@ const AppointmentForm = () => {
             <Grid item xs={12}>
               <Autocomplete
                 options={clients}
-                getOptionLabel={(option) => {
+                getOptionLabel={option => {
                   console.log('Option in getOptionLabel:', option);
-                  return option && typeof option === 'object' 
-                    ? `${option.firstName || ''} ${option.lastName || ''}`.trim() 
+                  return option && typeof option === 'object'
+                    ? `${option.firstName || ''} ${option.lastName || ''}`.trim()
                     : '';
                 }}
                 isOptionEqualToValue={(option, value) => {
@@ -295,13 +298,7 @@ const AppointmentForm = () => {
                   console.log('Selected client:', newValue);
                   setFormData({ ...formData, client: newValue });
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Client"
-                    required
-                  />
-                )}
+                renderInput={params => <TextField {...params} label="Client" required />}
               />
             </Grid>
             <Grid item xs={12}>
@@ -317,10 +314,13 @@ const AppointmentForm = () => {
             <Grid item xs={12}>
               <Autocomplete
                 options={lawyers}
-                getOptionLabel={(option) => {
+                getOptionLabel={option => {
                   console.log('getOptionLabel called with:', option);
-                  return option && typeof option === 'object' 
-                    ? `${option.firstName || ''} ${option.lastName || ''}`.trim() || option.name || option.email || ''
+                  return option && typeof option === 'object'
+                    ? `${option.firstName || ''} ${option.lastName || ''}`.trim() ||
+                        option.name ||
+                        option.email ||
+                        ''
                     : '';
                 }}
                 isOptionEqualToValue={(option, value) => {
@@ -332,22 +332,16 @@ const AppointmentForm = () => {
                   console.log('Selected lawyer:', newValue);
                   setFormData({ ...formData, lawyer: newValue });
                 }}
-                renderInput={(params) => {
+                renderInput={params => {
                   console.log('renderInput params:', params);
-                  return (
-                    <TextField
-                      {...params}
-                      label="Lawyer"
-                      required
-                    />
-                  );
+                  return <TextField {...params} label="Lawyer" required />;
                 }}
                 renderOption={(props, option) => {
                   console.log('renderOption called with:', option);
                   return (
                     <li {...props}>
-                      {option.firstName && option.lastName 
-                        ? `${option.firstName} ${option.lastName}` 
+                      {option.firstName && option.lastName
+                        ? `${option.firstName} ${option.lastName}`
                         : option.name || option.email || 'Unknown Lawyer'}
                     </li>
                   );
@@ -358,12 +352,12 @@ const AppointmentForm = () => {
               <DateTimePicker
                 label="Date & Time"
                 value={formData.dateTime}
-                onChange={(newValue) => {
+                onChange={newValue => {
                   setFormData({ ...formData, dateTime: newValue });
                 }}
                 inputFormat="dd.MM.yyyy HH:mm" // Turkish date format with 24h time
                 ampm={false} // Use 24-hour format
-                renderInput={(params) => <TextField {...params} fullWidth required />}
+                renderInput={params => <TextField {...params} fullWidth required />}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -380,12 +374,7 @@ const AppointmentForm = () => {
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth required>
                 <InputLabel>Type</InputLabel>
-                <Select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleChange}
-                  label="Type"
-                >
+                <Select name="type" value={formData.type} onChange={handleChange} label="Type">
                   <MenuItem value="consultation">Consultation</MenuItem>
                   <MenuItem value="meeting">Meeting</MenuItem>
                   <MenuItem value="court">Court preparation</MenuItem>
@@ -432,17 +421,10 @@ const AppointmentForm = () => {
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/dashboard/appointments')}
-                >
+                <Button variant="outlined" onClick={() => navigate('/dashboard/appointments')}>
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
-                >
+                <Button type="submit" variant="contained" disabled={loading}>
                   {loading ? 'Saving...' : 'Save'}
                 </Button>
               </Box>

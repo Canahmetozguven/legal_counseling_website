@@ -22,14 +22,14 @@ import {
   Alert,
   Switch,
   FormControlLabel,
-  Divider
+  Divider,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   DragIndicator as DragIndicatorIcon,
-  Image as ImageIcon
+  Image as ImageIcon,
 } from '@mui/icons-material';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { toast } from 'react-toastify';
@@ -48,9 +48,9 @@ const HomeCardManagement = () => {
     linkUrl: '',
     linkText: 'Learn More',
     order: 0,
-    active: true
+    active: true,
   });
-  
+
   const imageInputRef = useRef(null);
 
   // Fetch cards data
@@ -87,7 +87,7 @@ const HomeCardManagement = () => {
         linkUrl: card.linkUrl || '',
         linkText: card.linkText || 'Learn More',
         order: card.order || 0,
-        active: card.active !== undefined ? card.active : true
+        active: card.active !== undefined ? card.active : true,
       });
     } else {
       setSelectedCard(null);
@@ -98,37 +98,37 @@ const HomeCardManagement = () => {
         linkUrl: '',
         linkText: 'Learn More',
         order: cards.length > 0 ? Math.max(...cards.map(c => c.order || 0)) + 1 : 0,
-        active: true
+        active: true,
       });
     }
     setDialogOpen(true);
   };
 
   // Handle form input changes
-  const handleFormChange = (e) => {
+  const handleFormChange = e => {
     const { name, value, type, checked } = e.target;
     setCardForm(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
   // Handle image upload
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = async e => {
     const file = e.target.files[0];
     if (!file) return;
 
     const formData = new FormData();
     formData.append('image', file);
-    
+
     try {
       setLoading(true);
       const response = await homeCardService.uploadCardImage(formData);
-      
+
       if (response.data?.filename) {
         setCardForm(prev => ({
           ...prev,
-          image: response.data.filename
+          image: response.data.filename,
         }));
         toast.success('Image uploaded successfully!');
       }
@@ -144,7 +144,7 @@ const HomeCardManagement = () => {
   const handleSaveCard = async () => {
     try {
       setLoading(true);
-      
+
       if (selectedCard) {
         // Update existing card
         await homeCardService.updateHomeCard(selectedCard._id, cardForm);
@@ -154,7 +154,7 @@ const HomeCardManagement = () => {
         await homeCardService.createHomeCard(cardForm);
         toast.success('Card created successfully!');
       }
-      
+
       setDialogOpen(false);
       fetchCards(); // Refresh the cards list
     } catch (error) {
@@ -166,9 +166,9 @@ const HomeCardManagement = () => {
   };
 
   // Delete a card
-  const handleDeleteCard = async (cardId) => {
+  const handleDeleteCard = async cardId => {
     if (!window.confirm('Are you sure you want to delete this card?')) return;
-    
+
     try {
       setLoading(true);
       await homeCardService.deleteHomeCard(cardId);
@@ -183,21 +183,21 @@ const HomeCardManagement = () => {
   };
 
   // Handle drag and drop to reorder cards
-  const handleDragEnd = async (result) => {
+  const handleDragEnd = async result => {
     if (!result.destination) return;
-    
+
     const items = Array.from(cards);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-    
+
     // Update order property for each card
     const updatedItems = items.map((card, index) => ({
       ...card,
-      order: index
+      order: index,
     }));
-    
+
     setCards(updatedItems);
-    
+
     // Update orders in the backend
     try {
       await homeCardService.updateCardsOrder(
@@ -212,9 +212,9 @@ const HomeCardManagement = () => {
   };
 
   // Helper function to get image URL
-  const getImageUrl = (imagePath) => {
+  const getImageUrl = imagePath => {
     if (!imagePath) return null;
-    
+
     if (imagePath.startsWith('http')) {
       return imagePath;
     } else {
@@ -225,7 +225,9 @@ const HomeCardManagement = () => {
   return (
     <Container maxWidth="lg">
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ mb: 2 }}>Home Page Cards Management</Typography>
+        <Typography variant="h4" sx={{ mb: 2 }}>
+          Home Page Cards Management
+        </Typography>
         <Typography variant="body1" color="text.secondary">
           Manage the feature cards that appear on the homepage. Drag to reorder them.
         </Typography>
@@ -239,7 +241,11 @@ const HomeCardManagement = () => {
         </Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3 }}>
+          {error}
+        </Alert>
+      )}
 
       {loading && !dialogOpen ? (
         <Box display="flex" justifyContent="center" my={4}>
@@ -249,7 +255,7 @@ const HomeCardManagement = () => {
         <Paper sx={{ p: 2 }}>
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="home-cards">
-              {(provided) => (
+              {provided => (
                 <List {...provided.droppableProps} ref={provided.innerRef}>
                   {cards.length === 0 ? (
                     <ListItem>
@@ -258,27 +264,27 @@ const HomeCardManagement = () => {
                   ) : (
                     cards.map((card, index) => (
                       <Draggable key={card._id} draggableId={card._id} index={index}>
-                        {(provided) => (
-                          <Card 
+                        {provided => (
+                          <Card
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            sx={{ 
-                              mb: 2, 
+                            sx={{
+                              mb: 2,
                               opacity: card.active ? 1 : 0.6,
-                              position: 'relative'
+                              position: 'relative',
                             }}
                           >
                             <Grid container>
                               <Grid item xs={12} sm={3} md={2}>
                                 <Box
                                   {...provided.dragHandleProps}
-                                  sx={{ 
-                                    display: 'flex', 
-                                    alignItems: 'center', 
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
                                     justifyContent: 'center',
                                     height: '100%',
                                     borderRight: '1px solid',
-                                    borderColor: 'divider'
+                                    borderColor: 'divider',
                                   }}
                                 >
                                   <DragIndicatorIcon color="action" />
@@ -316,16 +322,21 @@ const HomeCardManagement = () => {
                                           onChange={async () => {
                                             try {
                                               const updatedCard = { ...card, active: !card.active };
-                                              await homeCardService.updateHomeCard(card._id, updatedCard);
+                                              await homeCardService.updateHomeCard(
+                                                card._id,
+                                                updatedCard
+                                              );
                                               fetchCards();
-                                              toast.success(`Card ${card.active ? 'disabled' : 'enabled'} successfully!`);
+                                              toast.success(
+                                                `Card ${card.active ? 'disabled' : 'enabled'} successfully!`
+                                              );
                                             } catch (error) {
                                               toast.error('Failed to update card status.');
                                             }
                                           }}
                                         />
                                       }
-                                      label={card.active ? "Active" : "Inactive"}
+                                      label={card.active ? 'Active' : 'Inactive'}
                                     />
                                   </Box>
                                 </CardContent>
@@ -335,7 +346,10 @@ const HomeCardManagement = () => {
                                   <IconButton color="primary" onClick={() => openCardDialog(card)}>
                                     <EditIcon />
                                   </IconButton>
-                                  <IconButton color="error" onClick={() => handleDeleteCard(card._id)}>
+                                  <IconButton
+                                    color="error"
+                                    onClick={() => handleDeleteCard(card._id)}
+                                  >
                                     <DeleteIcon />
                                   </IconButton>
                                 </Box>
@@ -355,12 +369,7 @@ const HomeCardManagement = () => {
       )}
 
       {/* Dialog for adding/editing cards */}
-      <Dialog 
-        open={dialogOpen} 
-        onClose={() => setDialogOpen(false)}
-        maxWidth="md"
-        fullWidth
-      >
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="md" fullWidth>
         <DialogTitle>{selectedCard ? 'Edit Card' : 'Add New Card'}</DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -388,9 +397,11 @@ const HomeCardManagement = () => {
                 inputProps={{ maxLength: 500 }}
               />
             </Grid>
-            
+
             <Grid item xs={12}>
-              <Typography variant="subtitle2" gutterBottom>Card Image</Typography>
+              <Typography variant="subtitle2" gutterBottom>
+                Card Image
+              </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                 <Button
                   variant="outlined"
@@ -414,22 +425,23 @@ const HomeCardManagement = () => {
                   onChange={handleFormChange}
                 />
               </Box>
-              
+
               {cardForm.image && (
                 <Box sx={{ mb: 2, maxWidth: 300 }}>
                   <img
                     src={getImageUrl(cardForm.image)}
                     alt="Preview"
                     style={{ width: '100%', maxHeight: 150, objectFit: 'cover' }}
-                    onError={(e) => {
+                    onError={e => {
                       console.error('Image failed to load:', e.target.src);
-                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiB2aWV3Qm94PSIwIDAgMjAwIDE1MCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzU1NSI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';
+                      e.target.src =
+                        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiB2aWV3Qm94PSIwIDAgMjAwIDE1MCI+PHJlY3Qgd2lkdGg9IjIwMCIgaGVpZ2h0PSIxNTAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzU1NSI+SW1hZ2UgTm90IEZvdW5kPC90ZXh0Pjwvc3ZnPg==';
                     }}
                   />
                 </Box>
               )}
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -441,7 +453,7 @@ const HomeCardManagement = () => {
                 required
               />
             </Grid>
-            
+
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -452,26 +464,26 @@ const HomeCardManagement = () => {
                 placeholder="e.g. Learn More"
               />
             </Grid>
-            
+
             <Grid item xs={12}>
               <Divider sx={{ my: 2 }} />
               <FormControlLabel
                 control={
                   <Switch
                     checked={cardForm.active}
-                    onChange={(e) => setCardForm(prev => ({ ...prev, active: e.target.checked }))}
+                    onChange={e => setCardForm(prev => ({ ...prev, active: e.target.checked }))}
                     name="active"
                   />
                 }
-                label={cardForm.active ? "Active" : "Inactive"}
+                label={cardForm.active ? 'Active' : 'Inactive'}
               />
             </Grid>
           </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             onClick={handleSaveCard}
             disabled={!cardForm.title || !cardForm.description || !cardForm.linkUrl || loading}
           >

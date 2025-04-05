@@ -19,7 +19,7 @@ import {
   useTheme,
   useMediaQuery,
   Divider,
-  ListItemIcon
+  ListItemIcon,
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -39,7 +39,7 @@ function HideOnScroll(props) {
   const { children } = props;
   const trigger = useScrollTrigger({
     disableHysteresis: true,
-    threshold: 100,  // Only hide after scrolling 100px
+    threshold: 100, // Only hide after scrolling 100px
   });
 
   return (
@@ -74,7 +74,7 @@ const Header = () => {
     };
   }, [isScrolled]);
 
-  const handleMenu = (event) => {
+  const handleMenu = event => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -88,7 +88,7 @@ const Header = () => {
     navigate('/login');
   };
 
-  const toggleMobileDrawer = (open) => (event) => {
+  const toggleMobileDrawer = open => event => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -101,18 +101,18 @@ const Header = () => {
     { name: 'Practice Areas', path: '/practice-areas', icon: <GavelIcon /> },
     { name: 'Our Team', path: '/about', icon: <GroupsIcon /> },
     { name: 'Resources', path: '/blog', icon: <ArticleIcon /> },
-    { name: 'Contact Us', path: '/contact', icon: <ContactSupportIcon /> }
+    { name: 'Contact Us', path: '/contact', icon: <ContactSupportIcon /> },
   ];
 
   // Quick access buttons for key legal services
   const legalQuickLinks = [
     { name: 'Free Consultation', path: '/contact', highlight: true },
-    { name: 'Client Portal', path: '/client-portal', highlight: false }
+    { name: 'Client Portal', path: '/client-portal', highlight: false },
   ];
 
-  const isActivePath = (path) => location.pathname === path;
+  const isActivePath = path => location.pathname === path;
 
-  const handleNavigate = (path) => {
+  const handleNavigate = path => {
     navigate(path);
     setMobileDrawerOpen(false);
   };
@@ -147,11 +147,11 @@ const Header = () => {
           Expert Legal Services
         </Typography>
       </Box>
-      
+
       <Divider />
-      
+
       <List sx={{ pt: 2 }}>
-        {navigationItems.map((item) => (
+        {navigationItems.map(item => (
           <ListItem key={item.name} disablePadding>
             <ListItemButton
               onClick={() => handleNavigate(item.path)}
@@ -163,26 +163,28 @@ const Header = () => {
                   borderRight: `4px solid ${theme.palette.primary.main}`,
                   '&:hover': {
                     backgroundColor: 'rgba(0, 40, 85, 0.12)',
-                  }
+                  },
                 },
               }}
             >
-              <ListItemIcon sx={{ color: isActivePath(item.path) ? theme.palette.primary.main : 'inherit' }}>
+              <ListItemIcon
+                sx={{ color: isActivePath(item.path) ? theme.palette.primary.main : 'inherit' }}
+              >
                 {item.icon}
               </ListItemIcon>
-              <ListItemText 
-                primary={item.name} 
+              <ListItemText
+                primary={item.name}
                 primaryTypographyProps={{
-                  fontWeight: isActivePath(item.path) ? 600 : 400
+                  fontWeight: isActivePath(item.path) ? 600 : 400,
                 }}
               />
             </ListItemButton>
           </ListItem>
         ))}
       </List>
-      
+
       <Divider sx={{ mt: 2, mb: 2 }} />
-      
+
       <Box sx={{ px: 3, mb: 2 }}>
         <Button
           fullWidth
@@ -196,9 +198,9 @@ const Header = () => {
           Free Consultation
         </Button>
       </Box>
-      
+
       <Divider />
-      
+
       {isAuthenticated ? (
         <List>
           <ListItem disablePadding>
@@ -220,11 +222,7 @@ const Header = () => {
         </List>
       ) : (
         <Box sx={{ px: 3, mt: 2 }}>
-          <Button
-            fullWidth
-            variant="outlined"
-            onClick={() => handleNavigate('/login')}
-          >
+          <Button fullWidth variant="outlined" onClick={() => handleNavigate('/login')}>
             Client Login
           </Button>
         </Box>
@@ -234,9 +232,9 @@ const Header = () => {
 
   return (
     <HideOnScroll>
-      <AppBar 
-        position="fixed" 
-        sx={{ 
+      <AppBar
+        position="fixed"
+        sx={{
           backgroundColor: isScrolled ? 'white' : 'rgba(255, 255, 255, 0.96)',
           color: theme.palette.primary.main,
           boxShadow: isScrolled ? '0 2px 10px rgba(0,0,0,0.1)' : 'none',
@@ -250,10 +248,10 @@ const Header = () => {
               size="large"
               edge="start"
               aria-label="menu"
-              sx={{ 
-                display: { md: 'none' }, 
+              sx={{
+                display: { md: 'none' },
                 mr: 2,
-                color: theme.palette.primary.main 
+                color: theme.palette.primary.main,
               }}
               onClick={toggleMobileDrawer(true)}
             >
@@ -280,7 +278,7 @@ const Header = () => {
 
             {/* Desktop Navigation */}
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, ml: 6, gap: 0.5 }}>
-              {navigationItems.map((item) => (
+              {navigationItems.map(item => (
                 <Button
                   key={item.name}
                   onClick={() => navigate(item.path)}
@@ -294,17 +292,19 @@ const Header = () => {
                     '&:hover': {
                       backgroundColor: 'rgba(0, 40, 85, 0.04)',
                     },
-                    '&::after': isActivePath(item.path) ? {
-                      content: '""',
-                      position: 'absolute',
-                      bottom: 0,
-                      left: '50%',
-                      transform: 'translateX(-50%)',
-                      width: '60%',
-                      height: '3px',
-                      backgroundColor: theme.palette.primary.main,
-                      borderRadius: '2px 2px 0 0'
-                    } : {}
+                    '&::after': isActivePath(item.path)
+                      ? {
+                          content: '""',
+                          position: 'absolute',
+                          bottom: 0,
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          width: '60%',
+                          height: '3px',
+                          backgroundColor: theme.palette.primary.main,
+                          borderRadius: '2px 2px 0 0',
+                        }
+                      : {},
                   }}
                 >
                   {item.name}
@@ -320,9 +320,9 @@ const Header = () => {
                     variant="outlined"
                     color="primary"
                     onClick={() => navigate('/login')}
-                    sx={{ 
+                    sx={{
                       borderRadius: 2,
-                      px: 2
+                      px: 2,
                     }}
                   >
                     Client Login
@@ -331,9 +331,9 @@ const Header = () => {
                     variant="contained"
                     color="primary"
                     onClick={() => navigate('/contact')}
-                    sx={{ 
+                    sx={{
                       borderRadius: 2,
-                      px: 2
+                      px: 2,
                     }}
                   >
                     Free Consultation
@@ -369,13 +369,15 @@ const Header = () => {
                       '& .MuiPaper-root': {
                         boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
                         borderRadius: 2,
-                      }
+                      },
                     }}
                   >
-                    <MenuItem onClick={() => {
-                      handleClose();
-                      navigate('/dashboard');
-                    }}>
+                    <MenuItem
+                      onClick={() => {
+                        handleClose();
+                        navigate('/dashboard');
+                      }}
+                    >
                       <ListItemIcon>
                         <DashboardIcon fontSize="small" />
                       </ListItemIcon>

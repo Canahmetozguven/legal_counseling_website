@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Alert,
-  Paper,
-} from '@mui/material';
+import { Box, Container, Typography, TextField, Button, Alert, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -22,11 +14,11 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (formData.password !== formData.passwordConfirm) {
       setError('Passwords do not match');
@@ -137,11 +129,7 @@ const Register = () => {
             >
               Register
             </Button>
-            <Button
-              fullWidth
-              variant="text"
-              onClick={() => navigate('/login')}
-            >
+            <Button fullWidth variant="text" onClick={() => navigate('/login')}>
               Already have an account? Login
             </Button>
           </Box>

@@ -16,20 +16,16 @@ import {
   Chip,
   CircularProgress,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
+import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosConfig';
 
 const statusColors = {
-  'scheduled': 'primary',
-  'confirmed': 'info',
-  'completed': 'success',
-  'canceled': 'error',
-  'rescheduled': 'warning',
+  scheduled: 'primary',
+  confirmed: 'info',
+  completed: 'success',
+  canceled: 'error',
+  rescheduled: 'warning',
 };
 
 const AppointmentList = () => {
@@ -53,7 +49,7 @@ const AppointmentList = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async id => {
     if (window.confirm('Are you sure you want to delete this appointment?')) {
       try {
         await axiosInstance.delete(`/api/appointments/${id}`);
@@ -74,11 +70,11 @@ const AppointmentList = () => {
     );
   }
 
-  const formatTime = (date) => {
+  const formatTime = date => {
     return new Date(date).toLocaleTimeString('tr-TR', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false
+      hour12: false,
     });
   };
 
@@ -88,11 +84,11 @@ const AppointmentList = () => {
     return endDate.toLocaleTimeString('tr-TR', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false
+      hour12: false,
     });
   };
 
-  const getEndTime = (appointment) => {
+  const getEndTime = appointment => {
     if (appointment.endTime) {
       return appointment.endTime;
     }
@@ -125,7 +121,7 @@ const AppointmentList = () => {
               <TableCell>Client</TableCell>
               <TableCell>Lawyer</TableCell>
               <TableCell>Date</TableCell>
-              <TableCell>Time (Start - End)</TableCell>  {/* Updated header */}
+              <TableCell>Time (Start - End)</TableCell> {/* Updated header */}
               <TableCell>Type</TableCell>
               <TableCell>Status</TableCell>
               <TableCell align="right">Actions</TableCell>
@@ -139,34 +135,35 @@ const AppointmentList = () => {
                 </TableCell>
               </TableRow>
             ) : (
-              appointments.map((appointment) => (
+              appointments.map(appointment => (
                 <TableRow key={appointment._id}>
                   <TableCell>{appointment.title || 'No Title'}</TableCell>
                   <TableCell>
-                    {appointment.client ? 
-                      `${appointment.client.firstName} ${appointment.client.lastName}` 
+                    {appointment.client
+                      ? `${appointment.client.firstName} ${appointment.client.lastName}`
                       : 'N/A'}
                   </TableCell>
                   <TableCell>
-                    {appointment.lawyer ? 
-                      (appointment.lawyer.firstName && appointment.lawyer.lastName ? 
-                        `${appointment.lawyer.firstName} ${appointment.lawyer.lastName}` :
-                        appointment.lawyer.name || appointment.lawyer.email || 'Unknown') 
+                    {appointment.lawyer
+                      ? appointment.lawyer.firstName && appointment.lawyer.lastName
+                        ? `${appointment.lawyer.firstName} ${appointment.lawyer.lastName}`
+                        : appointment.lawyer.name || appointment.lawyer.email || 'Unknown'
                       : 'N/A'}
                   </TableCell>
                   <TableCell>
-                    {appointment.formattedDate || 
-                     (appointment.date ? new Date(appointment.date).toLocaleDateString('tr-TR') : 'N/A')}
+                    {appointment.formattedDate ||
+                      (appointment.date
+                        ? new Date(appointment.date).toLocaleDateString('tr-TR')
+                        : 'N/A')}
                   </TableCell>
                   <TableCell>
-                    {appointment.startTime && appointment.endTime ? 
-                      `${appointment.startTime} - ${appointment.endTime}` :
-                      appointment.formattedTime ? 
-                        `${appointment.formattedTime} - ${getEndTime(appointment)}` :
-                        appointment.date ? 
-                          `${formatTime(appointment.date)} - ${formatEndTime(appointment.date, appointment.duration || 60)}` : 
-                          'N/A'
-                    }
+                    {appointment.startTime && appointment.endTime
+                      ? `${appointment.startTime} - ${appointment.endTime}`
+                      : appointment.formattedTime
+                        ? `${appointment.formattedTime} - ${getEndTime(appointment)}`
+                        : appointment.date
+                          ? `${formatTime(appointment.date)} - ${formatEndTime(appointment.date, appointment.duration || 60)}`
+                          : 'N/A'}
                   </TableCell>
                   <TableCell>{appointment.type || 'N/A'}</TableCell>
                   <TableCell>
@@ -183,10 +180,7 @@ const AppointmentList = () => {
                     >
                       <EditIcon />
                     </IconButton>
-                    <IconButton
-                      onClick={() => handleDelete(appointment._id)}
-                      color="error"
-                    >
+                    <IconButton onClick={() => handleDelete(appointment._id)} color="error">
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>

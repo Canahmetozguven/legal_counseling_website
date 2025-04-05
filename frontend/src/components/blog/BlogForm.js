@@ -12,7 +12,7 @@ import {
   FormControlLabel,
   Switch,
   LinearProgress,
-  Snackbar
+  Snackbar,
 } from '@mui/material';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -22,16 +22,16 @@ import ImageUpload from './ImageUpload';
 
 const modules = {
   toolbar: [
-    [{ 'header': [1, 2, 3, false] }],
+    [{ header: [1, 2, 3, false] }],
     ['bold', 'italic', 'underline', 'strike'],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ list: 'ordered' }, { list: 'bullet' }],
     ['link', 'blockquote', 'code-block'],
-    [{ 'color': [] }, { 'background': [] }],
-    ['clean']
+    [{ color: [] }, { background: [] }],
+    ['clean'],
   ],
 };
 
-const validateForm = (formData) => {
+const validateForm = formData => {
   const errors = [];
   if (!formData.title.trim()) errors.push('Title is required');
   if (!formData.summary.trim()) errors.push('Summary is required');
@@ -54,9 +54,9 @@ const BlogForm = () => {
     seo: {
       metaTitle: '',
       metaDescription: '',
-      keywords: []
+      keywords: [],
     },
-    publishedAt: null
+    publishedAt: null,
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -88,9 +88,9 @@ const BlogForm = () => {
         seo: post.seo || {
           metaTitle: '',
           metaDescription: '',
-          keywords: []
+          keywords: [],
         },
-        publishedAt: post.publishedAt
+        publishedAt: post.publishedAt,
       });
     } catch (err) {
       setError(err.response?.data?.message || 'Error fetching post');
@@ -106,7 +106,7 @@ const BlogForm = () => {
     }
   }, [id, fetchPost, fetchTags]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
     if (name.startsWith('seo.')) {
       const seoField = name.split('.')[1];
@@ -114,50 +114,50 @@ const BlogForm = () => {
         ...prev,
         seo: {
           ...prev.seo,
-          [seoField]: value
-        }
+          [seoField]: value,
+        },
       }));
     } else {
       setFormData(prev => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
 
-  const handleContentChange = (content) => {
+  const handleContentChange = content => {
     setFormData(prev => ({
       ...prev,
-      content
+      content,
     }));
   };
 
   const handleTagsChange = (event, newTags) => {
     setFormData(prev => ({
       ...prev,
-      tags: newTags
+      tags: newTags,
     }));
   };
 
-  const handleStatusChange = (e) => {
+  const handleStatusChange = e => {
     const newStatus = e.target.checked ? 'published' : 'draft';
     setFormData(prev => ({
       ...prev,
       status: newStatus,
-      publishedAt: newStatus === 'published' ? new Date().toISOString() : null
+      publishedAt: newStatus === 'published' ? new Date().toISOString() : null,
     }));
   };
 
-  const handleImageUpload = (imageData) => {
+  const handleImageUpload = imageData => {
     setFormData(prev => ({
       ...prev,
-      featuredImage: imageData
+      featuredImage: imageData,
     }));
   };
 
-  const submitForm = async (status) => {
+  const submitForm = async status => {
     const validationErrors = validateForm(formData);
-    
+
     if (validationErrors.length > 0) {
       setError(validationErrors.join('. '));
       return;
@@ -166,25 +166,25 @@ const BlogForm = () => {
     try {
       setLoading(true);
       setError('');
-      
+
       const method = id ? 'patch' : 'post';
       const url = id ? `/api/blog/${id}` : '/api/blog';
-      
+
       await axiosInstance[method](url, {
         ...formData,
         status,
-        publishedAt: status === 'published' ? new Date().toISOString() : null
+        publishedAt: status === 'published' ? new Date().toISOString() : null,
       });
-      
+
       setSuccess(true);
-      
+
       // Show appropriate success message
       const action = id ? 'updated' : 'created';
       const statusMessage = status === 'published' ? 'published' : 'saved as draft';
       setSnackbar({
         open: true,
         message: `Blog post ${action} and ${statusMessage} successfully!`,
-        severity: 'success'
+        severity: 'success',
       });
 
       // Navigate after a short delay
@@ -199,7 +199,7 @@ const BlogForm = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     await submitForm(formData.status);
   };
@@ -241,7 +241,9 @@ const BlogForm = () => {
               onChange={handleChange}
               required
               error={formData.title.length > 200}
-              helperText={formData.title.length > 200 ? 'Title must be less than 200 characters' : ''}
+              helperText={
+                formData.title.length > 200 ? 'Title must be less than 200 characters' : ''
+              }
             />
 
             <TextField
@@ -283,19 +285,15 @@ const BlogForm = () => {
               options={availableTags}
               value={formData.tags}
               onChange={handleTagsChange}
-              getOptionLabel={(option) => option || ''}
+              getOptionLabel={option => option || ''}
               isOptionEqualToValue={(option, value) => option === value}
               filterSelectedOptions
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
-                  <Chip
-                    label={option || ''}
-                    {...getTagProps({ index })}
-                    key={option || index}
-                  />
+                  <Chip label={option || ''} {...getTagProps({ index })} key={option || index} />
                 ))
               }
-              renderInput={(params) => (
+              renderInput={params => (
                 <TextField
                   {...params}
                   label="Tags"
@@ -337,11 +335,7 @@ const BlogForm = () => {
             />
 
             <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-              <Button
-                variant="outlined"
-                onClick={() => navigate('/blog')}
-                disabled={loading}
-              >
+              <Button variant="outlined" onClick={() => navigate('/blog')} disabled={loading}>
                 Cancel
               </Button>
               <Button

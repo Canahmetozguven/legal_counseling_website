@@ -15,10 +15,10 @@ const mockCases = [
     status: 'active',
     client: {
       firstName: 'John',
-      lastName: 'Doe'
+      lastName: 'Doe',
     },
     priority: 'high',
-    lastUpdated: new Date().toISOString()
+    lastUpdated: new Date().toISOString(),
   },
   {
     _id: '2',
@@ -27,11 +27,11 @@ const mockCases = [
     status: 'pending',
     client: {
       firstName: 'Jane',
-      lastName: 'Smith'
+      lastName: 'Smith',
     },
     priority: 'medium',
-    lastUpdated: new Date().toISOString()
-  }
+    lastUpdated: new Date().toISOString(),
+  },
 ];
 
 const renderCaseList = () => {
@@ -60,7 +60,7 @@ describe('CaseList Component', () => {
 
   it('filters cases by status', async () => {
     renderCaseList();
-    
+
     await waitFor(() => {
       expect(screen.getByText('Employment Case')).toBeInTheDocument();
     });

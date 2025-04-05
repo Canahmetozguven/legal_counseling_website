@@ -1,26 +1,26 @@
-const Appointment = require('../models/appointmentModel');
-const AppError = require('../utils/appError');
-const catchAsync = require('../utils/catchAsync');
+const Appointment = require("../models/appointmentModel");
+const AppError = require("../utils/appError");
+const catchAsync = require("../utils/catchAsync");
 
 // Get all appointments
 exports.getAllAppointments = catchAsync(async (req, res, next) => {
   let filter = {};
-  
+
   // Filter by client if provided
   if (req.query.client) {
     filter.client = req.query.client;
   }
-  
+
   // Filter by case if provided
   if (req.query.caseId) {
     filter.caseId = req.query.caseId;
   }
-  
+
   // Filter by date range
   if (req.query.startDate && req.query.endDate) {
     filter.date = {
       $gte: new Date(req.query.startDate),
-      $lte: new Date(req.query.endDate)
+      $lte: new Date(req.query.endDate),
     };
   } else if (req.query.startDate) {
     filter.date = { $gte: new Date(req.query.startDate) };
@@ -28,14 +28,17 @@ exports.getAllAppointments = catchAsync(async (req, res, next) => {
     filter.date = { $lte: new Date(req.query.endDate) };
   }
 
-  const appointments = await Appointment.find(filter).sort({ date: 1, startTime: 1 });
+  const appointments = await Appointment.find(filter).sort({
+    date: 1,
+    startTime: 1,
+  });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     results: appointments.length,
     data: {
-      appointments
-    }
+      appointments,
+    },
   });
 });
 
@@ -44,14 +47,14 @@ exports.getAppointment = catchAsync(async (req, res, next) => {
   const appointment = await Appointment.findById(req.params.id);
 
   if (!appointment) {
-    return next(new AppError('No appointment found with that ID', 404));
+    return next(new AppError("No appointment found with that ID", 404));
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      appointment
-    }
+      appointment,
+    },
   });
 });
 
@@ -69,31 +72,33 @@ exports.createAppointment = catchAsync(async (req, res, next) => {
     $or: [
       {
         startTime: { $lte: req.body.startTime },
-        endTime: { $gt: req.body.startTime }
+        endTime: { $gt: req.body.startTime },
       },
       {
         startTime: { $lt: req.body.endTime },
-        endTime: { $gte: req.body.endTime }
+        endTime: { $gte: req.body.endTime },
       },
       {
         startTime: { $gte: req.body.startTime },
-        endTime: { $lte: req.body.endTime }
-      }
+        endTime: { $lte: req.body.endTime },
+      },
     ],
-    status: { $nin: ['canceled', 'rescheduled'] }
+    status: { $nin: ["canceled", "rescheduled"] },
   });
 
   if (conflictingAppointment) {
-    return next(new AppError('There is a time conflict with another appointment', 400));
+    return next(
+      new AppError("There is a time conflict with another appointment", 400)
+    );
   }
 
   const newAppointment = await Appointment.create(req.body);
 
   res.status(201).json({
-    status: 'success',
+    status: "success",
     data: {
-      appointment: newAppointment
-    }
+      appointment: newAppointment,
+    },
   });
 });
 
@@ -102,16 +107,16 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
   // Check for time conflicts if changing date/time
   if (req.body.date || req.body.startTime || req.body.endTime) {
     const appointment = await Appointment.findById(req.params.id);
-    
+
     if (!appointment) {
-      return next(new AppError('No appointment found with that ID', 404));
+      return next(new AppError("No appointment found with that ID", 404));
     }
-    
+
     const date = req.body.date || appointment.date;
     const startTime = req.body.startTime || appointment.startTime;
     const endTime = req.body.endTime || appointment.endTime;
     const lawyer = req.body.lawyer || appointment.lawyer;
-    
+
     const conflictingAppointment = await Appointment.findOne({
       _id: { $ne: req.params.id },
       lawyer,
@@ -119,39 +124,45 @@ exports.updateAppointment = catchAsync(async (req, res, next) => {
       $or: [
         {
           startTime: { $lte: startTime },
-          endTime: { $gt: startTime }
+          endTime: { $gt: startTime },
         },
         {
           startTime: { $lt: endTime },
-          endTime: { $gte: endTime }
+          endTime: { $gte: endTime },
         },
         {
           startTime: { $gte: startTime },
-          endTime: { $lte: endTime }
-        }
+          endTime: { $lte: endTime },
+        },
       ],
-      status: { $nin: ['canceled', 'rescheduled'] }
+      status: { $nin: ["canceled", "rescheduled"] },
     });
 
     if (conflictingAppointment) {
-      return next(new AppError('There is a time conflict with another appointment', 400));
+      return next(
+        new AppError("There is a time conflict with another appointment", 400)
+      );
     }
   }
 
-  const appointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true
-  });
+  const appointment = await Appointment.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
 
   if (!appointment) {
-    return next(new AppError('No appointment found with that ID', 404));
+    return next(new AppError("No appointment found with that ID", 404));
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      appointment
-    }
+      appointment,
+    },
   });
 });
 
@@ -160,31 +171,31 @@ exports.deleteAppointment = catchAsync(async (req, res, next) => {
   const appointment = await Appointment.findByIdAndDelete(req.params.id);
 
   if (!appointment) {
-    return next(new AppError('No appointment found with that ID', 404));
+    return next(new AppError("No appointment found with that ID", 404));
   }
 
   res.status(204).json({
-    status: 'success',
-    data: null
+    status: "success",
+    data: null,
   });
 });
 
 // Get appointments for the current lawyer
 exports.getMyAppointments = catchAsync(async (req, res, next) => {
   let filter = { lawyer: req.user.id };
-  
+
   // Filter by date range
   if (req.query.startDate && req.query.endDate) {
     filter.date = {
       $gte: new Date(req.query.startDate),
-      $lte: new Date(req.query.endDate)
+      $lte: new Date(req.query.endDate),
     };
   } else if (req.query.startDate) {
     filter.date = { $gte: new Date(req.query.startDate) };
   } else if (req.query.endDate) {
     filter.date = { $lte: new Date(req.query.endDate) };
   }
-  
+
   // Default to today's appointments if no date provided
   if (!req.query.startDate && !req.query.endDate) {
     const today = new Date();
@@ -192,14 +203,17 @@ exports.getMyAppointments = catchAsync(async (req, res, next) => {
     filter.date = { $gte: today };
   }
 
-  const appointments = await Appointment.find(filter).sort({ date: 1, startTime: 1 });
+  const appointments = await Appointment.find(filter).sort({
+    date: 1,
+    startTime: 1,
+  });
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     results: appointments.length,
     data: {
-      appointments
-    }
+      appointments,
+    },
   });
 });
 
@@ -209,31 +223,31 @@ exports.getRecentAppointments = catchAsync(async (req, res, next) => {
   today.setHours(0, 0, 0, 0);
 
   const recentAppointments = await Appointment.find({
-    date: { 
-      $gte: today
+    date: {
+      $gte: today,
     },
-    status: { 
-      $nin: ['canceled', 'completed'] 
-    }
+    status: {
+      $nin: ["canceled", "completed"],
+    },
   })
-  .sort({ date: 1, startTime: 1 })
-  .limit(5)
-  .select('title date startTime endTime status type location client lawyer')
-  .lean();
+    .sort({ date: 1, startTime: 1 })
+    .limit(5)
+    .select("title date startTime endTime status type location client lawyer")
+    .lean();
 
   if (!recentAppointments) {
     return res.status(200).json({
-      status: 'success',
+      status: "success",
       data: {
-        appointments: []
-      }
+        appointments: [],
+      },
     });
   }
 
   res.status(200).json({
-    status: 'success',
+    status: "success",
     data: {
-      appointments: recentAppointments
-    }
+      appointments: recentAppointments,
+    },
   });
 });

@@ -26,7 +26,7 @@ describe('Login Component', () => {
 
   it('renders login form', () => {
     renderLogin();
-    
+
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login/i })).toBeInTheDocument();
@@ -36,27 +36,27 @@ describe('Login Component', () => {
     const mockLoginResponse = {
       status: 'success',
       token: 'test-token',
-      data: { user: { name: 'Test User', email: 'test@example.com' } }
+      data: { user: { name: 'Test User', email: 'test@example.com' } },
     };
 
     authService.login.mockResolvedValueOnce(mockLoginResponse);
-    
+
     renderLogin();
-    
+
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: 'test@example.com' }
+      target: { value: 'test@example.com' },
     });
-    
+
     fireEvent.change(screen.getByLabelText(/password/i), {
-      target: { value: 'password123' }
+      target: { value: 'password123' },
     });
-    
+
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    
+
     await waitFor(() => {
       expect(authService.login).toHaveBeenCalledWith({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'password123',
       });
     });
   });
@@ -64,19 +64,19 @@ describe('Login Component', () => {
   it('shows error message on login failure', async () => {
     const errorMessage = 'Invalid credentials';
     authService.login.mockRejectedValueOnce(new Error(errorMessage));
-    
+
     renderLogin();
-    
+
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: 'test@example.com' }
+      target: { value: 'test@example.com' },
     });
-    
+
     fireEvent.change(screen.getByLabelText(/password/i), {
-      target: { value: 'wrongpassword' }
+      target: { value: 'wrongpassword' },
     });
-    
+
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    
+
     await waitFor(() => {
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
     });
@@ -84,26 +84,26 @@ describe('Login Component', () => {
 
   it('validates required fields', async () => {
     renderLogin();
-    
+
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    
+
     await waitFor(() => {
       expect(screen.getByText(/email is required/i)).toBeInTheDocument();
       expect(screen.getByText(/password is required/i)).toBeInTheDocument();
     });
-    
+
     expect(authService.login).not.toHaveBeenCalled();
   });
 
   it('validates email format', async () => {
     renderLogin();
-    
+
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: 'invalid-email' }
+      target: { value: 'invalid-email' },
     });
-    
+
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    
+
     await waitFor(() => {
       expect(screen.getByText(/invalid email format/i)).toBeInTheDocument();
     });

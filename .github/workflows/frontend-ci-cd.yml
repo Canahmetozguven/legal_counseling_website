@@ -1,0 +1,124 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci-cd.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci-cd.yml'
+
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./frontend
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Check code style and linting
+        run: |
+          npm run lint
+          npm run format -- --check
+      
+      - name: Run tests
+        run: npm test -- --watchAll=false --passWithNoTests
+      
+      - name: Build application
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: npm run build
+      
+      - name: Generate documentation
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: npm run docs
+      
+      - name: Upload build artifacts
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: frontend/build/
+          retention-days: 7
+      
+      - name: Upload documentation artifacts
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation
+          path: frontend/docs/
+          retention-days: 7
+
+  deploy:
+    name: Deploy to Production
+    needs: build_and_test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-output
+          path: build
+      
+      # This is a placeholder for actual deployment steps
+      # You would replace this with your actual deployment logic
+      # such as deploying to Azure, AWS, or another hosting service
+      - name: Deploy to production
+        run: |
+          echo "Deploying to production environment..."
+          # Example: aws s3 sync build/ s3://your-bucket-name/ --delete
+          
+      - name: Deploy documentation
+        uses: actions/download-artifact@v3
+        with:
+          name: documentation
+          path: docs
+      
+      - name: Deploy docs to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
+          force_orphan: true
+          
+  notify:
+    name: Notify team
+    needs: [deploy]
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify on success
+        if: ${{ needs.deploy.result == 'success' }}
+        run: |
+          echo "Deployment completed successfully!"
+          # Add notification logic here (Slack, email, etc.)
+          # Example: curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment successful!"}' ${{ secrets.SLACK_WEBHOOK }}
+      
+      - name: Notify on failure
+        if: ${{ needs.deploy.result != 'success' }}
+        run: |
+          echo "Deployment failed!"
+          # Add failure notification logic here
+          # Example: curl -X POST -H 'Content-type: application/json' --data '{"text":"⚠️ Deployment failed!"}' ${{ secrets.SLACK_WEBHOOK }}

@@ -1,6 +1,6 @@
-const express = require('express');
-const userController = require('../controllers/userController');
-const authController = require('../controllers/authController');
+const express = require("express");
+const userController = require("../controllers/userController");
+const authController = require("../controllers/authController");
 
 const router = express.Router();
 
@@ -8,12 +8,12 @@ const router = express.Router();
 router.use(authController.protect);
 
 // Get all users
-router.get('/', userController.getAllUsers);
+router.get("/", userController.getAllUsers);
 
 // Get only lawyers
-router.get('/lawyers', userController.getLawyers);
+router.get("/lawyers", userController.getLawyers);
 
 // Get specific user by ID
-router.get('/:id', userController.getUser);
+router.get("/:id", userController.getUser);
 
 module.exports = router;

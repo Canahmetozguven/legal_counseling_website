@@ -13,15 +13,15 @@ const mockClients = [
     firstName: 'John',
     lastName: 'Doe',
     email: 'john@example.com',
-    phone: '1234567890'
+    phone: '1234567890',
   },
   {
     _id: '2',
     firstName: 'Jane',
     lastName: 'Smith',
     email: 'jane@example.com',
-    phone: '0987654321'
-  }
+    phone: '0987654321',
+  },
 ];
 
 const renderClientList = () => {

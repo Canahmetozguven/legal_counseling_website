@@ -1,0 +1,115 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci-cd.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-ci-cd.yml'
+
+jobs:
+  test_and_build:
+    name: Test and Build
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ./backend
+    
+    services:
+      mongodb:
+        image: mongo:5.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd mongosh --eval "db.adminCommand('ping')"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    env:
+      NODE_ENV: test
+      JWT_SECRET: testing_jwt_secret_key_for_ci_cd
+      JWT_EXPIRES_IN: 1d
+      MONGODB_URI: mongodb://localhost:27017/legal_practice_test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: './backend/package-lock.json'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Lint code
+        run: npm run lint
+      
+      - name: Run unit tests
+        run: npm test
+      
+      - name: Run integration tests
+        run: npm run test:integration
+      
+      - name: Build Docker image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          docker build -t legal-practice-backend:${{ github.sha }} -f Dockerfile.prod .
+          docker tag legal-practice-backend:${{ github.sha }} legal-practice-backend:latest
+
+  deploy:
+    name: Deploy Backend
+    needs: test_and_build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      # This would be replaced with actual deployment steps
+      # For example, deploying to a cloud provider or using Docker Compose
+      - name: Deploy to production
+        run: |
+          echo "Deploying backend to production environment..."
+          # Example: 
+          # - Deploying to AWS ECS
+          # - Using Docker Compose with production configuration
+          # - SSH into server and pull/update containers
+      
+      - name: Verify deployment
+        run: |
+          echo "Verifying backend deployment..."
+          # Example health check:
+          # curl -f https://api.example.com/health || exit 1
+      
+  notify:
+    name: Notify team
+    needs: [deploy]
+    if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Notify on success
+        if: ${{ needs.deploy.result == 'success' }}
+        run: |
+          echo "Backend deployment completed successfully!"
+          # Add notification logic here (Slack, email, etc.)
+          # Example: curl -X POST -H 'Content-type: application/json' --data '{"text":"Backend deployed successfully!"}' ${{ secrets.SLACK_WEBHOOK }}
+      
+      - name: Notify on failure
+        if: ${{ needs.deploy.result != 'success' }}
+        run: |
+          echo "Backend deployment failed!"
+          # Add failure notification logic here
+          # Example: curl -X POST -H 'Content-type: application/json' --data '{"text":"⚠️ Backend deployment failed!"}' ${{ secrets.SLACK_WEBHOOK }}

@@ -1,212 +1,171 @@
-# Legal Counseling Website
+# Musti Internetsitesi
 
-A full-stack web application for law firms to manage clients, cases, appointments, and blog content.
+A modern, production-ready law firm management system with client-facing website and secure administrative dashboard.
 
-## Features
+## Production-Ready Features
 
-- 🔐 Secure Authentication System
-- 👥 Client Management
-- 📅 Appointment Scheduling
-- 📁 Case Management
-- 📝 Legal Blog Platform
-- 📞 Contact Form with Admin Dashboard
-- 📱 Responsive Design
+This application has been built with a comprehensive set of production-ready features:
 
-## Technology Stack
+### 1. Code Quality & Best Practices
 
-### Frontend
-- React.js
-- Material-UI
-- React Router
-- Context API for State Management
-- Axios for API communication
+- ✅ ESLint and Prettier configured for consistent code style
+- ✅ Husky and lint-staged for pre-commit validation
+- ✅ Comprehensive TypeScript type definitions
+- ✅ PropTypes validation for React components
+- ✅ Component architecture with clear separation of concerns
 
-### Backend
-- Node.js
-- Express.js
-- MongoDB with Mongoose
-- JWT Authentication
-- Jest for Testing
+### 2. Testing
 
-### DevOps
-- Docker & Docker Compose
-- NGINX
-- SSL/TLS with Certbot
+- ✅ Jest unit tests for util functions and hooks
+- ✅ React Testing Library for component tests
+- ✅ Integration tests for API endpoints
+- ✅ E2E testing with Playwright
 
-## Prerequisites
+### 3. Performance Optimization
 
-- Node.js (v14.0.0 or later)
-- MongoDB (v4.4 or later)
-- NPM or Yarn
-- Docker and Docker Compose (for containerized setup)
+- ✅ Code splitting and lazy loading
+- ✅ Bundle size optimization and analysis
+- ✅ Efficient rendering with React optimizations
+- ✅ API response caching with configurable TTL
+- ✅ Runtime performance monitoring
+- ✅ Developer performance metrics dashboard
 
-## Installation
+### 4. Error Handling & Monitoring
 
-### Traditional Setup
+- ✅ Global error boundary for React components
+- ✅ Centralized error tracking and reporting
+- ✅ API error standardization and handling
+- ✅ User-friendly error messages and recovery options
 
-1. Clone the repository
+### 5. Security
+
+- ✅ JWT authentication with secure storage
+- ✅ CSRF protection
+- ✅ XSS prevention with input sanitization
+- ✅ Rate limiting for sensitive endpoints
+- ✅ Secure HTTP headers
+- ✅ Security logging and monitoring
+
+### 6. Accessibility
+
+- ✅ WCAG 2.1 AA compliance
+- ✅ Keyboard navigation support
+- ✅ Screen reader compatibility
+- ✅ High contrast mode support
+- ✅ Accessibility-enhancing HOC components
+
+### 7. Documentation
+
+- ✅ Comprehensive JSDoc documentation
+- ✅ API documentation
+- ✅ Code examples and usage patterns
+- ✅ Developer guides
+
+### 8. CI/CD Pipeline
+
+- ✅ Automated testing on pull requests
+- ✅ Build and deployment workflows
+- ✅ Environment-specific configurations
+- ✅ Docker containerization
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16+)
+- MongoDB
+- Docker and Docker Compose (for containerized deployment)
+
+### Development Setup
+
+1. Clone the repository:
+
 ```bash
-git clone https://github.com/yourusername/legal-counseling-website.git
-cd legal-counseling-website
+git clone https://github.com/yourusername/musti_internetsitesi.git
+cd musti_internetsitesi
 ```
 
-2. Install Backend Dependencies
+2. Install dependencies:
+
 ```bash
+# Install backend dependencies
 cd backend
 npm install
-```
 
-3. Install Frontend Dependencies
-```bash
+# Install frontend dependencies
 cd ../frontend
 npm install
 ```
 
-4. Environment Setup
-   - Copy `.env.example` to `.env` in both frontend and backend directories
-   - Update the environment variables with your configuration
+3. Set up environment variables:
+   Create a `config.env` file in the backend directory based on the provided example.
 
-### Docker Setup (Recommended)
+4. Start development servers:
 
-1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/legal-counseling-website.git
-cd legal-counseling-website
-```
+# Start both frontend and backend with Docker
+docker-compose up
 
-2. Environment Setup
-   - Review and update `.env.development` for development
-   - Review and update `.env.production` for production
-
-## Running the Application
-
-### Development Mode
-
-#### Traditional Method
-1. Start Backend Server
-```bash
+# Or start separately:
+# Backend
 cd backend
 npm run dev
-```
 
-2. Start Frontend Development Server
-```bash
+# Frontend
 cd frontend
 npm start
 ```
 
-The application will be available at `http://localhost:3000`
+5. Access the application:
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5000
 
-#### Using Docker (Recommended)
+### Production Deployment
+
+1. Build production assets:
+
 ```bash
-# Start the development environment
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop the development environment
-docker-compose down
-```
-
-The application will be available at `http://localhost:80` (routed through NGINX)
-
-### Production Mode
-
-#### Traditional Method
-1. Build Frontend
-```bash
+# Frontend build
 cd frontend
 npm run build
+
+# Start production environment
+cd ..
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
-2. Start Production Server
+2. Running tests:
+
 ```bash
-cd ../backend
-npm start
-```
-
-#### Using Docker for Production
-```bash
-# Build and start the production environment
-docker-compose -f docker-compose.prod.yml up -d --build
-
-# View logs
-docker-compose -f docker-compose.prod.yml logs -f
-
-# Stop the production environment
-docker-compose -f docker-compose.prod.yml down
-```
-
-## Docker Infrastructure Details
-
-Our Docker setup consists of:
-
-- **Development Environment**: 
-  - Hot-reload enabled for both frontend and backend
-  - Local volume mounts for real-time code updates
-  - NGINX for routing
-  - MongoDB without authentication for ease of development
-
-- **Production Environment**:
-  - Optimized builds with minimal dependencies
-  - NGINX with proper caching and security headers
-  - MongoDB with authentication
-  - SSL/TLS support via Certbot
-  - Persistent volumes for database and uploads
-
-## Testing
-
-### Running Backend Tests
-```bash
+# Backend tests
 cd backend
 npm test
-```
 
-### Running Frontend Tests
-```bash
+# Frontend tests
 cd frontend
 npm test
+
+# E2E tests
+npm run test:e2e
 ```
 
-### Running Tests in Docker
+## Additional Tools
+
+### Performance Analysis
+
 ```bash
-docker-compose exec backend npm test
-docker-compose exec frontend npm test
+cd frontend
+npm run analyze  # Run webpack bundle analyzer
 ```
 
-## Project Structure
+### Documentation Generation
 
+```bash
+cd frontend
+npm run docs      # Generate documentation
+npm run docs:serve  # Serve documentation locally
 ```
-├── backend/             # Backend Node.js/Express application
-├── frontend/            # Frontend React application
-├── nginx/               # NGINX configurations
-│   ├── dev.conf         # Development NGINX configuration
-│   └── prod.conf        # Production NGINX configuration
-├── docker-compose.yml         # Docker Compose for development
-├── docker-compose.prod.yml    # Docker Compose for production
-├── .env.development           # Development environment variables
-└── .env.production            # Production environment variables
-```
-
-## API Documentation
-
-The API documentation is available at `/api-docs` when running the server.
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contact
-
-Can Ahmet Ozguven - [canahmetozguven@gmail.com](mailto:canahmetozguven@gmail.com)
-
-Project Link: [https://github.com/yourusername/legal-counseling-website](https://github.com/yourusername/legal-counseling-website)
+This project is licensed under the MIT License - see the LICENSE file for details.

@@ -47,7 +47,7 @@ const SingleBlogPost = () => {
     fetchPost();
   }, [fetchPost]);
 
-  const handleShareClick = (event) => {
+  const handleShareClick = event => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -55,7 +55,7 @@ const SingleBlogPost = () => {
     setAnchorEl(null);
   };
 
-  const handleShare = async (platform) => {
+  const handleShare = async platform => {
     const url = encodeURIComponent(window.location.href);
     const title = encodeURIComponent(post.title);
     let shareUrl;
@@ -106,8 +106,8 @@ const SingleBlogPost = () => {
     image: post.featuredImage?.url || `${window.location.origin}/logo512.png`,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt || post.publishedAt,
-    authorName: post.author?.name || "Musti Attorneys",
-    url: window.location.href
+    authorName: post.author?.name || 'Musti Attorneys',
+    url: window.location.href,
   });
 
   const keywords = [...post.tags, 'legal advice', 'law firm blog', 'legal insights'];
@@ -137,7 +137,7 @@ const SingleBlogPost = () => {
               height: '400px',
               objectFit: 'cover',
               borderRadius: 2,
-              mb: 4
+              mb: 4,
             }}
           />
         )}
@@ -157,17 +157,13 @@ const SingleBlogPost = () => {
             <Typography variant="body2" color="text.secondary">
               • {new Date(post.publishedAt).toLocaleDateString()}
             </Typography>
-            <Button
-              startIcon={<ShareIcon />}
-              onClick={handleShareClick}
-              size="small"
-            >
+            <Button startIcon={<ShareIcon />} onClick={handleShareClick} size="small">
               Share
             </Button>
           </Stack>
 
           <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mb: 4 }}>
-            {post.tags.map((tag) => (
+            {post.tags.map(tag => (
               <Chip key={tag} label={tag} size="small" />
             ))}
           </Stack>
@@ -180,11 +176,7 @@ const SingleBlogPost = () => {
 
           <div dangerouslySetInnerHTML={{ __html: post.content }} />
 
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-          >
+          <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
             <MenuItem onClick={() => handleShare('facebook')}>
               <FacebookIcon sx={{ mr: 1 }} /> Facebook
             </MenuItem>

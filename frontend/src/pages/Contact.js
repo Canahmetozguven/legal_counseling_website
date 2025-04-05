@@ -11,7 +11,7 @@ import {
   Divider,
   Card,
   CardContent,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
@@ -29,19 +29,19 @@ const Contact = () => {
     email: '',
     phone: '',
     subject: '',
-    message: ''
+    message: '',
   });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setLoading(true);
     setSuccess(false);
@@ -54,7 +54,7 @@ const Contact = () => {
         email: '',
         phone: '',
         subject: '',
-        message: ''
+        message: '',
       });
       toast.success('Your message has been sent successfully. We will contact you soon.');
     } catch (error) {
@@ -68,23 +68,23 @@ const Contact = () => {
     {
       icon: <LocationOnIcon fontSize="large" color="primary" />,
       title: 'Office Location',
-      content: '123 Law Street, Cityville, ST 12345'
+      content: '123 Law Street, Cityville, ST 12345',
     },
     {
       icon: <PhoneIcon fontSize="large" color="primary" />,
       title: 'Phone Numbers',
-      content: 'Main: (555) 123-4567\nEmergency: (555) 999-8888'
+      content: 'Main: (555) 123-4567\nEmergency: (555) 999-8888',
     },
     {
       icon: <EmailIcon fontSize="large" color="primary" />,
       title: 'Email',
-      content: 'info@lawfirm.com'
+      content: 'info@lawfirm.com',
     },
     {
       icon: <AccessTimeIcon fontSize="large" color="primary" />,
       title: 'Office Hours',
-      content: 'Monday - Friday: 9:00 AM - 5:00 PM\nWeekends: By appointment only'
-    }
+      content: 'Monday - Friday: 9:00 AM - 5:00 PM\nWeekends: By appointment only',
+    },
   ];
 
   return (
@@ -94,7 +94,7 @@ const Contact = () => {
           bgcolor: 'primary.main',
           color: 'white',
           py: 8,
-          mb: 6
+          mb: 6,
         }}
       >
         <Container maxWidth="lg">
@@ -234,7 +234,7 @@ const Contact = () => {
                 mt: 4,
                 p: 3,
                 bgcolor: 'secondary.light',
-                borderRadius: 1
+                borderRadius: 1,
               }}
             >
               <Typography variant="h6" gutterBottom>
@@ -263,7 +263,7 @@ const Contact = () => {
                 bgcolor: 'grey.200',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
               }}
             >
               <Typography variant="body1" color="text.secondary">

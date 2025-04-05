@@ -41,21 +41,21 @@ const TeamMemberDetail = () => {
       try {
         setLoading(true);
         const response = await aboutService.getAboutContent();
-        
+
         // Extract the about data from the nested structure
         const aboutContent = response.data?.data?.about || response.data?.about || null;
-        
+
         if (!aboutContent || !aboutContent.teamMembers) {
           throw new Error('Team member data not found');
         }
-        
+
         // Find the specific team member by ID
         const foundMember = aboutContent.teamMembers.find(m => m._id === memberId);
-        
+
         if (!foundMember) {
           throw new Error('Team member not found');
         }
-        
+
         setMember(foundMember);
       } catch (error) {
         console.error('Error fetching team member details:', error);
@@ -81,13 +81,10 @@ const TeamMemberDetail = () => {
   if (error) {
     return (
       <Container maxWidth="md" sx={{ py: 8 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
-        <Button 
-          component={Link} 
-          to="/about" 
-          startIcon={<ArrowBackIcon />}
-          variant="contained"
-        >
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+        <Button component={Link} to="/about" startIcon={<ArrowBackIcon />} variant="contained">
           Back to Team
         </Button>
       </Container>
@@ -97,13 +94,10 @@ const TeamMemberDetail = () => {
   if (!member) {
     return (
       <Container maxWidth="md" sx={{ py: 8 }}>
-        <Alert severity="info" sx={{ mb: 2 }}>Team member not found.</Alert>
-        <Button 
-          component={Link} 
-          to="/about" 
-          startIcon={<ArrowBackIcon />}
-          variant="contained"
-        >
+        <Alert severity="info" sx={{ mb: 2 }}>
+          Team member not found.
+        </Alert>
+        <Button component={Link} to="/about" startIcon={<ArrowBackIcon />} variant="contained">
           Back to Team
         </Button>
       </Container>
@@ -124,10 +118,17 @@ const TeamMemberDetail = () => {
       <SEO
         title={`${member.name} | Attorney Profile | Musti Attorneys`}
         description={`Learn more about ${member.name}, ${member.title} at Musti Attorneys. Professional experience, expertise, and background information.`}
-        keywords={["attorney profile", member.name, "lawyer", "legal expertise", "attorney bio", member.title]}
+        keywords={[
+          'attorney profile',
+          member.name,
+          'lawyer',
+          'legal expertise',
+          'attorney bio',
+          member.title,
+        ]}
         schema={attorneySchema}
       />
-      
+
       <Container maxWidth="md" sx={{ py: 8 }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -135,31 +136,33 @@ const TeamMemberDetail = () => {
           transition={{ duration: 0.5 }}
         >
           <Box sx={{ mb: 4 }}>
-            <Button 
-              component={Link} 
-              to="/about" 
-              startIcon={<ArrowBackIcon />}
-              sx={{ mb: 2 }}
-            >
+            <Button component={Link} to="/about" startIcon={<ArrowBackIcon />} sx={{ mb: 2 }}>
               Back to Team
             </Button>
-            
+
             <Card elevation={3}>
               <Grid container>
                 {/* Team Member Image */}
-                <Grid item xs={12} md={4} sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'primary.light',
-                  p: 4 
-                }}>
+                <Grid
+                  item
+                  xs={12}
+                  md={4}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: 'primary.light',
+                    p: 4,
+                  }}
+                >
                   <Avatar
-                    src={member.image ? 
-                      member.image.startsWith('http') 
-                        ? member.image 
-                        : `http://localhost:5000/uploads/${member.image}`
-                      : null}
+                    src={
+                      member.image
+                        ? member.image.startsWith('http')
+                          ? member.image
+                          : `http://localhost:5000/uploads/${member.image}`
+                        : null
+                    }
                     alt={member.name}
                     sx={{
                       width: 200,
@@ -169,7 +172,7 @@ const TeamMemberDetail = () => {
                     }}
                   />
                 </Grid>
-                
+
                 {/* Team Member Info */}
                 <Grid item xs={12} md={8}>
                   <CardContent sx={{ p: 4 }}>
@@ -188,7 +191,7 @@ const TeamMemberDetail = () => {
               </Grid>
             </Card>
           </Box>
-          
+
           {/* Areas of Expertise section */}
           {member.expertise && member.expertise.length > 0 && (
             <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
@@ -198,7 +201,7 @@ const TeamMemberDetail = () => {
                   Areas of Expertise
                 </Typography>
               </Box>
-              
+
               <Grid container spacing={2} sx={{ mt: 2 }}>
                 {member.expertise.map((area, index) => (
                   <Grid item xs={6} md={3} key={index}>
@@ -209,7 +212,7 @@ const TeamMemberDetail = () => {
                         backgroundColor: 'primary.light',
                         borderRadius: 1,
                         color: 'white',
-                        fontWeight: 'bold'
+                        fontWeight: 'bold',
                       }}
                     >
                       {area}
@@ -219,7 +222,7 @@ const TeamMemberDetail = () => {
               </Grid>
             </Paper>
           )}
-          
+
           {/* Education and Awards section */}
           <Grid container spacing={3} sx={{ mt: 3 }}>
             {/* Education column */}
@@ -245,7 +248,7 @@ const TeamMemberDetail = () => {
                 </Paper>
               </Grid>
             )}
-            
+
             {/* Awards column */}
             {member.awards && member.awards.length > 0 && (
               <Grid item xs={12} md={member.education && member.education.length > 0 ? 6 : 12}>
@@ -270,41 +273,38 @@ const TeamMemberDetail = () => {
               </Grid>
             )}
           </Grid>
-          
+
           {/* Contact section */}
           <Paper elevation={3} sx={{ p: 3, mt: 4 }}>
             <Typography variant="h5" gutterBottom color="primary">
               Contact {member.name}
             </Typography>
-            
+
             {member.contact && (member.contact.email || member.contact.phone) ? (
               <>
                 <Box sx={{ mt: 2, mb: 3 }}>
                   {member.contact.email && (
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <EmailIcon color="primary" sx={{ mr: 2 }} />
-                      <Typography variant="body1">
-                        {member.contact.email}
-                      </Typography>
+                      <Typography variant="body1">{member.contact.email}</Typography>
                     </Box>
                   )}
-                  
+
                   {member.contact.phone && (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                       <PhoneIcon color="primary" sx={{ mr: 2 }} />
-                      <Typography variant="body1">
-                        {member.contact.phone}
-                      </Typography>
+                      <Typography variant="body1">{member.contact.phone}</Typography>
                     </Box>
                   )}
                 </Box>
               </>
             ) : (
               <Typography variant="body1" paragraph>
-                To schedule a consultation with {member.name}, please use our appointment booking system or contact our office directly.
+                To schedule a consultation with {member.name}, please use our appointment booking
+                system or contact our office directly.
               </Typography>
             )}
-            
+
             <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
               <Button variant="contained" color="primary" component={Link} to="/contact">
                 Contact Us

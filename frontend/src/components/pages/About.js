@@ -28,11 +28,11 @@ const About = () => {
       try {
         const response = await aboutService.getAboutContent();
         console.log('About API response:', response); // For debugging
-        
+
         // Fix: Correctly access the nested about data structure
         const aboutContent = response.data?.data?.about || response.data?.about || null;
         console.log('Extracted about content:', aboutContent); // For debugging
-        
+
         setAboutData(aboutContent);
       } catch (error) {
         console.error('Error fetching about content:', error);
@@ -71,14 +71,14 @@ const About = () => {
               },
             }}
           >
-            <Typography 
-              variant="h6" 
+            <Typography
+              variant="h6"
               className="contrast"
-              gutterBottom 
-              sx={{ 
+              gutterBottom
+              sx={{
                 fontWeight: 'bold',
                 fontSize: '1.1rem',
-                lineHeight: 1.4
+                lineHeight: 1.4,
               }}
             >
               {value}
@@ -115,14 +115,14 @@ const About = () => {
 
   // Create structured data for the law firm
   const lawFirmSchema = getLawFirmSchema({
-    name: "Musti Attorneys",
+    name: 'Musti Attorneys',
     description: aboutData.mission,
     url: window.location.origin,
-    logo: `${window.location.origin}/logo512.png`
+    logo: `${window.location.origin}/logo512.png`,
   });
 
   // Create structured data for each attorney
-  const attorneys = aboutData.teamMembers.map(member => 
+  const attorneys = aboutData.teamMembers.map(member =>
     getAttorneySchema({
       name: member.name,
       jobTitle: member.title,
@@ -140,10 +140,18 @@ const About = () => {
       <SEO
         title="About Our Law Firm | Musti Attorneys"
         description="Meet our experienced legal team. We're dedicated to providing exceptional legal representation and personalized solutions for all your legal needs."
-        keywords={["law firm", "legal team", "attorneys", "legal experience", "about us", "legal expertise", "lawyers"]}
+        keywords={[
+          'law firm',
+          'legal team',
+          'attorneys',
+          'legal experience',
+          'about us',
+          'legal expertise',
+          'lawyers',
+        ]}
         schema={schemas}
       />
-      
+
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -227,24 +235,26 @@ const About = () => {
                           },
                         }}
                       >
-                        <CardActionArea 
-                          component={Link} 
-                          to={`/about/team/${member._id}`} 
-                          sx={{ 
+                        <CardActionArea
+                          component={Link}
+                          to={`/about/team/${member._id}`}
+                          sx={{
                             display: 'flex',
                             flexDirection: 'column',
                             alignItems: 'center',
                             width: '100%',
                             height: '100%',
-                            p: 1
+                            p: 1,
                           }}
                         >
                           <Avatar
-                            src={member.image ? 
-                              member.image.startsWith('http') 
-                                ? member.image 
-                                : `http://localhost:5000/uploads/${member.image}`
-                              : null}
+                            src={
+                              member.image
+                                ? member.image.startsWith('http')
+                                  ? member.image
+                                  : `http://localhost:5000/uploads/${member.image}`
+                                : null
+                            }
                             alt={member.name}
                             sx={{
                               width: 120,
@@ -267,13 +277,13 @@ const About = () => {
                               {member.title}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" align="center">
-                              {member.description && member.description.length > 100 
-                                ? `${member.description.substring(0, 100)}...` 
+                              {member.description && member.description.length > 100
+                                ? `${member.description.substring(0, 100)}...`
                                 : member.description}
                             </Typography>
-                            <Typography 
-                              variant="body2" 
-                              color="primary" 
+                            <Typography
+                              variant="body2"
+                              color="primary"
                               sx={{ mt: 1, fontWeight: 'bold', textAlign: 'center' }}
                             >
                               View Profile

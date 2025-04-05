@@ -7,12 +7,12 @@ const clientService = {
     return response.data;
   },
 
-  getClient: async (id) => {
+  getClient: async id => {
     const response = await axiosInstance.get(`/clients/${id}`);
     return response.data;
   },
 
-  createClient: async (clientData) => {
+  createClient: async clientData => {
     const response = await axiosInstance.post('/clients', clientData);
     return response.data;
   },
@@ -22,10 +22,10 @@ const clientService = {
     return response.data;
   },
 
-  deleteClient: async (id) => {
+  deleteClient: async id => {
     const response = await axiosInstance.delete(`/clients/${id}`);
     return response.data;
-  }
+  },
 };
 
 export default clientService;

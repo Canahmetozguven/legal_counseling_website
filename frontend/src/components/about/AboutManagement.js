@@ -25,10 +25,10 @@ import {
   Tab,
   Chip,
 } from '@mui/material';
-import { 
-  Edit as EditIcon, 
-  Delete as DeleteIcon, 
-  Add as AddIcon, 
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Add as AddIcon,
   Image as ImageIcon,
   Visibility as VisibilityIcon,
   Preview as PreviewIcon,
@@ -48,11 +48,7 @@ function TabPanel(props) {
       aria-labelledby={`team-member-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3, pt: 2 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3, pt: 2 }}>{children}</Box>}
     </div>
   );
 }
@@ -62,7 +58,7 @@ const AboutManagement = () => {
     mission: '',
     values: [],
     history: '',
-    teamMembers: []
+    teamMembers: [],
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -77,7 +73,7 @@ const AboutManagement = () => {
     expertise: [],
     education: [],
     awards: [],
-    contact: { email: '', phone: '' }
+    contact: { email: '', phone: '' },
   });
   const [valueDialog, setValueDialog] = useState(false);
   const [selectedValue, setSelectedValue] = useState(null);
@@ -88,7 +84,7 @@ const AboutManagement = () => {
   const [expertiseInput, setExpertiseInput] = useState('');
   const [educationInput, setEducationInput] = useState('');
   const [awardInput, setAwardInput] = useState('');
-  
+
   // Handle tab change in team member dialog
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -102,25 +98,27 @@ const AboutManagement = () => {
     try {
       setLoading(true);
       const response = await aboutService.getAboutContent();
-      
+
       // Properly extract data from the nested response structure
       // The API returns: { status: 'success', data: { about: {...} } }
-      const aboutContent = response.data?.data?.about || response.data?.about || response.data || {
-        mission: '',
-        values: [],
-        history: '',
-        teamMembers: []
-      };
-      
+      const aboutContent = response.data?.data?.about ||
+        response.data?.about ||
+        response.data || {
+          mission: '',
+          values: [],
+          history: '',
+          teamMembers: [],
+        };
+
       console.log('API Response:', response); // Debug log to see the actual response
       console.log('Extracted About Content:', aboutContent); // Debug log to see what we extracted
-      
+
       // Ensure all required properties exist
       setAboutData({
         mission: aboutContent.mission || '',
         values: aboutContent.values || [],
         history: aboutContent.history || '',
-        teamMembers: aboutContent.teamMembers || []
+        teamMembers: aboutContent.teamMembers || [],
       });
     } catch (err) {
       console.error('Error details:', err); // More detailed error logging
@@ -130,24 +128,24 @@ const AboutManagement = () => {
         mission: '',
         values: [],
         history: '',
-        teamMembers: []
+        teamMembers: [],
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     setAboutData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleMemberFormChange = (e) => {
+  const handleMemberFormChange = e => {
     const { name, value } = e.target;
-    
+
     // Handle nested contact object
     if (name.startsWith('contact.')) {
       const contactField = name.split('.')[1];
@@ -155,13 +153,13 @@ const AboutManagement = () => {
         ...prev,
         contact: {
           ...prev.contact,
-          [contactField]: value
-        }
+          [contactField]: value,
+        },
       }));
     } else {
       setMemberForm(prev => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
@@ -180,7 +178,7 @@ const AboutManagement = () => {
 
   const openTeamMemberDialog = (member = null) => {
     setTabValue(0); // Reset tab to first tab when opening dialog
-    
+
     if (member) {
       setSelectedMember(member);
       // Ensure all required fields exist even if they weren't previously saved
@@ -189,7 +187,7 @@ const AboutManagement = () => {
         expertise: member.expertise || [],
         education: member.education || [],
         awards: member.awards || [],
-        contact: member.contact || { email: '', phone: '' }
+        contact: member.contact || { email: '', phone: '' },
       });
     } else {
       setSelectedMember(null);
@@ -202,7 +200,7 @@ const AboutManagement = () => {
         expertise: [],
         education: [],
         awards: [],
-        contact: { email: '', phone: '' }
+        contact: { email: '', phone: '' },
       });
     }
     setTeamMemberDialog(true);
@@ -229,7 +227,7 @@ const AboutManagement = () => {
     }
   };
 
-  const handleDeleteTeamMember = async (memberId) => {
+  const handleDeleteTeamMember = async memberId => {
     if (window.confirm('Are you sure you want to delete this team member?')) {
       try {
         await aboutService.deleteTeamMember(memberId);
@@ -256,7 +254,7 @@ const AboutManagement = () => {
 
     setAboutData(prev => ({
       ...prev,
-      values: updatedValues
+      values: updatedValues,
     }));
     setNewValue('');
     setEditIndex(-1);
@@ -269,18 +267,18 @@ const AboutManagement = () => {
     setValueDialog(true);
   };
 
-  const handleDeleteValue = (index) => {
+  const handleDeleteValue = index => {
     if (window.confirm('Are you sure you want to delete this value?')) {
       const updatedValues = aboutData.values.filter((_, i) => i !== index);
       setAboutData(prev => ({
         ...prev,
-        values: updatedValues
+        values: updatedValues,
       }));
     }
   };
 
   // Helper function to get the correct image URL with fallback
-  const getImageUrl = (imagePath) => {
+  const getImageUrl = imagePath => {
     if (!imagePath) {
       return '';
     }
@@ -291,19 +289,20 @@ const AboutManagement = () => {
     }
 
     // For development environment, use the backend directly without /api prefix
-    const baseUrl = process.env.NODE_ENV === 'production'
-      ? `${window.location.protocol}//${window.location.hostname}`
-      : 'http://localhost:5000';
+    const baseUrl =
+      process.env.NODE_ENV === 'production'
+        ? `${window.location.protocol}//${window.location.hostname}`
+        : 'http://localhost:5000';
 
     // Remove any filename path and ensure path starts directly with the filename
     // This avoids issues with /api or /uploads prefixes
     const filename = imagePath.split('/').pop();
-    
+
     // Return complete URL pointing directly to uploads folder
     return `${baseUrl}/uploads/${filename}`;
   };
 
-  const handleImageUpload = async (e) => {
+  const handleImageUpload = async e => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -337,7 +336,7 @@ const AboutManagement = () => {
       // Update the form with the image filename
       setMemberForm(prev => ({
         ...prev,
-        image: imageName
+        image: imageName,
       }));
       toast.success('Image uploaded successfully');
     } catch (err) {
@@ -347,61 +346,61 @@ const AboutManagement = () => {
       setLoading(false);
     }
   };
-  
+
   // Add expertise to the team member form
   const handleAddExpertise = () => {
     if (!expertiseInput.trim()) return;
-    
+
     setMemberForm(prev => ({
       ...prev,
-      expertise: [...prev.expertise, expertiseInput.trim()]
+      expertise: [...prev.expertise, expertiseInput.trim()],
     }));
     setExpertiseInput('');
   };
-  
+
   // Remove expertise from the team member form
-  const handleRemoveExpertise = (index) => {
+  const handleRemoveExpertise = index => {
     setMemberForm(prev => ({
       ...prev,
-      expertise: prev.expertise.filter((_, i) => i !== index)
+      expertise: prev.expertise.filter((_, i) => i !== index),
     }));
   };
-  
+
   // Add education to the team member form
   const handleAddEducation = () => {
     if (!educationInput.trim()) return;
-    
+
     setMemberForm(prev => ({
       ...prev,
-      education: [...prev.education, educationInput.trim()]
+      education: [...prev.education, educationInput.trim()],
     }));
     setEducationInput('');
   };
-  
+
   // Remove education from the team member form
-  const handleRemoveEducation = (index) => {
+  const handleRemoveEducation = index => {
     setMemberForm(prev => ({
       ...prev,
-      education: prev.education.filter((_, i) => i !== index)
+      education: prev.education.filter((_, i) => i !== index),
     }));
   };
-  
+
   // Add award to the team member form
   const handleAddAward = () => {
     if (!awardInput.trim()) return;
-    
+
     setMemberForm(prev => ({
       ...prev,
-      awards: [...prev.awards, awardInput.trim()]
+      awards: [...prev.awards, awardInput.trim()],
     }));
     setAwardInput('');
   };
-  
+
   // Remove award from the team member form
-  const handleRemoveAward = (index) => {
+  const handleRemoveAward = index => {
     setMemberForm(prev => ({
       ...prev,
-      awards: prev.awards.filter((_, i) => i !== index)
+      awards: prev.awards.filter((_, i) => i !== index),
     }));
   };
 
@@ -433,31 +432,32 @@ const AboutManagement = () => {
               </Typography>
               <Box sx={{ mb: 2 }}>
                 <List>
-                  {aboutData.values && aboutData.values.map((value, index) => (
-                    <React.Fragment key={index}>
-                      {index > 0 && <Divider />}
-                      <ListItem>
-                        <ListItemText primary={value} />
-                        <ListItemSecondaryAction>
-                          <IconButton
-                            edge="end"
-                            aria-label="edit"
-                            onClick={() => handleEditValue(value, index)}
-                            sx={{ mr: 1 }}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                            edge="end"
-                            aria-label="delete"
-                            onClick={() => handleDeleteValue(index)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                    </React.Fragment>
-                  ))}
+                  {aboutData.values &&
+                    aboutData.values.map((value, index) => (
+                      <React.Fragment key={index}>
+                        {index > 0 && <Divider />}
+                        <ListItem>
+                          <ListItemText primary={value} />
+                          <ListItemSecondaryAction>
+                            <IconButton
+                              edge="end"
+                              aria-label="edit"
+                              onClick={() => handleEditValue(value, index)}
+                              sx={{ mr: 1 }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                            <IconButton
+                              edge="end"
+                              aria-label="delete"
+                              onClick={() => handleDeleteValue(index)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </ListItemSecondaryAction>
+                        </ListItem>
+                      </React.Fragment>
+                    ))}
                 </List>
                 <Button
                   startIcon={<AddIcon />}
@@ -500,77 +500,80 @@ const AboutManagement = () => {
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
             <Typography variant="h6">Team Members</Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => openTeamMemberDialog()}
-            >
+            <Button variant="contained" color="primary" onClick={() => openTeamMemberDialog()}>
               Add Team Member
             </Button>
           </Box>
 
           <Grid container spacing={2}>
-            {aboutData.teamMembers && aboutData.teamMembers.map((member) => (
-              <Grid item xs={12} sm={6} md={4} key={member._id}>
-                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  {member.image && (
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      image={getImageUrl(member.image)}
-                      alt={member.name}
-                      sx={{ objectFit: 'cover' }}
-                      onError={(e) => {
-                        console.error('Image failed to load:', e.target.src);
-                        e.target.onerror = null;
-                        e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgNDAwIDIwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzg4OCIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
-                      }}
-                    />
-                  )}
-                  <CardContent>
-                    <Typography variant="h6">{member.name}</Typography>
-                    <Typography color="textSecondary" gutterBottom>{member.title}</Typography>
-                    
-                    {member.expertise && member.expertise.length > 0 && (
-                      <Box sx={{ mt: 1, mb: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {member.expertise.slice(0, 2).map((item, i) => (
-                          <Chip key={i} label={item} size="small" color="primary" variant="outlined" />
-                        ))}
-                        {member.expertise.length > 2 && (
-                          <Chip label={`+${member.expertise.length - 2} more`} size="small" />
-                        )}
-                      </Box>
+            {aboutData.teamMembers &&
+              aboutData.teamMembers.map(member => (
+                <Grid item xs={12} sm={6} md={4} key={member._id}>
+                  <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    {member.image && (
+                      <CardMedia
+                        component="img"
+                        height="140"
+                        image={getImageUrl(member.image)}
+                        alt={member.name}
+                        sx={{ objectFit: 'cover' }}
+                        onError={e => {
+                          console.error('Image failed to load:', e.target.src);
+                          e.target.onerror = null;
+                          e.target.src =
+                            'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgNDAwIDIwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzg4OCIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
+                        }}
+                      />
                     )}
-                    
-                    <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                      <Button
-                        startIcon={<VisibilityIcon />}
-                        component={Link}
-                        to={`/about/team/${member._id}`}
-                        target="_blank"
-                        size="small"
-                        variant="outlined"
-                      >
-                        Preview
-                      </Button>
-                      <IconButton
-                        size="small"
-                        onClick={() => openTeamMemberDialog(member)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDeleteTeamMember(member._id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+                    <CardContent>
+                      <Typography variant="h6">{member.name}</Typography>
+                      <Typography color="textSecondary" gutterBottom>
+                        {member.title}
+                      </Typography>
+
+                      {member.expertise && member.expertise.length > 0 && (
+                        <Box sx={{ mt: 1, mb: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {member.expertise.slice(0, 2).map((item, i) => (
+                            <Chip
+                              key={i}
+                              label={item}
+                              size="small"
+                              color="primary"
+                              variant="outlined"
+                            />
+                          ))}
+                          {member.expertise.length > 2 && (
+                            <Chip label={`+${member.expertise.length - 2} more`} size="small" />
+                          )}
+                        </Box>
+                      )}
+
+                      <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                        <Button
+                          startIcon={<VisibilityIcon />}
+                          component={Link}
+                          to={`/about/team/${member._id}`}
+                          target="_blank"
+                          size="small"
+                          variant="outlined"
+                        >
+                          Preview
+                        </Button>
+                        <IconButton size="small" onClick={() => openTeamMemberDialog(member)}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleDeleteTeamMember(member._id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
           </Grid>
         </Grid>
       </Grid>
@@ -584,8 +587,8 @@ const AboutManagement = () => {
         <DialogTitle>
           {selectedMember ? 'Edit Team Member' : 'Add Team Member'}
           {selectedMember && (
-            <Button 
-              startIcon={<PreviewIcon />} 
+            <Button
+              startIcon={<PreviewIcon />}
               component={Link}
               to={`/about/team/${selectedMember._id}`}
               target="_blank"
@@ -603,14 +606,14 @@ const AboutManagement = () => {
             <Tab label="Contact Info" />
           </Tabs>
         </Box>
-        
+
         <DialogContent>
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
-          
+
           <TabPanel value={tabValue} index={0}>
             <TextField
               fullWidth
@@ -628,17 +631,19 @@ const AboutManagement = () => {
               onChange={handleMemberFormChange}
               sx={{ mb: 2 }}
             />
-            
+
             {/* Image Preview */}
             {memberForm.image && (
               <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center' }}>
-                <img 
-                  src={memberForm.image.startsWith('http') 
-                    ? memberForm.image 
-                    : `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/uploads/${memberForm.image}`} 
+                <img
+                  src={
+                    memberForm.image.startsWith('http')
+                      ? memberForm.image
+                      : `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/uploads/${memberForm.image}`
+                  }
                   alt="Team member preview"
                   style={{ maxWidth: '100%', maxHeight: 200, objectFit: 'contain' }}
-                  onError={(e) => {
+                  onError={e => {
                     console.error('Image failed to load:', e.target.src);
                     // If URL contains '/api/uploads/', try removing the '/api' segment
                     if (e.target.src.includes('/api/uploads/')) {
@@ -648,13 +653,14 @@ const AboutManagement = () => {
                     } else {
                       // Fallback to placeholder if correction doesn't help
                       e.target.onerror = null; // Prevent infinite loop
-                      e.target.src = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgNDAwIDIwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzg4OCIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
+                      e.target.src =
+                        'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgNDAwIDIwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSIyMDAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgYWxpZ25tZW50LWJhc2VsaW5lPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZmlsbD0iIzg4OCIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+';
                     }
                   }}
                 />
               </Box>
             )}
-            
+
             <Box sx={{ mb: 2, display: 'flex', gap: 2 }}>
               <Button
                 variant="outlined"
@@ -697,36 +703,35 @@ const AboutManagement = () => {
               onChange={handleMemberFormChange}
             />
           </TabPanel>
-          
+
           <TabPanel value={tabValue} index={1}>
-            <Typography variant="h6" gutterBottom>Areas of Expertise</Typography>
+            <Typography variant="h6" gutterBottom>
+              Areas of Expertise
+            </Typography>
             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
               <TextField
                 fullWidth
                 label="Add Expertise Area"
                 value={expertiseInput}
-                onChange={(e) => setExpertiseInput(e.target.value)}
-                onKeyPress={(e) => {
+                onChange={e => setExpertiseInput(e.target.value)}
+                onKeyPress={e => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     handleAddExpertise();
                   }
                 }}
               />
-              <Button 
-                variant="contained" 
-                onClick={handleAddExpertise}
-              >
+              <Button variant="contained" onClick={handleAddExpertise}>
                 Add
               </Button>
             </Box>
-            
+
             <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {memberForm.expertise.map((item, index) => (
-                <Chip 
-                  key={index} 
-                  label={item} 
-                  onDelete={() => handleRemoveExpertise(index)} 
+                <Chip
+                  key={index}
+                  label={item}
+                  onDelete={() => handleRemoveExpertise(index)}
                   color="primary"
                 />
               ))}
@@ -736,15 +741,17 @@ const AboutManagement = () => {
                 </Typography>
               )}
             </Box>
-            
-            <Typography variant="h6" gutterBottom>Education</Typography>
+
+            <Typography variant="h6" gutterBottom>
+              Education
+            </Typography>
             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
               <TextField
                 fullWidth
                 label="Add Education"
                 value={educationInput}
-                onChange={(e) => setEducationInput(e.target.value)}
-                onKeyPress={(e) => {
+                onChange={e => setEducationInput(e.target.value)}
+                onKeyPress={e => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     handleAddEducation();
@@ -752,14 +759,11 @@ const AboutManagement = () => {
                 }}
                 placeholder="e.g. J.D., Harvard Law School, 2010"
               />
-              <Button 
-                variant="contained" 
-                onClick={handleAddEducation}
-              >
+              <Button variant="contained" onClick={handleAddEducation}>
                 Add
               </Button>
             </Box>
-            
+
             <List sx={{ mb: 3 }}>
               {memberForm.education.map((item, index) => (
                 <ListItem key={index}>
@@ -777,15 +781,17 @@ const AboutManagement = () => {
                 </Typography>
               )}
             </List>
-            
-            <Typography variant="h6" gutterBottom>Awards & Recognitions</Typography>
+
+            <Typography variant="h6" gutterBottom>
+              Awards & Recognitions
+            </Typography>
             <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
               <TextField
                 fullWidth
                 label="Add Award"
                 value={awardInput}
-                onChange={(e) => setAwardInput(e.target.value)}
-                onKeyPress={(e) => {
+                onChange={e => setAwardInput(e.target.value)}
+                onKeyPress={e => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     handleAddAward();
@@ -793,14 +799,11 @@ const AboutManagement = () => {
                 }}
                 placeholder="e.g. Top 10 Family Law Attorneys, 2022"
               />
-              <Button 
-                variant="contained" 
-                onClick={handleAddAward}
-              >
+              <Button variant="contained" onClick={handleAddAward}>
                 Add
               </Button>
             </Box>
-            
+
             <List>
               {memberForm.awards.map((item, index) => (
                 <ListItem key={index}>
@@ -819,13 +822,15 @@ const AboutManagement = () => {
               )}
             </List>
           </TabPanel>
-          
+
           <TabPanel value={tabValue} index={2}>
-            <Typography variant="h6" gutterBottom>Contact Information</Typography>
+            <Typography variant="h6" gutterBottom>
+              Contact Information
+            </Typography>
             <Typography variant="body2" color="text.secondary" paragraph>
               This information will be displayed on the team member's profile page.
             </Typography>
-            
+
             <TextField
               fullWidth
               label="Email Address"
@@ -834,7 +839,7 @@ const AboutManagement = () => {
               onChange={handleMemberFormChange}
               sx={{ mb: 2 }}
             />
-            
+
             <TextField
               fullWidth
               label="Phone Number"
@@ -858,15 +863,8 @@ const AboutManagement = () => {
         </DialogActions>
       </Dialog>
 
-      <Dialog
-        open={valueDialog}
-        onClose={() => setValueDialog(false)}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>
-          {editIndex >= 0 ? 'Edit Value' : 'Add Value'}
-        </DialogTitle>
+      <Dialog open={valueDialog} onClose={() => setValueDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>{editIndex >= 0 ? 'Edit Value' : 'Add Value'}</DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -874,7 +872,7 @@ const AboutManagement = () => {
             label="Value"
             fullWidth
             value={newValue}
-            onChange={(e) => setNewValue(e.target.value)}
+            onChange={e => setNewValue(e.target.value)}
             sx={{ mt: 2 }}
           />
         </DialogContent>

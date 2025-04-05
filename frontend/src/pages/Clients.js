@@ -15,7 +15,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField
+  TextField,
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
@@ -32,7 +32,7 @@ const Clients = () => {
     name: '',
     email: '',
     phone: '',
-    address: ''
+    address: '',
   });
 
   const loadClients = async () => {
@@ -55,7 +55,7 @@ const Clients = () => {
         name: client.name,
         email: client.email,
         phone: client.phone,
-        address: client.address
+        address: client.address,
       });
     } else {
       setSelectedClient(null);
@@ -63,7 +63,7 @@ const Clients = () => {
         name: '',
         email: '',
         phone: '',
-        address: ''
+        address: '',
       });
     }
     setOpen(true);
@@ -76,18 +76,18 @@ const Clients = () => {
       name: '',
       email: '',
       phone: '',
-      address: ''
+      address: '',
     });
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       if (selectedClient) {
@@ -104,7 +104,7 @@ const Clients = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async id => {
     if (window.confirm('Are you sure you want to delete this client?')) {
       try {
         await clientService.deleteClient(id);
@@ -149,7 +149,7 @@ const Clients = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {clients.map((client) => (
+                {clients.map(client => (
                   <TableRow key={client._id}>
                     <TableCell>{client.name}</TableCell>
                     <TableCell>{client.email}</TableCell>

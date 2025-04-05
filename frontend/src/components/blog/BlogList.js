@@ -22,13 +22,13 @@ import {
   FormControl,
   InputLabel,
   Stack,
-  Pagination
+  Pagination,
 } from '@mui/material';
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
-  Search as SearchIcon
+  Search as SearchIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -83,46 +83,39 @@ const BlogList = () => {
     }
   };
 
-  const openDeleteDialog = (post) => {
+  const openDeleteDialog = post => {
     setSelectedPost(post);
     setDeleteDialogOpen(true);
   };
 
-  const handleSearchChange = (event) => {
+  const handleSearchChange = event => {
     setSearchTerm(event.target.value);
     setPage(1);
   };
 
-  const handleStatusFilterChange = (event) => {
+  const handleStatusFilterChange = event => {
     setStatusFilter(event.target.value);
     setPage(1);
   };
 
-  const handleTagFilter = (tag) => {
-    setSelectedTags(prev => 
-      prev.includes(tag) 
-        ? prev.filter(t => t !== tag)
-        : [...prev, tag]
-    );
+  const handleTagFilter = tag => {
+    setSelectedTags(prev => (prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]));
     setPage(1);
   };
 
   const filteredPosts = posts
-    .filter(post => 
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.summary.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter(
+      post =>
+        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.summary.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    .filter(post => statusFilter === 'all' ? true : post.status === statusFilter)
-    .filter(post => 
-      selectedTags.length === 0 ? true : 
-      selectedTags.every(tag => post.tags.includes(tag))
+    .filter(post => (statusFilter === 'all' ? true : post.status === statusFilter))
+    .filter(post =>
+      selectedTags.length === 0 ? true : selectedTags.every(tag => post.tags.includes(tag))
     );
 
   const pageCount = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
-  const displayedPosts = filteredPosts.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
+  const displayedPosts = filteredPosts.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
   if (loading) {
     return <LinearProgress />;
@@ -157,14 +150,10 @@ const BlogList = () => {
               ),
             }}
           />
-          
+
           <FormControl sx={{ minWidth: 120 }}>
             <InputLabel>Status</InputLabel>
-            <Select
-              value={statusFilter}
-              onChange={handleStatusFilterChange}
-              label="Status"
-            >
+            <Select value={statusFilter} onChange={handleStatusFilterChange} label="Status">
               <MenuItem value="all">All</MenuItem>
               <MenuItem value="draft">Draft</MenuItem>
               <MenuItem value="published">Published</MenuItem>
@@ -177,7 +166,7 @@ const BlogList = () => {
                 key={tag}
                 label={tag}
                 onClick={() => handleTagFilter(tag)}
-                color={selectedTags.includes(tag) ? "primary" : "default"}
+                color={selectedTags.includes(tag) ? 'primary' : 'default'}
               />
             ))}
           </Box>
@@ -185,7 +174,7 @@ const BlogList = () => {
       </Paper>
 
       <Grid container spacing={3}>
-        {displayedPosts.map((post) => (
+        {displayedPosts.map(post => (
           <Grid item xs={12} md={6} lg={4} key={post._id}>
             <Card>
               <CardContent>
@@ -197,12 +186,7 @@ const BlogList = () => {
                 </Typography>
                 <Box mb={2}>
                   {post.tags.map((tag, index) => (
-                    <Chip
-                      key={index}
-                      label={tag}
-                      size="small"
-                      sx={{ mr: 1, mb: 1 }}
-                    />
+                    <Chip key={index} label={tag} size="small" sx={{ mr: 1, mb: 1 }} />
                   ))}
                 </Box>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -217,17 +201,10 @@ const BlogList = () => {
                 </Box>
               </CardContent>
               <CardActions>
-                <IconButton
-                  size="small"
-                  onClick={() => navigate(`/blog/edit/${post._id}`)}
-                >
+                <IconButton size="small" onClick={() => navigate(`/blog/edit/${post._id}`)}>
                   <EditIcon />
                 </IconButton>
-                <IconButton
-                  size="small"
-                  color="error"
-                  onClick={() => openDeleteDialog(post)}
-                >
+                <IconButton size="small" color="error" onClick={() => openDeleteDialog(post)}>
                   <DeleteIcon />
                 </IconButton>
               </CardActions>
@@ -247,10 +224,7 @@ const BlogList = () => {
         </Box>
       )}
 
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={() => setDeleteDialogOpen(false)}
-      >
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Delete Blog Post</DialogTitle>
         <DialogContent>
           Are you sure you want to delete "{selectedPost?.title}"? This action cannot be undone.

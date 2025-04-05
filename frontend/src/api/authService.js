@@ -5,23 +5,23 @@ const authService = {
   login: async (email, password) => {
     try {
       console.log('[AUTH DEBUG] Login request payload:', { email });
-      
+
       const response = await axiosInstance.post('/auth/login', { email, password });
-      
+
       console.log('[AUTH DEBUG] Login response:', response.data);
-      
+
       if (response.data.token) {
         console.log('[AUTH] Login successful, storing token');
         // Store auth data securely
         await secureStorage.setAuthData(response.data.token, response.data.data?.user || {});
-        
+
         // Set authorization header for all future requests
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
         console.log('[AUTH] Token stored and authorization header set');
       } else {
         console.warn('[AUTH] Login response missing token');
       }
-      
+
       return response.data;
     } catch (error) {
       console.error('[AUTH] Login error:', error.response?.data || error.message);
@@ -48,11 +48,11 @@ const authService = {
     try {
       const token = await secureStorage.getAuthToken();
       console.log('[AUTH] Checking stored token:', token ? 'Found' : 'Not found');
-      
+
       if (token) {
         // Set the Authorization header
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
+
         // Verify token is still valid
         try {
           await axiosInstance.get('/auth/me');
@@ -65,7 +65,8 @@ const authService = {
             if (refreshResponse.data.token) {
               console.log('[AUTH] Token refreshed successfully');
               await secureStorage.setAuthToken(refreshResponse.data.token);
-              axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${refreshResponse.data.token}`;
+              axiosInstance.defaults.headers.common['Authorization'] =
+                `Bearer ${refreshResponse.data.token}`;
               return true;
             }
           } catch (refreshError) {
@@ -105,7 +106,7 @@ const authService = {
       console.error('[AUTH] Token refresh failed:', error);
       return false;
     }
-  }
+  },
 };
 
 export default authService;

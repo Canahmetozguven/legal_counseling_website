@@ -41,7 +41,7 @@ const CaseForm = () => {
     try {
       const response = await axiosInstance.get('/api/clients');
       console.log('API response:', response.data);
-      
+
       // Handle the correct nested structure
       let clientsData = [];
       if (response.data && response.data.data && response.data.data.clients) {
@@ -52,7 +52,7 @@ const CaseForm = () => {
       } else if (Array.isArray(response.data)) {
         clientsData = response.data;
       }
-      
+
       console.log('Processed clients data:', clientsData);
       setClients(clientsData);
     } catch (error) {
@@ -93,13 +93,13 @@ const CaseForm = () => {
     }
   }, [id, fetchCase]);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
-    
+
     if (name === 'notes') {
       setFormData({
         ...formData,
-        notes: { content: value }
+        notes: { content: value },
       });
     } else {
       setFormData({
@@ -109,7 +109,7 @@ const CaseForm = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     try {
       setLoading(true);
@@ -197,9 +197,14 @@ const CaseForm = () => {
             <Grid item xs={12}>
               <Autocomplete
                 options={Array.isArray(clients) ? clients : []}
-                getOptionLabel={(option) => {
+                getOptionLabel={option => {
                   if (!option) return '';
-                  return option.fullName || `${option.firstName || ''} ${option.lastName || ''}`.trim() || String(option._id) || '';
+                  return (
+                    option.fullName ||
+                    `${option.firstName || ''} ${option.lastName || ''}`.trim() ||
+                    String(option._id) ||
+                    ''
+                  );
                 }}
                 value={formData.client}
                 onChange={(event, newValue) => {
@@ -210,13 +215,7 @@ const CaseForm = () => {
                   if (!option || !value) return false;
                   return option._id === value._id;
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Client"
-                    required
-                  />
-                )}
+                renderInput={params => <TextField {...params} label="Client" required />}
                 noOptionsText="No clients found"
               />
             </Grid>
@@ -235,10 +234,10 @@ const CaseForm = () => {
               <DatePicker
                 label="Next Hearing Date"
                 value={formData.nextHearing}
-                onChange={(newValue) => {
+                onChange={newValue => {
                   setFormData({ ...formData, nextHearing: newValue });
                 }}
-                renderInput={(params) => <TextField {...params} fullWidth />}
+                renderInput={params => <TextField {...params} fullWidth />}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -280,17 +279,10 @@ const CaseForm = () => {
             </Grid>
             <Grid item xs={12}>
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/dashboard/cases')}
-                >
+                <Button variant="outlined" onClick={() => navigate('/dashboard/cases')}>
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={loading}
-                >
+                <Button type="submit" variant="contained" disabled={loading}>
                   {loading ? 'Saving...' : 'Save'}
                 </Button>
               </Box>
