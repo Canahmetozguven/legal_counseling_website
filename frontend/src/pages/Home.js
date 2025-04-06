@@ -355,8 +355,8 @@ const Home = () => {
             variant="h6"
             sx={{ mb: 5, maxWidth: 'md', mx: 'auto', fontWeight: 400, color: 'text.secondary' }}
           >
-            Contact us today for a confidential consultation with our experienced legal team. We're
-            here to protect your rights and interests.
+            Contact us today for a confidential consultation with our experienced legal team.
+            We&apos;re here to protect your rights and interests.
           </Typography>
           <Box sx={{ display: 'flex', gap: 3, justifyContent: 'center', flexWrap: 'wrap' }}>
             <Button

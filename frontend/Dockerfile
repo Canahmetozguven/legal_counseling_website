@@ -2,6 +2,14 @@ FROM node:20-alpine as builder
 
 WORKDIR /usr/src/build
 
+# Add ARG instructions for environment variables
+ARG REACT_APP_API_URL
+ARG NODE_ENV
+
+# Set environment variables
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ENV NODE_ENV=$NODE_ENV
+
 # Copy package files first for better caching
 COPY package*.json ./
 

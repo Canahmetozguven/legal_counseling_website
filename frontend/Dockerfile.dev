@@ -2,6 +2,16 @@ FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
+# Add ARG instructions for environment variables
+ARG REACT_APP_API_URL
+ARG NODE_ENV
+
+# Set environment variables
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+ENV NODE_ENV=$NODE_ENV
+ENV PORT 3000
+ENV WATCHPACK_POLLING true
+
 # Copy package files
 COPY package*.json ./
 
@@ -10,11 +20,6 @@ RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application
 COPY . .
-
-# Set environment variables
-ENV NODE_ENV development
-ENV PORT 3000
-ENV WATCHPACK_POLLING true
 
 # Expose port 3000
 EXPOSE 3000

@@ -43,6 +43,9 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+      args:
+        REACT_APP_API_URL: http://localhost:5000/api
+        NODE_ENV: development
     container_name: frontend
     ports:
       - "3000:3000"

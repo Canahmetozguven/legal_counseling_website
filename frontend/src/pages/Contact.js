@@ -113,7 +113,7 @@ const Contact = () => {
             <Paper elevation={3} sx={{ p: 4 }}>
               {success && (
                 <Alert severity="success" sx={{ mb: 4 }}>
-                  Your message has been sent successfully. We'll contact you soon.
+                  Your message has been sent successfully. We&apos;ll contact you soon.
                 </Alert>
               )}
 
