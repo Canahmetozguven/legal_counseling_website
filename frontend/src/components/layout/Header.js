@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   AppBar,
   Toolbar,
@@ -48,6 +49,10 @@ function HideOnScroll(props) {
     </Slide>
   );
 }
+
+HideOnScroll.propTypes = {
+  children: PropTypes.node.isRequired
+};
 
 const Header = () => {
   const navigate = useNavigate();

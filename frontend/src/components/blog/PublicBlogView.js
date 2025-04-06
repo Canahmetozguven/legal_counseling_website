@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Container,
@@ -168,6 +169,22 @@ const BlogCard = ({ post, onShare }) => {
   );
 };
 
+BlogCard.propTypes = {
+  post: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    summary: PropTypes.string.isRequired,
+    tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+    readingTime: PropTypes.number.isRequired,
+    publishedAt: PropTypes.string.isRequired,
+    featuredImage: PropTypes.shape({
+      url: PropTypes.string.isRequired,
+      altText: PropTypes.string
+    })
+  }).isRequired,
+  onShare: PropTypes.func.isRequired
+};
+
 const TagsSidebar = ({ tags, selectedTags, onTagToggle, postCounts }) => {
   return (
     <Paper sx={{ p: 2, height: '100%' }}>
@@ -205,6 +222,13 @@ const TagsSidebar = ({ tags, selectedTags, onTagToggle, postCounts }) => {
       )}
     </Paper>
   );
+};
+
+TagsSidebar.propTypes = {
+  tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+  selectedTags: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onTagToggle: PropTypes.func.isRequired,
+  postCounts: PropTypes.objectOf(PropTypes.number).isRequired
 };
 
 const PublicBlogView = () => {

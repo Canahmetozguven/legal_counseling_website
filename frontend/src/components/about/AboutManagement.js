@@ -834,8 +834,8 @@ const AboutManagement = () => {
             <Typography variant="h6" gutterBottom>
               Contact Information
             </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              This information will be displayed on the team member's profile page.
+            <Typography color="text.secondary" variant="body2">
+              This information will be displayed on the team member&apos;s profile page.
             </Typography>
 
             <TextField

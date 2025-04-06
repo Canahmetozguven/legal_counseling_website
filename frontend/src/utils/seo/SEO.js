@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet-async';
 
 /**
@@ -76,6 +77,19 @@ const SEO = ({
       {schema && <script type="application/ld+json">{JSON.stringify(schema)}</script>}
     </Helmet>
   );
+};
+
+SEO.propTypes = {
+  title: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  canonical: PropTypes.string,
+  image: PropTypes.string,
+  keywords: PropTypes.arrayOf(PropTypes.string),
+  schema: PropTypes.object,
+  type: PropTypes.string,
+  publishedAt: PropTypes.string,
+  updatedAt: PropTypes.string,
+  author: PropTypes.string
 };
 
 export default SEO;

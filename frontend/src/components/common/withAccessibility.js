@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Higher-order component that adds accessibility features to a component
@@ -77,6 +78,18 @@ const withAccessibility = (WrappedComponent, options = {}) => {
   // Set display name for easier debugging
   const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
   AccessibleComponent.displayName = `WithAccessibility(${displayName})`;
+  
+  // Define PropTypes for the HOC
+  AccessibleComponent.propTypes = {
+    id: PropTypes.string,
+    role: PropTypes.string,
+    tabIndex: PropTypes.number,
+    'aria-label': PropTypes.string,
+    'aria-labelledby': PropTypes.string,
+    'aria-describedby': PropTypes.string,
+    onKeyDown: PropTypes.func,
+    onClick: PropTypes.func
+  };
 
   return AccessibleComponent;
 };

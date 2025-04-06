@@ -213,6 +213,12 @@ const BlogList = () => {
         ))}
       </Grid>
 
+      {filteredPosts.length === 0 && (
+        <Typography sx={{ my: 2 }} align="center" color="text.secondary">
+          No posts found. Click &quot;New Post&quot; to create one.
+        </Typography>
+      )}
+
       {pageCount > 1 && (
         <Box display="flex" justifyContent="center" mt={4}>
           <Pagination
@@ -227,7 +233,7 @@ const BlogList = () => {
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Delete Blog Post</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete "{selectedPost?.title}"? This action cannot be undone.
+          Are you sure you want to delete &quot;{selectedPost?.title}&quot;? This action cannot be undone.
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>

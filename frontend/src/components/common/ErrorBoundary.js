@@ -100,7 +100,7 @@ class ErrorBoundary extends React.Component {
               Something went wrong
             </Typography>
             <Typography variant="body1" color="text.secondary" paragraph>
-              We're sorry, but there was an error loading this content. Please try refreshing the
+              We&apos;re sorry, but there was an error loading this content. Please try refreshing the
               page or contact support if the issue persists.
             </Typography>
             <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center', gap: 2 }}>

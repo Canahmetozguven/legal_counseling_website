@@ -224,7 +224,7 @@ const AppointmentForm = () => {
         lawyer: formData.lawyer?._id,
         date: startDate.toISOString(),
         dateTime: startDate.toISOString(),
-        endTime: endDate.toISOString(),
+        endDateTime: endDate.toISOString(), // Changed from endTime to endDateTime
         duration: formData.duration,
         type: formData.type,
         status: formData.status,

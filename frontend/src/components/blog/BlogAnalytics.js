@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Paper,
@@ -47,6 +48,14 @@ const StatCard = ({ icon, title, value, trend, color }) => (
     </CardContent>
   </Card>
 );
+
+StatCard.propTypes = {
+  icon: PropTypes.node.isRequired,
+  title: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  trend: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  color: PropTypes.string.isRequired,
+};
 
 const BlogAnalytics = ({ analytics, historicalData }) => {
   const viewsTrend = (
@@ -172,6 +181,27 @@ const BlogAnalytics = ({ analytics, historicalData }) => {
       </Grid>
     </Box>
   );
+};
+
+BlogAnalytics.propTypes = {
+  analytics: PropTypes.shape({
+    views: PropTypes.number.isRequired,
+    likes: PropTypes.number.isRequired,
+    shares: PropTypes.number.isRequired,
+  }).isRequired,
+  historicalData: PropTypes.shape({
+    lastMonth: PropTypes.shape({
+      views: PropTypes.number.isRequired,
+      likes: PropTypes.number.isRequired,
+      shares: PropTypes.number.isRequired,
+    }).isRequired,
+    daily: PropTypes.arrayOf(
+      PropTypes.shape({
+        date: PropTypes.string.isRequired,
+        views: PropTypes.number.isRequired,
+      })
+    ).isRequired,
+  }).isRequired,
 };
 
 export default BlogAnalytics;

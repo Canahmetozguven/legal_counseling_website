@@ -75,6 +75,9 @@ const Footer = () => {
                   Contact us today for a confidential consultation with our expert legal team. We're
                   ready to help you navigate your legal challenges.
                 </Typography>
+                <Typography variant="body2" color="text.secondary" paragraph>
+                  Our experienced team is ready to provide you with the highest quality legal counsel. We&apos;ll stand by your side every step of the way.
+                </Typography>
                 <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                   <Button
                     variant="contained"
@@ -401,7 +404,7 @@ const Footer = () => {
                 content from this site should act or refrain from acting on the basis of any content
                 included in the site without seeking the appropriate legal or other professional
                 advice on the particular facts and circumstances at issue from an attorney licensed
-                in the recipient's state.
+                in the recipient&apos;s state.
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.8, lineHeight: 1.7 }}>
                 The content of this website contains general information and may not reflect current
@@ -461,8 +464,8 @@ const Footer = () => {
                     Cookie Policy
                   </Link>
                 </Box>
-                <Typography variant="body2" sx={{ mt: 2, opacity: 0.7 }}>
-                  © {new Date().getFullYear()} Legal Counsel. All rights reserved.
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                  &copy; {new Date().getFullYear()} Law Firm. All rights reserved. Attorney Advertising. Prior results do not guarantee a similar outcome.
                 </Typography>
               </Box>
             </Grid>

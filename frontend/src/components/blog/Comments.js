@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Typography,
@@ -211,6 +212,22 @@ const Comments = ({ postId, comments: initialComments, isAdmin }) => {
       </Dialog>
     </Box>
   );
+};
+
+Comments.propTypes = {
+  postId: PropTypes.string.isRequired,
+  comments: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      author: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+      }).isRequired,
+      content: PropTypes.string.isRequired,
+      createdAt: PropTypes.string.isRequired,
+      isApproved: PropTypes.bool.isRequired,
+    })
+  ).isRequired,
+  isAdmin: PropTypes.bool.isRequired,
 };
 
 export default Comments;

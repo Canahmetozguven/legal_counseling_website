@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Box,
   Button,
@@ -171,6 +172,15 @@ const ImageUpload = ({ onImageUpload, initialImage = null }) => {
       )}
     </Paper>
   );
+};
+
+ImageUpload.propTypes = {
+  onImageUpload: PropTypes.func.isRequired,
+  initialImage: PropTypes.shape({
+    url: PropTypes.string.isRequired,
+    caption: PropTypes.string,
+    altText: PropTypes.string
+  })
 };
 
 export default ImageUpload;

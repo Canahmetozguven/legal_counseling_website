@@ -125,8 +125,8 @@ const Contact = () => {
                 <Typography variant="h4" gutterBottom>
                   Send Us a Message
                 </Typography>
-                <Typography variant="body1" paragraph color="text.secondary" sx={{ mb: 4 }}>
-                  Please fill out the form below and we'll get back to you as soon as possible.
+                <Typography paragraph color="text.secondary">
+                  We&apos;re here to help with any legal questions you may have. Fill out the form below and we&apos;ll get back to you as soon as possible.
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
