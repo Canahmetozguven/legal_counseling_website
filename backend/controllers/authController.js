@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
@@ -200,9 +201,15 @@ exports.protect = catchAsync(async (req, res, next) => {
     });
 
     // 3) Check if user still exists
-    const currentUser = await User.findById(decoded.id)
-      .select("+passwordChangedAt")
-      .lean();
+    let currentUser;
+    console.log("[AUTH DEBUG] Decoded ID:", decoded.id);
+    console.log("[AUTH DEBUG] Is valid ObjectId:", mongoose.Types.ObjectId.isValid(decoded.id));
+    if (mongoose.Types.ObjectId.isValid(decoded.id)) {
+      currentUser = await User.findById(decoded.id).select("+passwordChangedAt");
+    } else {
+      console.log("[AUTH DEBUG] Invalid user ID in token:", decoded.id);
+      return next(new AppError("Invalid user ID in token", 400));
+    }
 
     console.log("[AUTH DEBUG] User found:", currentUser?._id);
 

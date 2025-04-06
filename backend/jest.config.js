@@ -4,5 +4,5 @@ module.exports = {
   setupFilesAfterEnv: ["./tests/setup.js"],
   coveragePathIgnorePatterns: ["/node_modules/"],
   verbose: true,
-  testTimeout: 120000, // Increased from 30000 to 120000
+  testTimeout: 30000, // Increase timeout for all tests to 30 seconds
 };

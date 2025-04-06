@@ -1,16 +1,18 @@
 const request = require("supertest");
 const mongoose = require("mongoose");
+const { MongoMemoryServer } = require("mongodb-memory-server");
 const app = require("../../app"); // Import app instead of server
 const User = require("../../models/userModel");
 const Case = require("../../models/caseModel");
 const Client = require("../../models/clientModel");
 
-// Use the common setup from setup.js
-require('../setup');
-
+let mongoServer;
 let token;
 let testUser;
 let testClient;
+
+// Use the common setup from setup.js
+require('../setup');
 
 beforeEach(async () => {
   // Create test user
@@ -57,7 +59,6 @@ describe("Case Routes", () => {
           courtName: "Superior Court",
           caseNumber: "EC-2025-123",
         },
-        assignedLawyer: testUser._id, // Explicitly set assignedLawyer
       };
 
       const response = await request(app)
@@ -117,29 +118,27 @@ describe("Case Routes", () => {
     });
 
     it("should filter cases by status and type", async () => {
-      // Create a case with open status and civil type
-      await Case.create({
-        title: "Active Civil Case",
-        description: "Description",
-        caseType: "civil", 
-        caseNumber: "C-2025-003", // Added required field
-        client: testClient._id,
-        assignedLawyer: testUser._id,
-        status: "open", // Updated to match enum values
-      });
+      await Case.create([
+        {
+          title: "Active Civil Case",
+          description: "Description",
+          caseType: "civil", 
+          caseNumber: "C-2025-003", // Added required field
+          client: testClient._id,
+          assignedLawyer: testUser._id,
+          status: "open", // Updated to match enum values
+        },
+        {
+          title: "Closed Criminal Case",
+          description: "Description",
+          caseType: "criminal",
+          caseNumber: "C-2025-004", // Added required field
+          client: testClient._id,
+          assignedLawyer: testUser._id,
+          status: "closed", // This is a valid enum value
+        },
+      ]);
 
-      // Create a case with closed status and criminal type
-      await Case.create({
-        title: "Closed Criminal Case",
-        description: "Description",
-        caseType: "criminal",
-        caseNumber: "C-2025-004", // Added required field
-        client: testClient._id,
-        assignedLawyer: testUser._id,
-        status: "closed", // This is a valid enum value
-      });
-
-      // Query specifically for open+civil cases - should only get one
       const response = await request(app)
         .get("/api/cases")
         .query({ status: "open", caseType: "civil" }) // Updated to match enum values
@@ -163,29 +162,24 @@ describe("Case Routes", () => {
         status: "open", // Updated to match enum values
       });
 
-      const updateData = {
-        title: "Updated Title",
-        status: "closed",
-        resolution: "Case settled out of court", // Ensure this field is included in the update
-      };
-
       const response = await request(app)
         .patch(`/api/cases/${testCase._id}`)
         .set("Authorization", `Bearer ${token}`)
-        .send(updateData);
+        .send({
+          title: "Updated Title",
+          status: "closed",
+          resolution: "Case settled out of court",
+        });
 
       expect(response.status).toBe(200);
       expect(response.body.data.case.title).toBe("Updated Title");
       expect(response.body.data.case.status).toBe("closed");
-      
-      // Since the resolution field might not be returned directly in the response
-      // We can modify the test to check if it exists, or fetch the case separately to verify
-      const updatedCase = await Case.findById(testCase._id);
-      expect(updatedCase.resolution).toBe("Case settled out of court");
+      expect(response.body.data.case.resolution).toBe(
+        "Case settled out of court"
+      );
     });
 
     it("should only allow assigned lawyer to update case", async () => {
-      // Create another lawyer
       const otherLawyer = await User.create({
         name: "Other Lawyer",
         email: "other@test.com",
@@ -194,34 +188,23 @@ describe("Case Routes", () => {
         role: "lawyer",
       });
 
-      // Get token for the other lawyer
-      const otherLoginResponse = await request(app).post("/api/auth/login").send({
-        email: "other@test.com",
-        password: "password123",
-      });
-
-      const otherLawyerToken = otherLoginResponse.body.token;
-
-      // Create a case assigned to the original test lawyer
       const testCase = await Case.create({
         title: "Test Case",
         description: "Description",
         caseType: "civil",
         caseNumber: "C-2025-006", // Added required field
         client: testClient._id,
-        assignedLawyer: testUser._id, // Assigned to testUser, not otherLawyer
+        assignedLawyer: otherLawyer._id,
         status: "open", // Updated to match enum values
       });
 
-      // Try to update the case using the other lawyer's token
       const response = await request(app)
         .patch(`/api/cases/${testCase._id}`)
-        .set("Authorization", `Bearer ${otherLawyerToken}`) // Using other lawyer's token
+        .set("Authorization", `Bearer ${token}`)
         .send({
           status: "closed",
         });
 
-      // This should be forbidden since the other lawyer is not assigned to this case
       expect(response.status).toBe(403);
     });
   });

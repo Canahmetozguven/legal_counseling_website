@@ -52,7 +52,7 @@ describe("Appointment Routes", () => {
         endTime: "11:00", // Added required field
         lawyer: testUser._id, // Added required field
         duration: 60,
-        type: "consultation", // Changed from "follow-up" to valid enum value
+        type: "consultation",
         notes: "Initial consultation meeting",
       };
 
@@ -83,7 +83,7 @@ describe("Appointment Routes", () => {
           endTime: "15:00", // Added required field
           lawyer: testUser._id, // Added required field
           duration: 60,
-          type: "consultation", // Changed from "follow-up" to valid enum value
+          type: "consultation",
         });
 
       expect(response.status).toBe(400);
@@ -102,7 +102,7 @@ describe("Appointment Routes", () => {
           endTime: "11:00", // Added required field
           lawyer: testUser._id, // Added required field
           duration: 60,
-          type: "consultation", // Changed from "follow-up" to valid enum value
+          type: "consultation",
         },
         {
           client: testClient._id,
@@ -112,7 +112,7 @@ describe("Appointment Routes", () => {
           endTime: "14:30", // Added required field
           lawyer: testUser._id, // Added required field
           duration: 30,
-          type: "meeting", // Changed from "follow-up" to valid enum value
+          type: "follow-up",
         },
       ]);
 
@@ -134,7 +134,7 @@ describe("Appointment Routes", () => {
           endTime: "11:00", // Added required field
           lawyer: testUser._id, // Added required field
           duration: 60,
-          type: "consultation", // Changed from "follow-up" to valid enum value
+          type: "consultation",
         },
         {
           client: testClient._id,
@@ -144,7 +144,7 @@ describe("Appointment Routes", () => {
           endTime: "14:30", // Added required field
           lawyer: testUser._id, // Added required field
           duration: 30,
-          type: "meeting", // Changed from "follow-up" to valid enum value
+          type: "follow-up",
         },
       ]);
 
@@ -174,7 +174,7 @@ describe("Appointment Routes", () => {
         endTime: "11:00", // Added required field
         lawyer: testUser._id, // Added required field
         duration: 60,
-        type: "consultation", // Changed from "follow-up" to valid enum value
+        type: "consultation",
       });
 
       const response = await request(app)
@@ -186,8 +186,7 @@ describe("Appointment Routes", () => {
         });
 
       expect(response.status).toBe(200);
-      // Commenting out this expectation since the duration field isn't returned in the response
-      // expect(response.body.data.appointment.duration).toBe(90);
+      expect(response.body.data.appointment.duration).toBe(90);
       expect(response.body.data.appointment.notes).toBe(
         "Extended consultation needed"
       );
@@ -204,7 +203,7 @@ describe("Appointment Routes", () => {
         endTime: "11:00", // Added required field
         lawyer: testUser._id, // Added required field
         duration: 60,
-        type: "consultation", // Changed from "follow-up" to valid enum value
+        type: "consultation",
       });
 
       const response = await request(app)

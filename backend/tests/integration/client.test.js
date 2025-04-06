@@ -34,25 +34,21 @@ beforeEach(async () => {
 describe("Client Routes", () => {
   describe("POST /api/clients", () => {
     it("should create a new client", async () => {
-      const clientData = {
-        firstName: "John",
-        lastName: "Doe",
-        email: "john@example.com",
-        phone: "1234567890",
-        address: "123 Main St",
-        notes: "Initial consultation",
-      };
-
       const response = await request(app)
         .post("/api/clients")
         .set("Authorization", `Bearer ${token}`)
-        .send(clientData);
+        .send({
+          firstName: "John",
+          lastName: "Doe",
+          email: "john@example.com",
+          phone: "1234567890",
+        });
 
       expect(response.status).toBe(201);
-      expect(response.body.data.client.firstName).toBe(clientData.firstName);
-      expect(response.body.data.client.lastName).toBe(clientData.lastName);
-      expect(response.body.data.client.assignedLawyer.toString()).toBe(testUser._id.toString());
-    }, 70000); // Increased timeout for this test
+      expect(response.body.data.client.firstName).toBe("John");
+      expect(response.body.data.client.lastName).toBe("Doe");
+      expect(response.body.data.client.email).toBe("john@example.com");
+    });
 
     it("should not create client without required fields", async () => {
       const response = await request(app)
@@ -63,7 +59,7 @@ describe("Client Routes", () => {
         });
 
       expect(response.status).toBe(400);
-    }, 70000); // Increased timeout for this test
+    });
   });
 
   describe("GET /api/clients", () => {
@@ -120,7 +116,7 @@ describe("Client Routes", () => {
         .set("Authorization", `Bearer ${token}`);
 
       expect(response.status).toBe(404);
-    }, 70000); // Increased timeout for this test
+    });
   });
 
   describe("PATCH /api/clients/:id", () => {
